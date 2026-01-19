@@ -321,13 +321,25 @@ def stop_batch():
     data = request.json or {}
     if state["batch"]:
         history = load_history()
+        # Sauvegarder l'historique des capteurs avec le batch
+        batch_sensor_history = {
+            "timestamps": list(sensor_history["timestamps"]),
+            "t1": list(sensor_history["t1"]),
+            "t2": list(sensor_history["t2"]),
+            "t3": list(sensor_history["t3"]),
+            "humidity": list(sensor_history["humidity"])
+        }
         history.insert(0, {**state["batch"], "ended_at": datetime.now().isoformat(),
             "events": state["events"], "status": data.get('status', 'completed'),
-            "rating": data.get('rating', 0), "notes": data.get('notes', '')})
+            "rating": data.get('rating', 0), "notes": data.get('notes', ''),
+            "sensor_history": batch_sensor_history})
         save_history(history)
         state["batch"] = None
         state["mode"] = "idle"
         state["events"] = []
+        # Vider l'historique des capteurs pour le prochain batch
+        for key in sensor_history:
+            sensor_history[key].clear()
     return jsonify({"success": True})
 
 @app.route('/api/batch/next-step', methods=['POST'])

@@ -9,121 +9,127 @@
         :root{--orange:#ff9900;--yellow:#ffcc00;--blue:#9999ff;--purple:#cc99cc;--tan:#ffaa66;--red:#cc4444;--green:#55cc55;--bg:#000;--bg2:#0a0a12;}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         html,body{font-family:'Antonio',sans-serif;background:var(--bg);color:var(--orange);height:100vh;overflow:hidden;}
-        .app{display:grid;grid-template-rows:48px 1fr 58px;height:100vh;}
-        .header{display:flex;align-items:center;padding:0 10px;gap:10px;background:linear-gradient(90deg,var(--purple) 50%,transparent 50%);}
-        .header-title{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--bg);text-transform:uppercase;flex:1;padding-left:10px;}
-        .header-status{background:var(--tan);padding:6px 14px;border-radius:15px;font-family:'Orbitron',sans-serif;font-size:14px;color:var(--bg);}
+        .app{display:grid;grid-template-rows:44px 1fr 52px;height:100vh;}
+        .header{display:flex;align-items:center;padding:0 8px;gap:8px;background:linear-gradient(90deg,var(--purple) 50%,transparent 50%);}
+        .header-title{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--bg);text-transform:uppercase;flex:1;padding-left:8px;}
+        .header-status{background:var(--tan);padding:5px 12px;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--bg);}
         .header-status.on{background:var(--green);animation:pulse 2s infinite;}
-        .btn-quit{background:var(--red);border:none;width:44px;height:44px;border-radius:8px;font-size:22px;color:#fff;cursor:pointer;}
+        .btn-quit{background:var(--red);border:none;width:40px;height:40px;border-radius:6px;font-size:20px;color:#fff;cursor:pointer;}
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
-        @keyframes glow{0%,100%{box-shadow:0 0 5px var(--orange);}50%{box-shadow:0 0 20px var(--orange);}}
-        @keyframes scan{0%{background-position:0 0;}100%{background-position:200% 0;}}
+        @keyframes glow{0%,100%{box-shadow:0 0 5px var(--orange);}50%{box-shadow:0 0 15px var(--orange);}}
+        @keyframes scan{0%{left:-100%;}100%{left:100%;}}
         @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-        .nav{display:flex;gap:4px;padding:6px 10px;background:var(--bg2);}
-        .nav-btn{flex:1;background:var(--tan);border:none;padding:10px 4px;font-family:'Orbitron',sans-serif;font-size:13px;color:var(--bg);text-transform:uppercase;border-radius:8px;cursor:pointer;}
+        @keyframes datapoint{0%{transform:scale(1.5);opacity:1;}100%{transform:scale(1);opacity:.8;}}
+        .nav{display:flex;gap:3px;padding:4px 6px;background:var(--bg2);}
+        .nav-btn{flex:1;background:var(--tan);border:none;padding:8px 2px;font-family:'Orbitron',sans-serif;font-size:11px;color:var(--bg);text-transform:uppercase;border-radius:6px;cursor:pointer;}
         .nav-btn.active{background:var(--orange);}
         .nav-btn.blue{background:var(--blue);}
         .nav-btn.purple{background:var(--purple);}
         .nav-btn.green{background:var(--green);}
         .main{overflow:hidden;position:relative;}
-        .screen{position:absolute;inset:0;padding:8px;display:none;flex-direction:column;overflow-y:auto;}
+        .screen{position:absolute;inset:0;padding:6px;display:none;flex-direction:column;overflow:hidden;}
         .screen.active{display:flex;}
-        /* Dashboard sensors always visible */
-        .sensors-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
-        .sensor-box{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 10px 10px 0;padding:8px;text-align:center;position:relative;overflow:hidden;}
-        .sensor-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);background-size:200% 100%;animation:scan 2s linear infinite;}
-        .sensor-label{font-size:11px;color:var(--tan);text-transform:uppercase;}
-        .sensor-value{font-family:'Orbitron',sans-serif;font-size:24px;color:var(--yellow);margin:4px 0;}
-        .sensor-value.avg{color:var(--orange);font-size:28px;}
-        .sensor-unit{font-size:14px;color:var(--orange);}
-        /* Batch panel */
-        .batch-panel{flex:1;display:flex;flex-direction:column;gap:6px;}
-        .panel{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 10px 10px 0;padding:10px;position:relative;}
-        .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);background-size:200% 100%;animation:scan 2s linear infinite;}
-        .panel-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--orange);text-transform:uppercase;margin-bottom:8px;}
-        .batch-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-        .info-item{background:rgba(153,153,255,.1);border-left:3px solid var(--blue);padding:6px 8px;}
-        .info-label{font-size:10px;color:var(--tan);text-transform:uppercase;}
-        .info-value{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--yellow);}
-        .progress{height:10px;background:rgba(255,153,0,.2);border-radius:5px;margin-top:10px;overflow:hidden;}
+        .sensors-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:6px;}
+        .sensor-box{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 8px 8px 0;padding:6px 4px;text-align:center;position:relative;overflow:hidden;}
+        .sensor-box::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:scan 2s linear infinite;}
+        .sensor-label{font-size:10px;color:var(--tan);text-transform:uppercase;}
+        .sensor-value{font-family:'Orbitron',sans-serif;font-size:20px;color:var(--yellow);margin:2px 0;transition:all .3s;}
+        .sensor-value.updated{animation:datapoint .5s ease;}
+        .sensor-value.avg{color:var(--orange);font-size:22px;}
+        .sensor-unit{font-size:12px;color:var(--orange);}
+        .batch-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+        .panel{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 8px 8px 0;padding:8px;position:relative;overflow:hidden;}
+        .panel::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:scan 2s linear infinite;}
+        .panel-title{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--orange);text-transform:uppercase;margin-bottom:6px;}
+        .batch-info{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+        .info-item{background:rgba(153,153,255,.1);border-left:3px solid var(--blue);padding:4px 6px;}
+        .info-label{font-size:9px;color:var(--tan);text-transform:uppercase;}
+        .info-value{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--yellow);}
+        .progress{height:8px;background:rgba(255,153,0,.2);border-radius:4px;margin-top:8px;overflow:hidden;}
         .progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width .5s;}
-        .actuators{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
-        .actuator{text-align:center;padding:8px 4px;border:1px solid var(--tan);border-radius:6px;cursor:pointer;}
+        .actuators{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px;}
+        .actuator{text-align:center;padding:6px 2px;border:1px solid var(--tan);border-radius:4px;cursor:pointer;}
         .actuator.on{border-color:var(--green);background:rgba(85,204,85,.1);}
-        .actuator-led{font-size:18px;color:var(--tan);}
-        .actuator-led.on{color:var(--green);text-shadow:0 0 10px var(--green);animation:blink 1s infinite;}
-        .actuator-name{font-size:9px;color:var(--tan);text-transform:uppercase;margin-top:2px;}
-        .batch-actions{display:flex;gap:6px;margin-top:10px;}
-        .batch-actions .btn{flex:1;}
+        .actuator-led{font-size:16px;color:var(--tan);}
+        .actuator-led.on{color:var(--green);text-shadow:0 0 8px var(--green);animation:blink 1s infinite;}
+        .actuator-name{font-size:8px;color:var(--tan);text-transform:uppercase;margin-top:1px;}
+        .batch-actions{display:flex;gap:4px;margin-top:8px;}
+        .batch-actions .btn{flex:1;padding:10px 4px;font-size:12px;}
         .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-        .empty-icon{width:80px;height:80px;border:3px solid var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--orange);cursor:pointer;animation:glow 2s infinite;}
-        .empty-text{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--tan);margin-top:12px;}
-        /* Presets */
-        .preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
-        .preset-card{background:rgba(255,170,102,.1);border:2px solid var(--tan);border-radius:8px;padding:8px 4px;text-align:center;cursor:pointer;min-height:60px;}
-        .preset-card.selected{background:rgba(255,153,0,.3);border-color:var(--orange);box-shadow:0 0 10px rgba(255,153,0,.5);}
-        .preset-card.manual{grid-column:span 4;min-height:40px;display:flex;align-items:center;justify-content:center;gap:10px;}
-        .preset-icon{font-family:'Orbitron',sans-serif;font-size:18px;color:var(--yellow);}
-        .preset-name{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--yellow);margin-top:4px;}
-        .form-section{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 8px 8px 0;padding:8px;margin-bottom:8px;}
-        .section-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--orange);text-transform:uppercase;margin-bottom:6px;}
-        .form-input{width:100%;padding:10px;background:var(--bg2);border:2px solid var(--tan);border-radius:4px;color:var(--yellow);font-size:16px;}
+        .empty-icon{width:70px;height:70px;border:3px solid var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--orange);cursor:pointer;animation:glow 2s infinite;}
+        .empty-text{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--tan);margin-top:10px;}
+        /* Create - compact */
+        .create-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;overflow:hidden;}
+        .create-left,.create-right{display:flex;flex-direction:column;overflow:hidden;}
+        .form-section{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 6px 6px 0;padding:6px;margin-bottom:6px;}
+        .form-section.flex{flex:1;display:flex;flex-direction:column;overflow:hidden;margin-bottom:0;}
+        .section-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--orange);text-transform:uppercase;margin-bottom:4px;}
+        .form-input{width:100%;padding:8px;background:var(--bg2);border:2px solid var(--tan);border-radius:4px;color:var(--yellow);font-size:14px;}
         .form-input:focus{outline:none;border-color:var(--orange);}
-        .form-textarea{width:100%;min-height:70px;padding:10px;background:var(--bg2);border:2px solid var(--tan);border-radius:4px;color:var(--yellow);font-size:16px;resize:none;}
-        .steps-list{max-height:150px;overflow-y:auto;}
-        .step-card{background:rgba(153,153,255,.1);border:1px solid var(--blue);border-radius:6px;margin-bottom:6px;}
-        .step-header{background:var(--blue);padding:4px 8px;display:flex;justify-content:space-between;align-items:center;}
-        .step-title{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--bg);}
-        .step-delete{background:var(--red);border:none;color:#fff;padding:2px 8px;border-radius:4px;cursor:pointer;}
-        .step-content{padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;}
-        .step-content .form-input{padding:6px;font-size:14px;}
-        .form-label{font-size:10px;color:var(--tan);text-transform:uppercase;}
-        .btn{background:var(--tan);border:none;padding:12px;font-family:'Orbitron',sans-serif;font-size:14px;color:var(--bg);text-transform:uppercase;border-radius:6px;cursor:pointer;}
+        .preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
+        .preset-card{background:rgba(255,170,102,.1);border:2px solid var(--tan);border-radius:6px;padding:6px 2px;text-align:center;cursor:pointer;}
+        .preset-card.selected{background:rgba(255,153,0,.3);border-color:var(--orange);}
+        .preset-icon{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--yellow);}
+        .preset-name{font-family:'Orbitron',sans-serif;font-size:8px;color:var(--yellow);margin-top:2px;}
+        .steps-list{flex:1;overflow-y:auto;margin-top:4px;}
+        .step-mini{background:rgba(153,153,255,.1);border:1px solid var(--blue);border-radius:4px;padding:4px 6px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;}
+        .step-info{font-size:11px;color:var(--yellow);}
+        .step-delete{background:var(--red);border:none;color:#fff;width:20px;height:20px;border-radius:4px;cursor:pointer;font-size:12px;}
+        .btn{background:var(--tan);border:none;padding:10px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--bg);text-transform:uppercase;border-radius:6px;cursor:pointer;}
         .btn.green{background:var(--green);}
         .btn.red{background:var(--red);}
         .btn.orange{background:var(--orange);}
-        .btn-sm{padding:8px 12px;font-size:11px;}
-        /* Sensors page - Graph */
-        .graph-controls{display:flex;gap:6px;margin-bottom:10px;}
-        .graph-btn{flex:1;background:var(--tan);border:none;padding:10px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--bg);border-radius:6px;cursor:pointer;opacity:.6;}
+        .btn-sm{padding:6px 10px;font-size:10px;}
+        .btn-add{width:100%;margin-top:4px;padding:8px;}
+        /* Sensors page */
+        .graph-controls{display:flex;gap:4px;margin-bottom:6px;}
+        .graph-btn{flex:1;background:var(--tan);border:none;padding:8px;font-family:'Orbitron',sans-serif;font-size:10px;color:var(--bg);border-radius:4px;cursor:pointer;opacity:.6;}
         .graph-btn.active{opacity:1;background:var(--orange);}
-        .graph-container{flex:1;background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 10px 10px 0;padding:10px;position:relative;min-height:250px;}
-        .graph-container::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);background-size:200% 100%;animation:scan 2s linear infinite;}
-        #tempCanvas{width:100%;height:100%;}
-        .graph-legend{display:flex;gap:12px;justify-content:center;margin-top:10px;}
-        .legend-item{display:flex;align-items:center;gap:4px;font-size:12px;}
-        .legend-color{width:12px;height:12px;border-radius:2px;}
+        .graph-container{flex:1;background:rgba(255,153,0,.03);border:2px solid var(--orange);border-radius:0 8px 8px 0;position:relative;overflow:hidden;}
+        .graph-container::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:scan 2s linear infinite;}
+        .graph-canvas-wrap{position:absolute;inset:8px;}
+        #tempCanvas{display:block;}
+        .graph-legend{display:flex;gap:10px;justify-content:center;margin-top:6px;}
+        .legend-item{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--tan);}
+        .legend-color{width:10px;height:10px;border-radius:2px;}
+        .live-indicator{display:flex;align-items:center;gap:4px;font-family:'Orbitron',sans-serif;font-size:10px;color:var(--green);}
+        .live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 1s infinite;}
         /* Events & History */
         .list-container{flex:1;overflow-y:auto;}
-        .event-item{background:rgba(255,153,0,.05);border-left:4px solid var(--orange);padding:8px;margin-bottom:4px;border-radius:0 6px 6px 0;}
-        .event-time{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--tan);}
-        .event-text{font-size:14px;color:var(--yellow);margin-top:2px;}
-        .history-item{background:rgba(255,153,0,.05);border:1px solid var(--orange);border-radius:6px;margin-bottom:6px;overflow:hidden;}
-        .history-header{background:var(--tan);padding:6px 8px;display:flex;justify-content:space-between;}
-        .history-title{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--bg);}
-        .history-badge{background:var(--green);color:var(--bg);padding:2px 6px;border-radius:4px;font-size:10px;}
+        .event-item{background:rgba(255,153,0,.05);border-left:3px solid var(--orange);padding:6px;margin-bottom:3px;border-radius:0 4px 4px 0;}
+        .event-time{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--tan);}
+        .event-text{font-size:12px;color:var(--yellow);margin-top:1px;}
+        .history-item{background:rgba(255,153,0,.05);border:1px solid var(--orange);border-radius:4px;margin-bottom:4px;overflow:hidden;}
+        .history-header{background:var(--tan);padding:4px 6px;display:flex;justify-content:space-between;}
+        .history-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--bg);}
+        .history-badge{background:var(--green);color:var(--bg);padding:1px 4px;border-radius:3px;font-size:9px;}
         .history-badge.failed{background:var(--red);}
-        .history-content{padding:6px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;}
-        .history-actions{display:flex;gap:4px;padding:6px;}
-        .history-actions .btn-sm{flex:1;text-align:center;}
+        .history-content{padding:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;text-align:center;}
+        .history-actions{display:flex;gap:3px;padding:4px;}
+        .history-actions .btn-sm{flex:1;text-align:center;font-size:9px;padding:5px;}
         /* Modal */
-        .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:10px;}
         .modal.active{display:flex;}
-        .modal-content{background:var(--bg2);border:2px solid var(--orange);border-radius:0 12px 12px 0;padding:16px;width:100%;max-width:360px;}
-        .modal-title{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--orange);text-transform:uppercase;margin-bottom:12px;text-align:center;}
-        .modal-buttons{display:flex;gap:8px;margin-top:16px;}
+        .modal-content{background:var(--bg2);border:2px solid var(--orange);border-radius:0 10px 10px 0;padding:12px;width:100%;max-width:340px;max-height:90vh;overflow-y:auto;}
+        .modal-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--orange);text-transform:uppercase;margin-bottom:10px;text-align:center;}
+        .modal-buttons{display:flex;gap:6px;margin-top:12px;}
         .modal-buttons .btn{flex:1;}
-        .stars{display:flex;gap:8px;justify-content:center;margin:10px 0;}
-        .star{font-size:26px;color:var(--tan);cursor:pointer;}
-        .star.active{color:var(--yellow);text-shadow:0 0 10px var(--yellow);}
-        .status-btns{display:flex;gap:8px;margin:10px 0;}
-        .status-btn{flex:1;padding:10px;font-family:'Orbitron',sans-serif;font-size:12px;border:none;border-radius:6px;cursor:pointer;opacity:.5;}
+        .form-textarea{width:100%;min-height:60px;padding:8px;background:var(--bg2);border:2px solid var(--tan);border-radius:4px;color:var(--yellow);font-size:14px;resize:none;}
+        .stars{display:flex;gap:6px;justify-content:center;margin:8px 0;}
+        .star{font-size:24px;color:var(--tan);cursor:pointer;}
+        .star.active{color:var(--yellow);text-shadow:0 0 8px var(--yellow);}
+        .status-btns{display:flex;gap:6px;margin:8px 0;}
+        .status-btn{flex:1;padding:8px;font-family:'Orbitron',sans-serif;font-size:11px;border:none;border-radius:4px;cursor:pointer;opacity:.5;}
         .status-btn.active{opacity:1;}
         .status-btn.ok{background:var(--green);color:var(--bg);}
         .status-btn.fail{background:var(--red);color:#fff;}
-        .alert-container{position:fixed;top:56px;right:8px;z-index:1001;}
-        .alert{background:var(--green);color:var(--bg);padding:10px 14px;border-radius:6px;margin-bottom:6px;font-family:'Orbitron',sans-serif;font-size:11px;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+        .form-label{font-size:9px;color:var(--tan);text-transform:uppercase;margin-bottom:2px;}
+        .alert-container{position:fixed;top:50px;right:6px;z-index:1001;}
+        .alert{background:var(--green);color:var(--bg);padding:8px 12px;border-radius:4px;margin-bottom:4px;font-family:'Orbitron',sans-serif;font-size:10px;}
         .alert.error{background:var(--red);color:#fff;}
+        /* History graph modal */
+        .history-graph{width:100%;height:150px;margin:10px 0;}
     </style>
 </head>
 <body>
@@ -146,10 +152,19 @@
         </div>
         <!-- Create -->
         <div class="screen" id="create">
-            <div class="form-section"><div class="section-title">Nom</div><input type="text" class="form-input" id="batchName" placeholder="Mon batch" inputmode="text"></div>
-            <div class="form-section"><div class="section-title">Préréglage</div><div id="presetGrid" class="preset-grid"></div></div>
-            <div class="form-section" style="flex:1;display:flex;flex-direction:column;"><div style="display:flex;justify-content:space-between;"><div class="section-title">Étapes</div><button class="btn-sm" onclick="addStep()">+</button></div><div class="steps-list" id="stepsList"></div></div>
-            <button class="btn green" onclick="startBatch()">Démarrer</button>
+            <div class="create-grid">
+                <div class="create-left">
+                    <div class="form-section"><div class="section-title">Nom</div><input type="text" class="form-input" id="batchName" placeholder="Batch" inputmode="text"></div>
+                    <div class="form-section flex"><div class="section-title">Préréglage</div><div id="presetGrid" class="preset-grid"></div></div>
+                </div>
+                <div class="create-right">
+                    <div class="form-section flex">
+                        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="section-title">Étapes</div><button class="btn-sm" onclick="openStepModal()">+</button></div>
+                        <div class="steps-list" id="stepsList"></div>
+                    </div>
+                    <button class="btn green" onclick="startBatch()" style="margin-top:6px;">Démarrer</button>
+                </div>
+            </div>
         </div>
         <!-- Sensors -->
         <div class="screen" id="sensors">
@@ -160,25 +175,28 @@
                 <div class="sensor-box"><div class="sensor-label">Humid</div><div class="sensor-value" id="shum">--</div><div class="sensor-unit">%</div></div>
             </div>
             <div class="graph-controls">
-                <button class="graph-btn active" data-interval="1m" onclick="setInterval('1m')">1 min</button>
-                <button class="graph-btn" data-interval="15m" onclick="setInterval('15m')">15 min</button>
-                <button class="graph-btn" data-interval="1h" onclick="setInterval('1h')">1 heure</button>
+                <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
+                <button class="graph-btn active" data-interval="live" onclick="setGraphInterval('live')">Temps réel</button>
+                <button class="graph-btn" data-interval="1m" onclick="setGraphInterval('1m')">1 min</button>
+                <button class="graph-btn" data-interval="15m" onclick="setGraphInterval('15m')">15 min</button>
+                <button class="graph-btn" data-interval="1h" onclick="setGraphInterval('1h')">1h</button>
             </div>
-            <div class="graph-container"><canvas id="tempCanvas"></canvas></div>
+            <div class="graph-container"><div class="graph-canvas-wrap"><canvas id="tempCanvas"></canvas></div></div>
             <div class="graph-legend">
                 <div class="legend-item"><div class="legend-color" style="background:#ff6b6b"></div>T1</div>
                 <div class="legend-item"><div class="legend-color" style="background:#4ecdc4"></div>T2</div>
                 <div class="legend-item"><div class="legend-color" style="background:#ffe66d"></div>T3</div>
+                <div class="legend-item"><div class="legend-color" style="background:#cc99cc"></div>Moy</div>
             </div>
         </div>
         <!-- Events -->
         <div class="screen" id="events">
-            <button class="btn orange" onclick="openModal('eventModal')" style="margin-bottom:10px;">+ Note</button>
+            <button class="btn orange" onclick="openModal('eventModal')" style="margin-bottom:6px;">+ Note</button>
             <div class="list-container" id="eventsList"></div>
         </div>
         <!-- History -->
         <div class="screen" id="history">
-            <div class="section-title" style="margin-bottom:8px;">Historique</div>
+            <div class="section-title" style="margin-bottom:6px;">Historique</div>
             <div class="list-container" id="historyList"></div>
         </div>
     </div>
@@ -187,24 +205,25 @@
         <button class="nav-btn" data-screen="create" onclick="showScreen('create')">Nouveau</button>
         <button class="nav-btn green" data-screen="sensors" onclick="showScreen('sensors')">Capteurs</button>
         <button class="nav-btn blue" data-screen="events" onclick="showScreen('events')">Notes</button>
-        <button class="nav-btn purple" data-screen="history" onclick="showScreen('history')">Historique</button>
+        <button class="nav-btn purple" data-screen="history" onclick="showScreen('history')">Histo.</button>
     </div>
 </div>
 <div class="alert-container" id="alertContainer"></div>
-<div class="modal" id="eventModal"><div class="modal-content"><div class="modal-title">Ajouter note</div><textarea class="form-textarea" id="eventInput" placeholder="Observation..." inputmode="text"></textarea><div class="modal-buttons"><button class="btn" onclick="closeModal('eventModal')">Annuler</button><button class="btn orange" onclick="addEvent()">Ajouter</button></div></div></div>
+<div class="modal" id="eventModal"><div class="modal-content"><div class="modal-title">Note</div><textarea class="form-textarea" id="eventInput" placeholder="Observation..." inputmode="text"></textarea><div class="modal-buttons"><button class="btn" onclick="closeModal('eventModal')">Annuler</button><button class="btn orange" onclick="addEvent()">OK</button></div></div></div>
 <div class="modal" id="stopModal"><div class="modal-content"><div class="modal-title">Terminer</div><div class="status-btns"><button class="status-btn ok active" id="statusOk" onclick="setStopStatus('completed')">Réussi</button><button class="status-btn fail" id="statusFail" onclick="setStopStatus('failed')">Échoué</button></div><div class="stars" id="stopStars"><span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span><span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span><span class="star" onclick="setRating(5)">★</span></div><textarea class="form-textarea" id="stopNotes" placeholder="Notes..." inputmode="text"></textarea><div class="modal-buttons"><button class="btn" onclick="closeModal('stopModal')">Annuler</button><button class="btn red" onclick="stopBatch()">Terminer</button></div></div></div>
+<div class="modal" id="stepModal"><div class="modal-content"><div class="modal-title">Ajouter étape</div><div class="form-row"><div><div class="form-label">Nom</div><input class="form-input" id="stepName" value="Étape" inputmode="text"></div><div><div class="form-label">Durée (h)</div><input class="form-input" id="stepDuration" type="number" value="12" inputmode="numeric"></div></div><div class="form-row"><div><div class="form-label">Temp °C</div><input class="form-input" id="stepTemp" type="number" value="30" inputmode="numeric"></div><div><div class="form-label">Humid %</div><input class="form-input" id="stepHumid" type="number" value="70" inputmode="numeric"></div></div><div class="modal-buttons"><button class="btn" onclick="closeModal('stepModal')">Annuler</button><button class="btn orange" onclick="addStepFromModal()">Ajouter</button></div></div></div>
 <div class="modal" id="historyModal"><div class="modal-content"><div class="modal-title" id="historyModalTitle">Détails</div><div id="historyModalContent"></div></div></div>
-<div class="modal" id="deleteModal"><div class="modal-content"><div class="modal-title">Confirmer</div><p style="color:var(--yellow);text-align:center;margin:16px 0;">Supprimer ?</p><div class="modal-buttons"><button class="btn" onclick="closeModal('deleteModal')">Annuler</button><button class="btn red" onclick="confirmDelete()">Supprimer</button></div></div></div>
+<div class="modal" id="deleteModal"><div class="modal-content"><div class="modal-title">Confirmer</div><p style="color:var(--yellow);text-align:center;margin:12px 0;">Supprimer ?</p><div class="modal-buttons"><button class="btn" onclick="closeModal('deleteModal')">Annuler</button><button class="btn red" onclick="confirmDelete()">Supprimer</button></div></div></div>
 <script>
-let state={},presets={},selectedPreset=null,editSteps=[],stopStatus='completed',stopRating=0,deleteId=null,graphInterval='1m',canvas,ctx;
+let state={},presets={},selectedPreset=null,editSteps=[],stopStatus='completed',stopRating=0,deleteId=null;
+let graphInterval='live',canvas,ctx,graphData={timestamps:[],t1:[],t2:[],t3:[],humidity:[]};
+let lastValues={t1:0,t2:0,t3:0};
 
 async function fetchState(){
     try{
         state=await(await fetch('/api/state')).json();
         const t=state.sensors.temperature||[0,0,0];
-        document.getElementById('t1').textContent=t[0].toFixed(1);
-        document.getElementById('t2').textContent=t[1].toFixed(1);
-        document.getElementById('t3').textContent=t[2].toFixed(1);
+        updateSensorDisplay('t1',t[0]);updateSensorDisplay('t2',t[1]);updateSensorDisplay('t3',t[2]);
         document.getElementById('tavg').textContent=((t[0]+t[1]+t[2])/3).toFixed(1);
         document.getElementById('st1').textContent=t[0].toFixed(1);
         document.getElementById('st2').textContent=t[1].toFixed(1);
@@ -212,8 +231,22 @@ async function fetchState(){
         document.getElementById('shum').textContent=state.sensors.humidity.toFixed(0);
         document.getElementById('headerStatus').textContent=state.batch?'En cours':'Inactif';
         document.getElementById('headerStatus').className='header-status'+(state.batch?' on':'');
+        // Add to live graph
+        if(graphInterval==='live'){
+            const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+            graphData.timestamps.push(now);
+            graphData.t1.push(t[0]);graphData.t2.push(t[1]);graphData.t3.push(t[2]);
+            graphData.humidity.push(state.sensors.humidity);
+            if(graphData.timestamps.length>60){graphData.timestamps.shift();graphData.t1.shift();graphData.t2.shift();graphData.t3.shift();graphData.humidity.shift();}
+            if(document.getElementById('sensors').classList.contains('active'))drawGraph();
+        }
         renderBatch();
     }catch(e){console.error(e);}
+}
+function updateSensorDisplay(id,val){
+    const el=document.getElementById(id);
+    const newVal=val.toFixed(1);
+    if(el.textContent!==newVal){el.textContent=newVal;el.classList.remove('updated');void el.offsetWidth;el.classList.add('updated');}
 }
 async function fetchPresets(){presets=await(await fetch('/api/presets')).json();renderPresets();}
 async function fetchHistory(){renderHistory(await(await fetch('/api/history')).json());}
@@ -225,22 +258,17 @@ function showScreen(id){
     document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',events:'Notes',history:'Historique'}[id];
     if(id==='history')fetchHistory();
     if(id==='events')renderEvents();
-    if(id==='sensors')fetchGraph();
+    if(id==='sensors'){resizeCanvas();drawGraph();}
 }
 function renderBatch(){
     const p=document.getElementById('batchPanel');
-    if(!state.batch){
-        p.innerHTML='<div class="empty-state"><div class="empty-icon" onclick="showScreen(\'create\')">+</div><div class="empty-text">Aucune fermentation</div></div>';
-        return;
-    }
+    if(!state.batch){p.innerHTML='<div class="empty-state"><div class="empty-icon" onclick="showScreen(\'create\')">+</div><div class="empty-text">Aucune fermentation</div></div>';return;}
     const s=state.batch.current_step,pr=state.batch.step_progress||0;
     p.innerHTML=`<div class="panel"><div class="panel-title">${state.batch.id} - ${state.batch.name}</div>
-        <div class="batch-info">
-            <div class="info-item"><div class="info-label">Étape</div><div class="info-value">${state.batch.current_step_index+1}/${state.batch.steps.length}</div></div>
-            <div class="info-item"><div class="info-label">Phase</div><div class="info-value">${s.name}</div></div>
-            <div class="info-item"><div class="info-label">Cible</div><div class="info-value">${s.temp}°C / ${s.humidity}%</div></div>
-            <div class="info-item"><div class="info-label">Temps</div><div class="info-value">${state.batch.elapsed_hours}h / ${s.duration}h</div></div>
-        </div>
+        <div class="batch-info"><div class="info-item"><div class="info-label">Étape</div><div class="info-value">${state.batch.current_step_index+1}/${state.batch.steps.length}</div></div>
+        <div class="info-item"><div class="info-label">Phase</div><div class="info-value">${s.name}</div></div>
+        <div class="info-item"><div class="info-label">Cible</div><div class="info-value">${s.temp}°C / ${s.humidity}%</div></div>
+        <div class="info-item"><div class="info-label">Temps</div><div class="info-value">${state.batch.elapsed_hours}h / ${s.duration}h</div></div></div>
         <div class="progress"><div class="progress-fill" style="width:${pr}%"></div></div>
         <div class="actuators">
             <div class="actuator ${state.actuators.heater?'on':''}" onclick="toggle('heater')"><div class="actuator-led ${state.actuators.heater?'on':''}">●</div><div class="actuator-name">Chauffe</div></div>
@@ -248,23 +276,20 @@ function renderBatch(){
             <div class="actuator ${state.actuators.fan_internal?'on':''}" onclick="toggle('fan_internal')"><div class="actuator-led ${state.actuators.fan_internal?'on':''}">●</div><div class="actuator-name">Ventilo</div></div>
             <div class="actuator ${state.actuators.fan_extract?'on':''}" onclick="toggle('fan_extract')"><div class="actuator-led ${state.actuators.fan_extract?'on':''}">●</div><div class="actuator-name">Extract</div></div>
         </div>
-        <div class="batch-actions">
-            ${state.batch.current_step_index<state.batch.steps.length-1?'<button class="btn" onclick="nextStep()">Étape suiv.</button>':''}
-            <button class="btn red" onclick="openStopModal()">Terminer</button>
-        </div>
-    </div>`;
+        <div class="batch-actions">${state.batch.current_step_index<state.batch.steps.length-1?'<button class="btn" onclick="nextStep()">Étape suiv.</button>':''}<button class="btn red" onclick="openStopModal()">Terminer</button></div></div>`;
 }
 function renderPresets(){
     const g=document.getElementById('presetGrid'),sys=Object.entries(presets).filter(([k,p])=>p.system!==false&&k!=='manual');
     g.innerHTML=sys.map(([k,p])=>`<div class="preset-card ${selectedPreset===k?'selected':''}" onclick="selectPreset('${k}')"><div class="preset-icon">${p.icon||k.substring(0,2).toUpperCase()}</div><div class="preset-name">${p.name}</div></div>`).join('')+
-    (presets.manual?`<div class="preset-card manual ${selectedPreset==='manual'?'selected':''}" onclick="selectPreset('manual')"><div class="preset-icon">M</div><div class="preset-name">Manuel</div></div>`:'');
+    (presets.manual?`<div class="preset-card ${selectedPreset==='manual'?'selected':''}" onclick="selectPreset('manual')"><div class="preset-icon">M</div><div class="preset-name">Manuel</div></div>`:'');
 }
 function selectPreset(k){selectedPreset=k;editSteps=JSON.parse(JSON.stringify(presets[k].steps));document.getElementById('batchName').value=presets[k].name;renderPresets();renderSteps();}
-function renderSteps(){document.getElementById('stepsList').innerHTML=editSteps.map((s,i)=>`<div class="step-card"><div class="step-header"><span class="step-title">Étape ${i+1}</span><button class="step-delete" onclick="deleteStep(${i})">×</button></div><div class="step-content"><div><label class="form-label">Nom</label><input class="form-input" value="${s.name}" onchange="editSteps[${i}].name=this.value" inputmode="text"></div><div><label class="form-label">Temp</label><input class="form-input" type="number" value="${s.temp}" onchange="editSteps[${i}].temp=+this.value" inputmode="numeric"></div><div><label class="form-label">Humid</label><input class="form-input" type="number" value="${s.humidity}" onchange="editSteps[${i}].humidity=+this.value" inputmode="numeric"></div><div><label class="form-label">Durée h</label><input class="form-input" type="number" value="${s.duration}" onchange="editSteps[${i}].duration=+this.value" inputmode="numeric"></div></div></div>`).join('');}
+function renderSteps(){document.getElementById('stepsList').innerHTML=editSteps.map((s,i)=>`<div class="step-mini"><span class="step-info">${i+1}. ${s.name} ${s.temp}°C ${s.duration}h</span><button class="step-delete" onclick="deleteStep(${i})">×</button></div>`).join('')||'<p style="color:var(--tan);font-size:11px;text-align:center;padding:10px;">Sélectionner un préréglage</p>';}
 function deleteStep(i){editSteps.splice(i,1);renderSteps();}
-function addStep(){editSteps.push({name:'Nouvelle',temp:30,humidity:70,duration:12,ventilation:'off'});renderSteps();}
+function openStepModal(){document.getElementById('stepName').value='Étape '+(editSteps.length+1);openModal('stepModal');}
+function addStepFromModal(){editSteps.push({name:document.getElementById('stepName').value,temp:+document.getElementById('stepTemp').value,humidity:+document.getElementById('stepHumid').value,duration:+document.getElementById('stepDuration').value,ventilation:'off'});renderSteps();closeModal('stepModal');}
 async function startBatch(){
-    if(!editSteps.length){alert('Ajoutez une étape');return;}
+    if(!editSteps.length){showAlert('Ajoutez une étape',true);return;}
     const res=await fetch('/api/batch/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({preset:selectedPreset,name:document.getElementById('batchName').value||'Sans nom',steps:editSteps,code:presets[selectedPreset]?.code||'X'})});
     if((await res.json()).success){showAlert('Démarré');fetchState();showScreen('dashboard');}
 }
@@ -275,85 +300,130 @@ async function stopBatch(){closeModal('stopModal');await fetch('/api/batch/stop'
 async function nextStep(){await fetch('/api/batch/next-step',{method:'POST'});fetchState();}
 async function toggle(n){await fetch('/api/actuator/'+n,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});fetchState();}
 async function addEvent(){const i=document.getElementById('eventInput');if(!i.value)return;await fetch('/api/batch/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:i.value})});i.value='';closeModal('eventModal');fetchState();renderEvents();}
-function renderEvents(){document.getElementById('eventsList').innerHTML=(state.events||[]).map(e=>`<div class="event-item"><div class="event-time">${new Date(e.time).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div class="event-text">${e.text}</div></div>`).join('')||'<p style="color:var(--tan);text-align:center;padding:40px;">Aucune note</p>';}
-function renderHistory(h){document.getElementById('historyList').innerHTML=h.slice(0,20).map(b=>`<div class="history-item"><div class="history-header"><span class="history-title">${b.id} - ${b.name}</span><span class="history-badge ${b.status==='completed'?'':'failed'}">${b.rating?'★'.repeat(b.rating):(b.status==='completed'?'OK':'✗')}</span></div><div class="history-content"><div><div class="form-label">Date</div><div class="info-value">${new Date(b.started_at).toLocaleDateString('fr-FR')}</div></div><div><div class="form-label">Durée</div><div class="info-value">${b.total_duration}h</div></div><div><div class="form-label">Étapes</div><div class="info-value">${b.steps?.length||0}</div></div><div><div class="form-label">Notes</div><div class="info-value">${(b.events||[]).length}</div></div></div><div class="history-actions"><button class="btn-sm" onclick="relaunch('${b.id}')">Relancer</button><button class="btn-sm" style="background:var(--purple)" onclick="viewHistory('${b.id}')">Détails</button><button class="btn-sm" style="background:var(--red)" onclick="askDelete('${b.id}')">Suppr.</button></div></div>`).join('')||'<p style="color:var(--tan);text-align:center;padding:40px;">Aucun</p>';}
+function renderEvents(){document.getElementById('eventsList').innerHTML=(state.events||[]).map(e=>`<div class="event-item"><div class="event-time">${new Date(e.time).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div class="event-text">${e.text}</div></div>`).join('')||'<p style="color:var(--tan);text-align:center;padding:30px;">Aucune note</p>';}
+function renderHistory(h){document.getElementById('historyList').innerHTML=h.slice(0,20).map(b=>`<div class="history-item"><div class="history-header"><span class="history-title">${b.id} - ${b.name}</span><span class="history-badge ${b.status==='completed'?'':'failed'}">${b.rating?'★'.repeat(b.rating):(b.status==='completed'?'OK':'✗')}</span></div><div class="history-content"><div><div class="form-label">Date</div><div style="color:var(--yellow);font-size:11px">${new Date(b.started_at).toLocaleDateString('fr-FR')}</div></div><div><div class="form-label">Durée</div><div style="color:var(--yellow);font-size:11px">${b.total_duration}h</div></div><div><div class="form-label">Étapes</div><div style="color:var(--yellow);font-size:11px">${b.steps?.length||0}</div></div><div><div class="form-label">Notes</div><div style="color:var(--yellow);font-size:11px">${(b.events||[]).length}</div></div></div><div class="history-actions"><button class="btn-sm" onclick="relaunch('${b.id}')">Relancer</button><button class="btn-sm" style="background:var(--purple)" onclick="viewHistory('${b.id}')">Détails</button><button class="btn-sm" style="background:var(--red)" onclick="askDelete('${b.id}')">×</button></div></div>`).join('')||'<p style="color:var(--tan);text-align:center;padding:30px;">Aucun</p>';}
 async function relaunch(id){const b=await(await fetch('/api/history/'+encodeURIComponent(id))).json();if(b.steps){editSteps=JSON.parse(JSON.stringify(b.steps));document.getElementById('batchName').value=b.name;selectedPreset=b.preset;renderPresets();renderSteps();showScreen('create');}}
-async function viewHistory(id){const b=await(await fetch('/api/history/'+encodeURIComponent(id))).json();document.getElementById('historyModalTitle').textContent=b.id;document.getElementById('historyModalContent').innerHTML=`<p style="color:var(--tan)">NOM</p><p style="color:var(--yellow);margin-bottom:10px">${b.name}</p><p style="color:var(--tan)">ÉTAPES</p>${b.steps.map((s,i)=>`<p style="color:var(--blue)">${i+1}. ${s.name} - ${s.temp}°C, ${s.humidity}%, ${s.duration}h</p>`).join('')}${b.notes?`<p style="color:var(--tan);margin-top:10px">NOTES</p><p style="color:var(--yellow)">${b.notes}</p>`:''}<div class="modal-buttons"><button class="btn" onclick="closeModal('historyModal')">Fermer</button><button class="btn orange" onclick="closeModal('historyModal');relaunch('${b.id}')">Relancer</button></div>`;openModal('historyModal');}
+async function viewHistory(id){
+    const b=await(await fetch('/api/history/'+encodeURIComponent(id))).json();
+    document.getElementById('historyModalTitle').textContent=b.id;
+    let graphHtml='';
+    if(b.sensor_history&&b.sensor_history.t1&&b.sensor_history.t1.length>0){
+        graphHtml=`<canvas id="historyCanvas" class="history-graph"></canvas>`;
+    }
+    document.getElementById('historyModalContent').innerHTML=`<p style="color:var(--tan);font-size:10px">NOM</p><p style="color:var(--yellow);margin-bottom:8px">${b.name}</p>
+        <p style="color:var(--tan);font-size:10px">ÉTAPES</p>${b.steps.map((s,i)=>`<p style="color:var(--blue);font-size:11px">${i+1}. ${s.name} - ${s.temp}°C, ${s.humidity}%, ${s.duration}h</p>`).join('')}
+        ${graphHtml}
+        ${b.notes?`<p style="color:var(--tan);font-size:10px;margin-top:8px">NOTES</p><p style="color:var(--yellow);font-size:12px">${b.notes}</p>`:''}
+        <div class="modal-buttons"><button class="btn" onclick="closeModal('historyModal')">Fermer</button><button class="btn orange" onclick="closeModal('historyModal');relaunch('${b.id}')">Relancer</button></div>`;
+    openModal('historyModal');
+    if(b.sensor_history&&b.sensor_history.t1&&b.sensor_history.t1.length>0){
+        setTimeout(()=>drawHistoryGraph(b.sensor_history),100);
+    }
+}
+function drawHistoryGraph(data){
+    const hc=document.getElementById('historyCanvas');if(!hc)return;
+    const hctx=hc.getContext('2d');
+    hc.width=hc.offsetWidth*2;hc.height=hc.offsetHeight*2;
+    hctx.scale(2,2);
+    const w=hc.offsetWidth,h=hc.offsetHeight,pad=25;
+    hctx.fillStyle='#0a0a12';hctx.fillRect(0,0,w,h);
+    const all=[...data.t1,...data.t2,...data.t3].filter(v=>v>0);
+    if(!all.length)return;
+    const min=Math.floor(Math.min(...all))-2,max=Math.ceil(Math.max(...all))+2;
+    hctx.strokeStyle='rgba(255,153,0,0.2)';hctx.lineWidth=1;
+    for(let i=0;i<=4;i++){const y=pad+(h-2*pad)*i/4;hctx.beginPath();hctx.moveTo(pad,y);hctx.lineTo(w-5,y);hctx.stroke();}
+    hctx.fillStyle='#ffaa66';hctx.font='9px Orbitron';
+    for(let i=0;i<=4;i++){const v=max-(max-min)*i/4;hctx.fillText(v.toFixed(0)+'°',2,pad+(h-2*pad)*i/4+3);}
+    const colors=['#ff6b6b','#4ecdc4','#ffe66d'];
+    [data.t1,data.t2,data.t3].forEach((d,di)=>{
+        hctx.strokeStyle=colors[di];hctx.lineWidth=1.5;hctx.beginPath();
+        d.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-5)*i/(d.length-1||1),y=pad+(h-2*pad)*(1-(v-min)/(max-min||1));i===0||d[i-1]===0?hctx.moveTo(x,y):hctx.lineTo(x,y);});
+        hctx.stroke();
+    });
+}
 function askDelete(id){deleteId=id;openModal('deleteModal');}
 async function confirmDelete(){closeModal('deleteModal');if(deleteId){await fetch('/api/history/'+encodeURIComponent(deleteId),{method:'DELETE'});fetchHistory();deleteId=null;}}
 function openModal(id){document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('active');}
-function showAlert(t,err){const c=document.getElementById('alertContainer'),a=document.createElement('div');a.className='alert'+(err?' error':'');a.textContent=t;c.appendChild(a);setTimeout(()=>a.remove(),2500);}
+function showAlert(t,err){const c=document.getElementById('alertContainer'),a=document.createElement('div');a.className='alert'+(err?' error':'');a.textContent=t;c.appendChild(a);setTimeout(()=>a.remove(),2000);}
 function quitApp(){if(confirm('Quitter ?')){fetch('/api/quit',{method:'POST'});}}
 
 // Graph
-function initCanvas(){
-    canvas=document.getElementById('tempCanvas');
-    ctx=canvas.getContext('2d');
-    resizeCanvas();
-    window.addEventListener('resize',resizeCanvas);
-}
+function initCanvas(){canvas=document.getElementById('tempCanvas');ctx=canvas.getContext('2d');resizeCanvas();window.addEventListener('resize',resizeCanvas);}
 function resizeCanvas(){
-    const container=canvas.parentElement;
-    canvas.width=container.clientWidth-20;
-    canvas.height=container.clientHeight-20;
+    const wrap=canvas.parentElement;
+    canvas.style.width=wrap.clientWidth+'px';
+    canvas.style.height=wrap.clientHeight+'px';
+    canvas.width=wrap.clientWidth*2;
+    canvas.height=wrap.clientHeight*2;
+    ctx.scale(2,2);
+    drawGraph();
 }
-function setInterval(i){
+function setGraphInterval(i){
     graphInterval=i;
     document.querySelectorAll('.graph-btn').forEach(b=>b.classList.toggle('active',b.dataset.interval===i));
-    fetchGraph();
+    document.querySelector('.live-indicator').style.display=i==='live'?'flex':'none';
+    if(i!=='live')fetchGraphData();
 }
-async function fetchGraph(){
+async function fetchGraphData(){
     try{
         const data=await(await fetch('/api/sensors/history?interval='+graphInterval)).json();
-        drawGraph(data);
+        graphData=data;
+        drawGraph();
     }catch(e){console.error(e);}
 }
-function drawGraph(data){
-    if(!ctx||!data.t1.length)return;
-    const w=canvas.width,h=canvas.height,padding=30;
-    ctx.clearRect(0,0,w,h);
+function drawGraph(){
+    if(!ctx||!graphData.t1||!graphData.t1.length)return;
+    const w=canvas.width/2,h=canvas.height/2,pad=30;
+    ctx.clearRect(0,0,w*2,h*2);
+    // Background
+    ctx.fillStyle='rgba(10,10,18,0.5)';ctx.fillRect(0,0,w,h);
     // Grid
-    ctx.strokeStyle='rgba(255,153,0,0.2)';
-    ctx.lineWidth=1;
-    for(let i=0;i<=5;i++){
-        const y=padding+(h-2*padding)*i/5;
-        ctx.beginPath();ctx.moveTo(padding,y);ctx.lineTo(w-10,y);ctx.stroke();
-    }
-    // Find min/max
-    const all=[...data.t1,...data.t2,...data.t3].filter(v=>v>0);
+    ctx.strokeStyle='rgba(255,153,0,0.15)';ctx.lineWidth=1;
+    for(let i=0;i<=5;i++){const y=pad+(h-2*pad)*i/5;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-10,y);ctx.stroke();}
+    for(let i=0;i<=6;i++){const x=pad+(w-pad-10)*i/6;ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,h-pad);ctx.stroke();}
+    // Find range
+    const all=[...graphData.t1,...graphData.t2,...graphData.t3].filter(v=>v>0);
     if(!all.length)return;
     const min=Math.floor(Math.min(...all))-2,max=Math.ceil(Math.max(...all))+2;
-    // Y axis labels
-    ctx.fillStyle='#ffaa66';ctx.font='11px Orbitron';
-    for(let i=0;i<=5;i++){
-        const v=max-(max-min)*i/5;
-        const y=padding+(h-2*padding)*i/5;
-        ctx.fillText(v.toFixed(0)+'°',2,y+4);
+    // Y axis
+    ctx.fillStyle='#ffaa66';ctx.font='10px Orbitron';
+    for(let i=0;i<=5;i++){const v=max-(max-min)*i/5;ctx.fillText(v.toFixed(0)+'°',3,pad+(h-2*pad)*i/5+4);}
+    // X axis (time)
+    ctx.fillStyle='#ffaa66';
+    const ts=graphData.timestamps;
+    if(ts.length>0){
+        const step=Math.max(1,Math.floor(ts.length/6));
+        for(let i=0;i<ts.length;i+=step){
+            const x=pad+(w-pad-10)*i/(ts.length-1||1);
+            const label=typeof ts[i]==='string'?ts[i].split(' ').pop()?.substring(0,5)||ts[i]:ts[i];
+            ctx.fillText(label,x-12,h-pad+12);
+        }
     }
-    // Draw lines
-    const colors=['#ff6b6b','#4ecdc4','#ffe66d'];
-    const datasets=[data.t1,data.t2,data.t3];
+    // Draw lines with glow
+    const colors=['#ff6b6b','#4ecdc4','#ffe66d','#cc99cc'];
+    const datasets=[graphData.t1,graphData.t2,graphData.t3];
+    // Add average
+    const avgData=graphData.t1.map((v,i)=>(v+graphData.t2[i]+graphData.t3[i])/3);
+    datasets.push(avgData);
     datasets.forEach((d,di)=>{
-        ctx.strokeStyle=colors[di];ctx.lineWidth=2;ctx.beginPath();
-        d.forEach((v,i)=>{
-            if(v===0)return;
-            const x=padding+(w-padding-10)*i/(d.length-1||1);
-            const y=padding+(h-2*padding)*(1-(v-min)/(max-min||1));
-            if(i===0||d[i-1]===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-        });
+        ctx.strokeStyle=colors[di];ctx.lineWidth=2;ctx.shadowColor=colors[di];ctx.shadowBlur=8;
+        ctx.beginPath();
+        d.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-10)*i/(d.length-1||1),y=pad+(h-2*pad)*(1-(v-min)/(max-min||1));i===0||d[i-1]===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
         ctx.stroke();
-        // Glow effect
-        ctx.shadowColor=colors[di];ctx.shadowBlur=5;ctx.stroke();ctx.shadowBlur=0;
+        ctx.shadowBlur=0;
+        // Draw last point animated
+        if(d.length>0&&d[d.length-1]>0){
+            const lx=pad+(w-pad-10),ly=pad+(h-2*pad)*(1-(d[d.length-1]-min)/(max-min||1));
+            ctx.fillStyle=colors[di];ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fill();
+        }
     });
 }
 
 initCanvas();
 fetchState();
 fetchPresets();
-setInterval(graphInterval);
-window.setInterval(fetchState,5000);
-window.setInterval(()=>{if(document.getElementById('sensors').classList.contains('active'))fetchGraph();},5000);
+setInterval(fetchState,5000);
 </script>
 </body>
 </html>
