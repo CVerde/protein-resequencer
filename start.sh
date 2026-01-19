@@ -1,7 +1,7 @@
 #!/bin/bash
-# MINSHARA-F Launcher
+# Protein Resequencer Launcher
 
-cd /home/pi/fermentation
+cd /home/pi/protein-resequencer
 
 # Arrêter les instances précédentes
 pkill -f "python3 app.py" 2>/dev/null
