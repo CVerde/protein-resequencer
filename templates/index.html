@@ -4,162 +4,228 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Protein Resequencer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root{--orange:#ff9900;--yellow:#ffcc00;--blue:#9999ff;--purple:#cc99cc;--tan:#ffaa66;--red:#cc4444;--green:#55cc55;--bg:#000;--bg2:#0a0a12;}
+        :root{
+            --lcars-orange:#ff9900;--lcars-gold:#cc7700;--lcars-yellow:#ffcc00;
+            --lcars-blue:#9999ff;--lcars-purple:#cc99cc;--lcars-violet:#9977aa;
+            --lcars-tan:#ffaa66;--lcars-peach:#ffcc99;--lcars-cream:#ffddaa;
+            --lcars-red:#cc4444;--lcars-green:#55cc55;
+            --t1:#ff6b35;--t2:#f7931e;--t3:#fbb03b;--tavg:#ffcc00;
+            --humid:#4ecdc4;--press:#9999ff;--co2:#cc99cc;
+            --bg:#000;--bg2:#0a0a0f;
+        }
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-        html,body{font-family:'Antonio',sans-serif;background:var(--bg);color:var(--orange);height:100vh;overflow:hidden;}
+        html,body{font-family:'Antonio',sans-serif;background:var(--bg);color:var(--lcars-orange);height:100vh;overflow:hidden;}
         .app{display:grid;grid-template-rows:44px 1fr 52px;height:100vh;}
-        .header{display:flex;align-items:center;padding:0 8px;gap:8px;background:linear-gradient(90deg,var(--purple) 50%,transparent 50%);}
-        .header-title{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--bg);text-transform:uppercase;flex:1;padding-left:8px;}
-        .header-status{background:var(--tan);padding:5px 12px;border-radius:12px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--bg);}
-        .header-status.on{background:var(--green);animation:pulse 2s infinite;}
-        .btn-quit{background:var(--red);border:none;width:40px;height:40px;border-radius:6px;font-size:20px;color:#fff;cursor:pointer;}
+        
+        /* Header LCARS style */
+        .header{display:flex;align-items:stretch;background:var(--bg);}
+        .header-elbow{width:80px;background:var(--lcars-purple);border-radius:0 0 20px 0;position:relative;}
+        .header-elbow::after{content:'';position:absolute;bottom:0;right:-20px;width:20px;height:100%;background:var(--bg);border-radius:20px 0 0 0;}
+        .header-bar{flex:1;display:flex;align-items:center;margin-left:30px;padding-right:10px;}
+        .header-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:500;color:var(--lcars-cream);text-transform:uppercase;letter-spacing:3px;flex:1;}
+        .header-status{background:var(--lcars-tan);padding:6px 16px;border-radius:0 0 10px 10px;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:500;color:var(--bg);}
+        .header-status.on{background:var(--lcars-green);animation:pulse 2s infinite;}
+        .header-end{width:50px;background:var(--lcars-gold);border-radius:0 0 0 15px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+        .header-end:active{background:var(--lcars-red);}
+        
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
-        @keyframes glow{0%,100%{box-shadow:0 0 5px var(--orange);}50%{box-shadow:0 0 15px var(--orange);}}
-        @keyframes scan{0%{left:-100%;}100%{left:100%;}}
-        @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-        @keyframes datapoint{0%{transform:scale(1.5);opacity:1;}100%{transform:scale(1);opacity:.8;}}
-        .nav{display:flex;gap:3px;padding:4px 6px;background:var(--bg2);}
-        .nav-btn{flex:1;background:var(--tan);border:none;padding:8px 2px;font-family:'Orbitron',sans-serif;font-size:11px;color:var(--bg);text-transform:uppercase;border-radius:6px;cursor:pointer;}
-        .nav-btn.active{background:var(--orange);}
-        .nav-btn.blue{background:var(--blue);}
-        .nav-btn.purple{background:var(--purple);}
-        .nav-btn.green{background:var(--green);}
-        .main{overflow:hidden;position:relative;}
-        .screen{position:absolute;inset:0;padding:6px;display:none;flex-direction:column;overflow:hidden;}
+        @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+        @keyframes spinSlow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+        @keyframes scan{0%{left:-50%;}100%{left:100%;}}
+        @keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+        @keyframes dataIn{0%{opacity:0;transform:scale(1.2);}100%{opacity:1;transform:scale(1);}}
+        
+        /* Nav LCARS */
+        .nav{display:flex;gap:3px;padding:0 4px;background:var(--bg2);align-items:stretch;height:52px;}
+        .nav-elbow{width:60px;background:var(--lcars-violet);border-radius:0 15px 0 0;}
+        .nav-btn{flex:1;background:var(--lcars-tan);border:none;padding:0;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:500;color:var(--bg);text-transform:uppercase;cursor:pointer;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:center;}
+        .nav-btn.active{background:var(--lcars-orange);}
+        .nav-btn:nth-child(3){background:var(--lcars-peach);}
+        .nav-btn:nth-child(3).active{background:var(--lcars-orange);}
+        .nav-btn:nth-child(4){background:var(--lcars-blue);}
+        .nav-btn:nth-child(5){background:var(--lcars-purple);}
+        .nav-btn:nth-child(6){background:var(--lcars-violet);}
+        
+        .main{overflow:hidden;position:relative;background:var(--bg);}
+        .screen{position:absolute;inset:0;padding:8px;display:none;flex-direction:column;overflow:hidden;}
         .screen.active{display:flex;}
-        .sensors-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:6px;}
-        .sensor-box{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 8px 8px 0;padding:6px 4px;text-align:center;position:relative;overflow:hidden;}
-        .sensor-box::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:scan 2s linear infinite;}
-        .sensor-label{font-size:10px;color:var(--tan);text-transform:uppercase;}
-        .sensor-value{font-family:'Orbitron',sans-serif;font-size:20px;color:var(--yellow);margin:2px 0;transition:all .3s;}
-        .sensor-value.updated{animation:datapoint .5s ease;}
-        .sensor-value.avg{color:var(--orange);font-size:22px;}
-        .sensor-unit{font-size:12px;color:var(--orange);}
-        .batch-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-        .panel{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 8px 8px 0;padding:8px;position:relative;overflow:hidden;}
-        .panel::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:scan 2s linear infinite;}
-        .panel-title{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--orange);text-transform:uppercase;margin-bottom:6px;}
-        .batch-info{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
-        .info-item{background:rgba(153,153,255,.1);border-left:3px solid var(--blue);padding:4px 6px;}
-        .info-label{font-size:9px;color:var(--tan);text-transform:uppercase;}
-        .info-value{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--yellow);}
-        .progress{height:8px;background:rgba(255,153,0,.2);border-radius:4px;margin-top:8px;overflow:hidden;}
-        .progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width .5s;}
-        .actuators{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px;}
-        .actuator{text-align:center;padding:6px 2px;border:1px solid var(--tan);border-radius:4px;cursor:pointer;}
-        .actuator.on{border-color:var(--green);background:rgba(85,204,85,.1);}
-        .actuator-led{font-size:16px;color:var(--tan);}
-        .actuator-led.on{color:var(--green);text-shadow:0 0 8px var(--green);animation:blink 1s infinite;}
-        .actuator-name{font-size:8px;color:var(--tan);text-transform:uppercase;margin-top:1px;}
-        .batch-actions{display:flex;gap:4px;margin-top:8px;}
-        .batch-actions .btn{flex:1;padding:10px 4px;font-size:12px;}
+        
+        /* Sensor boxes - grandes typos */
+        .sensors-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
+        .sensor-box{background:var(--bg2);border-left:4px solid var(--t1);padding:8px;position:relative;overflow:hidden;}
+        .sensor-box.t2{border-color:var(--t2);}
+        .sensor-box.t3{border-color:var(--t3);}
+        .sensor-box.avg{border-color:var(--tavg);}
+        .sensor-box.humid{border-color:var(--humid);}
+        .sensor-box.press{border-color:var(--press);}
+        .sensor-box.co2{border-color:var(--co2);}
+        .sensor-box::after{content:'';position:absolute;top:0;left:0;width:50%;height:2px;background:linear-gradient(90deg,currentColor,transparent);animation:scan 3s linear infinite;opacity:.5;}
+        .sensor-label{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:500;color:var(--lcars-tan);margin-bottom:2px;}
+        .sensor-reading{display:flex;align-items:baseline;gap:4px;}
+        .sensor-value{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:700;transition:all .2s;}
+        .sensor-value.t1{color:var(--t1);}
+        .sensor-value.t2{color:var(--t2);}
+        .sensor-value.t3{color:var(--t3);}
+        .sensor-value.avg{color:var(--tavg);}
+        .sensor-value.humid{color:var(--humid);}
+        .sensor-unit{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--lcars-tan);}
+        .sensor-value.updated{animation:dataIn .3s ease;}
+        
+        /* Batch panel */
+        .batch-panel{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+        .panel{background:var(--bg2);border-left:4px solid var(--lcars-orange);padding:10px;position:relative;}
+        .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+        .panel-title{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:500;color:var(--lcars-orange);text-transform:uppercase;letter-spacing:1px;}
+        .panel-id{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--lcars-tan);}
+        
+        .batch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+        .batch-item{background:rgba(153,153,255,.1);border-left:3px solid var(--lcars-blue);padding:6px 8px;}
+        .batch-label{font-size:11px;color:var(--lcars-tan);text-transform:uppercase;}
+        .batch-val{font-family:'Orbitron',sans-serif;font-size:15px;color:var(--lcars-yellow);}
+        
+        .progress{height:10px;background:rgba(255,153,0,.15);border-radius:2px;margin-top:10px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--lcars-gold),var(--lcars-orange),var(--lcars-yellow));transition:width .5s;}
+        
+        /* Actuators avec animation ventilo */
+        .actuators{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+        .actuator{background:var(--bg2);border:2px solid var(--lcars-tan);padding:8px 4px;text-align:center;cursor:pointer;border-radius:4px;transition:all .2s;}
+        .actuator.on{border-color:var(--lcars-green);background:rgba(85,204,85,.1);}
+        .actuator-icon{font-size:20px;color:var(--lcars-tan);height:24px;display:flex;align-items:center;justify-content:center;}
+        .actuator.on .actuator-icon{color:var(--lcars-green);}
+        .actuator-name{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--lcars-tan);text-transform:uppercase;margin-top:4px;}
+        /* Fan animation */
+        .fan-icon{display:inline-block;}
+        .fan-icon.spinning{animation:spin .5s linear infinite;}
+        .fan-icon.slow{animation:spinSlow 2s linear infinite;}
+        
+        .batch-actions{display:flex;gap:6px;margin-top:10px;}
+        .batch-actions .btn{flex:1;}
+        
+        /* Empty state - cercle plein centré */
         .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-        .empty-icon{width:70px;height:70px;border:3px solid var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--orange);cursor:pointer;animation:glow 2s infinite;}
-        .empty-text{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--tan);margin-top:10px;}
-        /* Create - compact */
-        .create-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;overflow:hidden;}
-        .create-left,.create-right{display:flex;flex-direction:column;overflow:hidden;}
-        .form-section{background:rgba(255,153,0,.05);border:2px solid var(--orange);border-radius:0 6px 6px 0;padding:6px;margin-bottom:6px;}
-        .form-section.flex{flex:1;display:flex;flex-direction:column;overflow:hidden;margin-bottom:0;}
-        .section-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--orange);text-transform:uppercase;margin-bottom:4px;}
-        .form-input{width:100%;padding:8px;background:var(--bg2);border:2px solid var(--tan);border-radius:4px;color:var(--yellow);font-size:14px;}
-        .form-input:focus{outline:none;border-color:var(--orange);}
-        .preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
-        .preset-card{background:rgba(255,170,102,.1);border:2px solid var(--tan);border-radius:6px;padding:6px 2px;text-align:center;cursor:pointer;}
-        .preset-card.selected{background:rgba(255,153,0,.3);border-color:var(--orange);}
-        .preset-icon{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--yellow);}
-        .preset-name{font-family:'Orbitron',sans-serif;font-size:8px;color:var(--yellow);margin-top:2px;}
-        .steps-list{flex:1;overflow-y:auto;margin-top:4px;}
-        .step-mini{background:rgba(153,153,255,.1);border:1px solid var(--blue);border-radius:4px;padding:4px 6px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;}
-        .step-info{font-size:11px;color:var(--yellow);}
-        .step-delete{background:var(--red);border:none;color:#fff;width:20px;height:20px;border-radius:4px;cursor:pointer;font-size:12px;}
-        .btn{background:var(--tan);border:none;padding:10px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--bg);text-transform:uppercase;border-radius:6px;cursor:pointer;}
-        .btn.green{background:var(--green);}
-        .btn.red{background:var(--red);}
-        .btn.orange{background:var(--orange);}
-        .btn-sm{padding:6px 10px;font-size:10px;}
-        .btn-add{width:100%;margin-top:4px;padding:8px;}
+        .start-btn{width:100px;height:100px;background:var(--lcars-orange);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:0 0 30px rgba(255,153,0,.3);}
+        .start-btn:hover{transform:scale(1.05);box-shadow:0 0 40px rgba(255,153,0,.5);}
+        .start-btn:active{transform:scale(.95);}
+        .start-btn span{font-family:'Orbitron',sans-serif;font-size:48px;font-weight:700;color:var(--bg);line-height:1;}
+        .empty-text{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--lcars-tan);margin-top:16px;text-transform:uppercase;letter-spacing:2px;}
+        
+        /* Create screen compact */
+        .create-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;overflow:hidden;}
+        .create-col{display:flex;flex-direction:column;overflow:hidden;}
+        .section{background:var(--bg2);border-left:4px solid var(--lcars-orange);padding:8px;margin-bottom:6px;}
+        .section.flex{flex:1;display:flex;flex-direction:column;overflow:hidden;margin-bottom:0;}
+        .section-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:500;color:var(--lcars-orange);text-transform:uppercase;margin-bottom:6px;}
+        .form-input{width:100%;padding:10px;background:var(--bg);border:2px solid var(--lcars-tan);border-radius:0;color:var(--lcars-yellow);font-family:'Antonio',sans-serif;font-size:16px;}
+        .form-input:focus{outline:none;border-color:var(--lcars-orange);}
+        
+        .preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;flex:1;overflow-y:auto;}
+        .preset-card{background:var(--bg);border:2px solid var(--lcars-tan);padding:8px 4px;text-align:center;cursor:pointer;}
+        .preset-card.selected{border-color:var(--lcars-orange);background:rgba(255,153,0,.1);}
+        .preset-icon{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--lcars-yellow);}
+        .preset-name{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--lcars-tan);margin-top:2px;}
+        
+        .steps-list{flex:1;overflow-y:auto;}
+        .step-row{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-left:3px solid var(--lcars-blue);padding:6px 8px;margin-bottom:4px;}
+        .step-info{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--lcars-yellow);}
+        .step-del{background:var(--lcars-red);border:none;color:#fff;width:24px;height:24px;font-size:14px;cursor:pointer;}
+        
+        .btn{background:var(--lcars-tan);border:none;padding:12px;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:500;color:var(--bg);text-transform:uppercase;cursor:pointer;border-radius:0;}
+        .btn.green{background:var(--lcars-green);}
+        .btn.red{background:var(--lcars-red);}
+        .btn.orange{background:var(--lcars-orange);}
+        .btn-sm{padding:8px 12px;font-size:11px;}
+        
         /* Sensors page */
-        .graph-controls{display:flex;gap:4px;margin-bottom:6px;}
-        .graph-btn{flex:1;background:var(--tan);border:none;padding:8px;font-family:'Orbitron',sans-serif;font-size:10px;color:var(--bg);border-radius:4px;cursor:pointer;opacity:.6;}
-        .graph-btn.active{opacity:1;background:var(--orange);}
-        .graph-container{flex:1;background:rgba(255,153,0,.03);border:2px solid var(--orange);border-radius:0 8px 8px 0;position:relative;overflow:hidden;}
-        .graph-container::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);animation:scan 2s linear infinite;}
-        .graph-canvas-wrap{position:absolute;inset:8px;}
+        .graph-controls{display:flex;gap:4px;margin-bottom:8px;}
+        .graph-btn{flex:1;background:var(--lcars-tan);border:none;padding:10px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:500;color:var(--bg);cursor:pointer;opacity:.6;}
+        .graph-btn.active{opacity:1;background:var(--lcars-orange);}
+        .graph-container{flex:1;background:var(--bg2);border-left:4px solid var(--lcars-orange);position:relative;overflow:hidden;}
+        .graph-wrap{position:absolute;inset:10px;}
         #tempCanvas{display:block;}
-        .graph-legend{display:flex;gap:10px;justify-content:center;margin-top:6px;}
-        .legend-item{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--tan);}
-        .legend-color{width:10px;height:10px;border-radius:2px;}
-        .live-indicator{display:flex;align-items:center;gap:4px;font-family:'Orbitron',sans-serif;font-size:10px;color:var(--green);}
-        .live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blink 1s infinite;}
-        /* Events & History */
+        .graph-legend{display:flex;gap:12px;justify-content:center;margin-top:8px;}
+        .legend-item{display:flex;align-items:center;gap:4px;font-family:'Orbitron',sans-serif;font-size:11px;}
+        .legend-color{width:14px;height:4px;}
+        .legend-item.t1{color:var(--t1);}.legend-item.t1 .legend-color{background:var(--t1);}
+        .legend-item.t2{color:var(--t2);}.legend-item.t2 .legend-color{background:var(--t2);}
+        .legend-item.t3{color:var(--t3);}.legend-item.t3 .legend-color{background:var(--t3);}
+        .legend-item.avg{color:var(--tavg);}.legend-item.avg .legend-color{background:var(--tavg);}
+        
+        /* Lists */
         .list-container{flex:1;overflow-y:auto;}
-        .event-item{background:rgba(255,153,0,.05);border-left:3px solid var(--orange);padding:6px;margin-bottom:3px;border-radius:0 4px 4px 0;}
-        .event-time{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--tan);}
-        .event-text{font-size:12px;color:var(--yellow);margin-top:1px;}
-        .history-item{background:rgba(255,153,0,.05);border:1px solid var(--orange);border-radius:4px;margin-bottom:4px;overflow:hidden;}
-        .history-header{background:var(--tan);padding:4px 6px;display:flex;justify-content:space-between;}
-        .history-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--bg);}
-        .history-badge{background:var(--green);color:var(--bg);padding:1px 4px;border-radius:3px;font-size:9px;}
-        .history-badge.failed{background:var(--red);}
-        .history-content{padding:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;text-align:center;}
-        .history-actions{display:flex;gap:3px;padding:4px;}
-        .history-actions .btn-sm{flex:1;text-align:center;font-size:9px;padding:5px;}
+        .event-item{background:var(--bg2);border-left:3px solid var(--lcars-orange);padding:8px;margin-bottom:4px;}
+        .event-time{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--lcars-tan);}
+        .event-text{font-size:14px;color:var(--lcars-yellow);margin-top:2px;}
+        
+        .history-item{background:var(--bg2);border-left:4px solid var(--lcars-orange);margin-bottom:6px;}
+        .history-head{background:var(--lcars-tan);padding:6px 10px;display:flex;justify-content:space-between;}
+        .history-title{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--bg);}
+        .history-badge{background:var(--lcars-green);color:var(--bg);padding:2px 6px;font-family:'Orbitron',sans-serif;font-size:10px;}
+        .history-badge.fail{background:var(--lcars-red);}
+        .history-body{padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;}
+        .history-label{font-size:10px;color:var(--lcars-tan);}
+        .history-val{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--lcars-yellow);}
+        .history-actions{display:flex;gap:4px;padding:6px;}
+        .history-actions .btn-sm{flex:1;text-align:center;}
+        
         /* Modal */
-        .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:10px;}
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:12px;}
         .modal.active{display:flex;}
-        .modal-content{background:var(--bg2);border:2px solid var(--orange);border-radius:0 10px 10px 0;padding:12px;width:100%;max-width:340px;max-height:90vh;overflow-y:auto;}
-        .modal-title{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--orange);text-transform:uppercase;margin-bottom:10px;text-align:center;}
-        .modal-buttons{display:flex;gap:6px;margin-top:12px;}
-        .modal-buttons .btn{flex:1;}
-        .form-textarea{width:100%;min-height:60px;padding:8px;background:var(--bg2);border:2px solid var(--tan);border-radius:4px;color:var(--yellow);font-size:14px;resize:none;}
-        .stars{display:flex;gap:6px;justify-content:center;margin:8px 0;}
-        .star{font-size:24px;color:var(--tan);cursor:pointer;}
-        .star.active{color:var(--yellow);text-shadow:0 0 8px var(--yellow);}
-        .status-btns{display:flex;gap:6px;margin:8px 0;}
-        .status-btn{flex:1;padding:8px;font-family:'Orbitron',sans-serif;font-size:11px;border:none;border-radius:4px;cursor:pointer;opacity:.5;}
+        .modal-box{background:var(--bg2);border-left:4px solid var(--lcars-orange);padding:16px;width:100%;max-width:340px;}
+        .modal-title{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--lcars-orange);text-transform:uppercase;margin-bottom:12px;}
+        .modal-btns{display:flex;gap:8px;margin-top:16px;}
+        .modal-btns .btn{flex:1;}
+        .form-textarea{width:100%;min-height:70px;padding:10px;background:var(--bg);border:2px solid var(--lcars-tan);color:var(--lcars-yellow);font-size:16px;resize:none;}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+        .form-label{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--lcars-tan);margin-bottom:4px;}
+        .stars{display:flex;gap:8px;justify-content:center;margin:10px 0;}
+        .star{font-size:26px;color:var(--lcars-tan);cursor:pointer;}
+        .star.active{color:var(--lcars-yellow);}
+        .status-btns{display:flex;gap:8px;margin:10px 0;}
+        .status-btn{flex:1;padding:10px;font-family:'Orbitron',sans-serif;font-size:12px;border:none;cursor:pointer;opacity:.5;}
         .status-btn.active{opacity:1;}
-        .status-btn.ok{background:var(--green);color:var(--bg);}
-        .status-btn.fail{background:var(--red);color:#fff;}
-        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
-        .form-label{font-size:9px;color:var(--tan);text-transform:uppercase;margin-bottom:2px;}
-        .alert-container{position:fixed;top:50px;right:6px;z-index:1001;}
-        .alert{background:var(--green);color:var(--bg);padding:8px 12px;border-radius:4px;margin-bottom:4px;font-family:'Orbitron',sans-serif;font-size:10px;}
-        .alert.error{background:var(--red);color:#fff;}
-        /* History graph modal */
-        .history-graph{width:100%;height:150px;margin:10px 0;}
+        .status-btn.ok{background:var(--lcars-green);color:var(--bg);}
+        .status-btn.fail{background:var(--lcars-red);color:#fff;}
+        
+        .alert-box{position:fixed;top:50px;right:10px;z-index:1001;}
+        .alert{background:var(--lcars-green);color:var(--bg);padding:10px 16px;margin-bottom:4px;font-family:'Orbitron',sans-serif;font-size:11px;}
+        .alert.err{background:var(--lcars-red);color:#fff;}
+        
+        .history-graph{width:100%;height:120px;margin:10px 0;background:var(--bg);}
     </style>
 </head>
 <body>
 <div class="app">
     <div class="header">
-        <div class="header-title" id="pageTitle">Accueil</div>
-        <div class="header-status" id="headerStatus">Inactif</div>
-        <button class="btn-quit" onclick="quitApp()">×</button>
+        <div class="header-elbow"></div>
+        <div class="header-bar">
+            <div class="header-title" id="pageTitle">Accueil</div>
+            <div class="header-status" id="headerStatus">Inactif</div>
+        </div>
+        <div class="header-end" onclick="quitApp()">✕</div>
     </div>
     <div class="main">
         <!-- Dashboard -->
         <div class="screen active" id="dashboard">
-            <div class="sensors-bar">
-                <div class="sensor-box"><div class="sensor-label">T1</div><div class="sensor-value" id="t1">--</div><div class="sensor-unit">°C</div></div>
-                <div class="sensor-box"><div class="sensor-label">T2</div><div class="sensor-value" id="t2">--</div><div class="sensor-unit">°C</div></div>
-                <div class="sensor-box"><div class="sensor-label">T3</div><div class="sensor-value" id="t3">--</div><div class="sensor-unit">°C</div></div>
-                <div class="sensor-box"><div class="sensor-label">Moy</div><div class="sensor-value avg" id="tavg">--</div><div class="sensor-unit">°C</div></div>
+            <div class="sensors-row">
+                <div class="sensor-box"><div class="sensor-label">T1</div><div class="sensor-reading"><span class="sensor-value t1" id="t1">--</span><span class="sensor-unit">°C</span></div></div>
+                <div class="sensor-box t2"><div class="sensor-label">T2</div><div class="sensor-reading"><span class="sensor-value t2" id="t2">--</span><span class="sensor-unit">°C</span></div></div>
+                <div class="sensor-box t3"><div class="sensor-label">T3</div><div class="sensor-reading"><span class="sensor-value t3" id="t3">--</span><span class="sensor-unit">°C</span></div></div>
+                <div class="sensor-box avg"><div class="sensor-label">MOY</div><div class="sensor-reading"><span class="sensor-value avg" id="tavg">--</span><span class="sensor-unit">°C</span></div></div>
             </div>
             <div class="batch-panel" id="batchPanel"></div>
         </div>
         <!-- Create -->
         <div class="screen" id="create">
             <div class="create-grid">
-                <div class="create-left">
-                    <div class="form-section"><div class="section-title">Nom</div><input type="text" class="form-input" id="batchName" placeholder="Batch" inputmode="text"></div>
-                    <div class="form-section flex"><div class="section-title">Préréglage</div><div id="presetGrid" class="preset-grid"></div></div>
+                <div class="create-col">
+                    <div class="section"><div class="section-title">Nom</div><input type="text" class="form-input" id="batchName" placeholder="Batch" inputmode="text"></div>
+                    <div class="section flex"><div class="section-title">Préréglage</div><div id="presetGrid" class="preset-grid"></div></div>
                 </div>
-                <div class="create-right">
-                    <div class="form-section flex">
-                        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="section-title">Étapes</div><button class="btn-sm" onclick="openStepModal()">+</button></div>
+                <div class="create-col">
+                    <div class="section flex">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div class="section-title">Étapes</div><button class="btn-sm orange" onclick="openStepModal()">+</button></div>
                         <div class="steps-list" id="stepsList"></div>
                     </div>
                     <button class="btn green" onclick="startBatch()" style="margin-top:6px;">Démarrer</button>
@@ -168,62 +234,61 @@
         </div>
         <!-- Sensors -->
         <div class="screen" id="sensors">
-            <div class="sensors-bar">
-                <div class="sensor-box"><div class="sensor-label">T1</div><div class="sensor-value" id="st1">--</div><div class="sensor-unit">°C</div></div>
-                <div class="sensor-box"><div class="sensor-label">T2</div><div class="sensor-value" id="st2">--</div><div class="sensor-unit">°C</div></div>
-                <div class="sensor-box"><div class="sensor-label">T3</div><div class="sensor-value" id="st3">--</div><div class="sensor-unit">°C</div></div>
-                <div class="sensor-box"><div class="sensor-label">Humid</div><div class="sensor-value" id="shum">--</div><div class="sensor-unit">%</div></div>
+            <div class="sensors-row">
+                <div class="sensor-box"><div class="sensor-label">T1</div><div class="sensor-reading"><span class="sensor-value t1" id="st1">--</span><span class="sensor-unit">°C</span></div></div>
+                <div class="sensor-box t2"><div class="sensor-label">T2</div><div class="sensor-reading"><span class="sensor-value t2" id="st2">--</span><span class="sensor-unit">°C</span></div></div>
+                <div class="sensor-box t3"><div class="sensor-label">T3</div><div class="sensor-reading"><span class="sensor-value t3" id="st3">--</span><span class="sensor-unit">°C</span></div></div>
+                <div class="sensor-box humid"><div class="sensor-label">HUMID</div><div class="sensor-reading"><span class="sensor-value humid" id="shum">--</span><span class="sensor-unit">%</span></div></div>
             </div>
             <div class="graph-controls">
-                <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
                 <button class="graph-btn active" data-interval="live" onclick="setGraphInterval('live')">Temps réel</button>
                 <button class="graph-btn" data-interval="1m" onclick="setGraphInterval('1m')">1 min</button>
                 <button class="graph-btn" data-interval="15m" onclick="setGraphInterval('15m')">15 min</button>
                 <button class="graph-btn" data-interval="1h" onclick="setGraphInterval('1h')">1h</button>
             </div>
-            <div class="graph-container"><div class="graph-canvas-wrap"><canvas id="tempCanvas"></canvas></div></div>
+            <div class="graph-container"><div class="graph-wrap"><canvas id="tempCanvas"></canvas></div></div>
             <div class="graph-legend">
-                <div class="legend-item"><div class="legend-color" style="background:#ff6b6b"></div>T1</div>
-                <div class="legend-item"><div class="legend-color" style="background:#4ecdc4"></div>T2</div>
-                <div class="legend-item"><div class="legend-color" style="background:#ffe66d"></div>T3</div>
-                <div class="legend-item"><div class="legend-color" style="background:#cc99cc"></div>Moy</div>
+                <div class="legend-item t1"><div class="legend-color"></div>T1</div>
+                <div class="legend-item t2"><div class="legend-color"></div>T2</div>
+                <div class="legend-item t3"><div class="legend-color"></div>T3</div>
+                <div class="legend-item avg"><div class="legend-color"></div>MOY</div>
             </div>
         </div>
         <!-- Events -->
         <div class="screen" id="events">
-            <button class="btn orange" onclick="openModal('eventModal')" style="margin-bottom:6px;">+ Note</button>
+            <button class="btn orange" onclick="openModal('eventModal')" style="margin-bottom:8px;">+ Ajouter note</button>
             <div class="list-container" id="eventsList"></div>
         </div>
         <!-- History -->
         <div class="screen" id="history">
-            <div class="section-title" style="margin-bottom:6px;">Historique</div>
+            <div class="section-title" style="margin-bottom:8px;">Historique</div>
             <div class="list-container" id="historyList"></div>
         </div>
     </div>
     <div class="nav">
+        <div class="nav-elbow"></div>
         <button class="nav-btn active" data-screen="dashboard" onclick="showScreen('dashboard')">Accueil</button>
         <button class="nav-btn" data-screen="create" onclick="showScreen('create')">Nouveau</button>
-        <button class="nav-btn green" data-screen="sensors" onclick="showScreen('sensors')">Capteurs</button>
-        <button class="nav-btn blue" data-screen="events" onclick="showScreen('events')">Notes</button>
-        <button class="nav-btn purple" data-screen="history" onclick="showScreen('history')">Histo.</button>
+        <button class="nav-btn" data-screen="sensors" onclick="showScreen('sensors')">Capteurs</button>
+        <button class="nav-btn" data-screen="events" onclick="showScreen('events')">Notes</button>
+        <button class="nav-btn" data-screen="history" onclick="showScreen('history')">Histo</button>
     </div>
 </div>
-<div class="alert-container" id="alertContainer"></div>
-<div class="modal" id="eventModal"><div class="modal-content"><div class="modal-title">Note</div><textarea class="form-textarea" id="eventInput" placeholder="Observation..." inputmode="text"></textarea><div class="modal-buttons"><button class="btn" onclick="closeModal('eventModal')">Annuler</button><button class="btn orange" onclick="addEvent()">OK</button></div></div></div>
-<div class="modal" id="stopModal"><div class="modal-content"><div class="modal-title">Terminer</div><div class="status-btns"><button class="status-btn ok active" id="statusOk" onclick="setStopStatus('completed')">Réussi</button><button class="status-btn fail" id="statusFail" onclick="setStopStatus('failed')">Échoué</button></div><div class="stars" id="stopStars"><span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span><span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span><span class="star" onclick="setRating(5)">★</span></div><textarea class="form-textarea" id="stopNotes" placeholder="Notes..." inputmode="text"></textarea><div class="modal-buttons"><button class="btn" onclick="closeModal('stopModal')">Annuler</button><button class="btn red" onclick="stopBatch()">Terminer</button></div></div></div>
-<div class="modal" id="stepModal"><div class="modal-content"><div class="modal-title">Ajouter étape</div><div class="form-row"><div><div class="form-label">Nom</div><input class="form-input" id="stepName" value="Étape" inputmode="text"></div><div><div class="form-label">Durée (h)</div><input class="form-input" id="stepDuration" type="number" value="12" inputmode="numeric"></div></div><div class="form-row"><div><div class="form-label">Temp °C</div><input class="form-input" id="stepTemp" type="number" value="30" inputmode="numeric"></div><div><div class="form-label">Humid %</div><input class="form-input" id="stepHumid" type="number" value="70" inputmode="numeric"></div></div><div class="modal-buttons"><button class="btn" onclick="closeModal('stepModal')">Annuler</button><button class="btn orange" onclick="addStepFromModal()">Ajouter</button></div></div></div>
-<div class="modal" id="historyModal"><div class="modal-content"><div class="modal-title" id="historyModalTitle">Détails</div><div id="historyModalContent"></div></div></div>
-<div class="modal" id="deleteModal"><div class="modal-content"><div class="modal-title">Confirmer</div><p style="color:var(--yellow);text-align:center;margin:12px 0;">Supprimer ?</p><div class="modal-buttons"><button class="btn" onclick="closeModal('deleteModal')">Annuler</button><button class="btn red" onclick="confirmDelete()">Supprimer</button></div></div></div>
+<div class="alert-box" id="alertBox"></div>
+<div class="modal" id="eventModal"><div class="modal-box"><div class="modal-title">Note</div><textarea class="form-textarea" id="eventInput" placeholder="Observation..." inputmode="text"></textarea><div class="modal-btns"><button class="btn" onclick="closeModal('eventModal')">Annuler</button><button class="btn orange" onclick="addEvent()">OK</button></div></div></div>
+<div class="modal" id="stopModal"><div class="modal-box"><div class="modal-title">Terminer batch</div><div class="status-btns"><button class="status-btn ok active" id="statusOk" onclick="setStopStatus('completed')">Réussi</button><button class="status-btn fail" id="statusFail" onclick="setStopStatus('failed')">Échoué</button></div><div class="stars" id="stopStars"><span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span><span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span><span class="star" onclick="setRating(5)">★</span></div><textarea class="form-textarea" id="stopNotes" placeholder="Notes..." inputmode="text"></textarea><div class="modal-btns"><button class="btn" onclick="closeModal('stopModal')">Annuler</button><button class="btn red" onclick="stopBatch()">Terminer</button></div></div></div>
+<div class="modal" id="stepModal"><div class="modal-box"><div class="modal-title">Ajouter étape</div><div class="form-row"><div><div class="form-label">Nom</div><input class="form-input" id="stepName" value="Étape" inputmode="text"></div><div><div class="form-label">Durée (h)</div><input class="form-input" id="stepDuration" type="number" value="12" inputmode="numeric"></div></div><div class="form-row"><div><div class="form-label">Temp °C</div><input class="form-input" id="stepTemp" type="number" value="30" inputmode="numeric"></div><div><div class="form-label">Humid %</div><input class="form-input" id="stepHumid" type="number" value="70" inputmode="numeric"></div></div><div class="modal-btns"><button class="btn" onclick="closeModal('stepModal')">Annuler</button><button class="btn orange" onclick="addStepFromModal()">OK</button></div></div></div>
+<div class="modal" id="historyModal"><div class="modal-box"><div class="modal-title" id="historyModalTitle">Détails</div><div id="historyModalContent"></div></div></div>
+<div class="modal" id="deleteModal"><div class="modal-box"><div class="modal-title">Confirmer suppression</div><p style="color:var(--lcars-yellow);text-align:center;margin:16px 0;">Supprimer ce batch ?</p><div class="modal-btns"><button class="btn" onclick="closeModal('deleteModal')">Annuler</button><button class="btn red" onclick="confirmDelete()">Supprimer</button></div></div></div>
 <script>
 let state={},presets={},selectedPreset=null,editSteps=[],stopStatus='completed',stopRating=0,deleteId=null;
 let graphInterval='live',canvas,ctx,graphData={timestamps:[],t1:[],t2:[],t3:[],humidity:[]};
-let lastValues={t1:0,t2:0,t3:0};
 
 async function fetchState(){
     try{
         state=await(await fetch('/api/state')).json();
         const t=state.sensors.temperature||[0,0,0];
-        updateSensorDisplay('t1',t[0]);updateSensorDisplay('t2',t[1]);updateSensorDisplay('t3',t[2]);
+        updateVal('t1',t[0]);updateVal('t2',t[1]);updateVal('t3',t[2]);
         document.getElementById('tavg').textContent=((t[0]+t[1]+t[2])/3).toFixed(1);
         document.getElementById('st1').textContent=t[0].toFixed(1);
         document.getElementById('st2').textContent=t[1].toFixed(1);
@@ -231,23 +296,16 @@ async function fetchState(){
         document.getElementById('shum').textContent=state.sensors.humidity.toFixed(0);
         document.getElementById('headerStatus').textContent=state.batch?'En cours':'Inactif';
         document.getElementById('headerStatus').className='header-status'+(state.batch?' on':'');
-        // Add to live graph
         if(graphInterval==='live'){
-            const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-            graphData.timestamps.push(now);
-            graphData.t1.push(t[0]);graphData.t2.push(t[1]);graphData.t3.push(t[2]);
-            graphData.humidity.push(state.sensors.humidity);
+            graphData.timestamps.push(new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+            graphData.t1.push(t[0]);graphData.t2.push(t[1]);graphData.t3.push(t[2]);graphData.humidity.push(state.sensors.humidity);
             if(graphData.timestamps.length>60){graphData.timestamps.shift();graphData.t1.shift();graphData.t2.shift();graphData.t3.shift();graphData.humidity.shift();}
             if(document.getElementById('sensors').classList.contains('active'))drawGraph();
         }
         renderBatch();
     }catch(e){console.error(e);}
 }
-function updateSensorDisplay(id,val){
-    const el=document.getElementById(id);
-    const newVal=val.toFixed(1);
-    if(el.textContent!==newVal){el.textContent=newVal;el.classList.remove('updated');void el.offsetWidth;el.classList.add('updated');}
-}
+function updateVal(id,val){const el=document.getElementById(id),nv=val.toFixed(1);if(el.textContent!==nv){el.textContent=nv;el.classList.remove('updated');void el.offsetWidth;el.classList.add('updated');}}
 async function fetchPresets(){presets=await(await fetch('/api/presets')).json();renderPresets();}
 async function fetchHistory(){renderHistory(await(await fetch('/api/history')).json());}
 function showScreen(id){
@@ -256,25 +314,27 @@ function showScreen(id){
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-screen="'+id+'"]')?.classList.add('active');
     document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',events:'Notes',history:'Historique'}[id];
-    if(id==='history')fetchHistory();
-    if(id==='events')renderEvents();
-    if(id==='sensors'){resizeCanvas();drawGraph();}
+    if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}
 }
 function renderBatch(){
     const p=document.getElementById('batchPanel');
-    if(!state.batch){p.innerHTML='<div class="empty-state"><div class="empty-icon" onclick="showScreen(\'create\')">+</div><div class="empty-text">Aucune fermentation</div></div>';return;}
+    if(!state.batch){
+        p.innerHTML='<div class="empty-state"><div class="start-btn" onclick="showScreen(\'create\')"><span>+</span></div><div class="empty-text">Démarrer fermentation</div></div>';
+        return;
+    }
     const s=state.batch.current_step,pr=state.batch.step_progress||0;
-    p.innerHTML=`<div class="panel"><div class="panel-title">${state.batch.id} - ${state.batch.name}</div>
-        <div class="batch-info"><div class="info-item"><div class="info-label">Étape</div><div class="info-value">${state.batch.current_step_index+1}/${state.batch.steps.length}</div></div>
-        <div class="info-item"><div class="info-label">Phase</div><div class="info-value">${s.name}</div></div>
-        <div class="info-item"><div class="info-label">Cible</div><div class="info-value">${s.temp}°C / ${s.humidity}%</div></div>
-        <div class="info-item"><div class="info-label">Temps</div><div class="info-value">${state.batch.elapsed_hours}h / ${s.duration}h</div></div></div>
+    const fanInt=state.actuators.fan_internal,fanExt=state.actuators.fan_extract;
+    p.innerHTML=`<div class="panel"><div class="panel-header"><div class="panel-title">${state.batch.name}</div><div class="panel-id">${state.batch.id}</div></div>
+        <div class="batch-grid"><div class="batch-item"><div class="batch-label">Étape</div><div class="batch-val">${state.batch.current_step_index+1}/${state.batch.steps.length}</div></div>
+        <div class="batch-item"><div class="batch-label">Phase</div><div class="batch-val">${s.name}</div></div>
+        <div class="batch-item"><div class="batch-label">Cible</div><div class="batch-val">${s.temp}°C / ${s.humidity}%</div></div>
+        <div class="batch-item"><div class="batch-label">Temps</div><div class="batch-val">${state.batch.elapsed_hours}h / ${s.duration}h</div></div></div>
         <div class="progress"><div class="progress-fill" style="width:${pr}%"></div></div>
         <div class="actuators">
-            <div class="actuator ${state.actuators.heater?'on':''}" onclick="toggle('heater')"><div class="actuator-led ${state.actuators.heater?'on':''}">●</div><div class="actuator-name">Chauffe</div></div>
-            <div class="actuator ${state.actuators.humidifier?'on':''}" onclick="toggle('humidifier')"><div class="actuator-led ${state.actuators.humidifier?'on':''}">●</div><div class="actuator-name">Humid</div></div>
-            <div class="actuator ${state.actuators.fan_internal?'on':''}" onclick="toggle('fan_internal')"><div class="actuator-led ${state.actuators.fan_internal?'on':''}">●</div><div class="actuator-name">Ventilo</div></div>
-            <div class="actuator ${state.actuators.fan_extract?'on':''}" onclick="toggle('fan_extract')"><div class="actuator-led ${state.actuators.fan_extract?'on':''}">●</div><div class="actuator-name">Extract</div></div>
+            <div class="actuator ${state.actuators.heater?'on':''}" onclick="toggle('heater')"><div class="actuator-icon">${state.actuators.heater?'🔥':'○'}</div><div class="actuator-name">Chauffe</div></div>
+            <div class="actuator ${state.actuators.humidifier?'on':''}" onclick="toggle('humidifier')"><div class="actuator-icon">${state.actuators.humidifier?'💧':'○'}</div><div class="actuator-name">Humid</div></div>
+            <div class="actuator ${fanInt?'on':''}" onclick="toggle('fan_internal')"><div class="actuator-icon"><span class="fan-icon ${fanInt?'spinning':''}">⟳</span></div><div class="actuator-name">Ventilo</div></div>
+            <div class="actuator ${fanExt?'on':''}" onclick="toggle('fan_extract')"><div class="actuator-icon"><span class="fan-icon ${fanExt?'slow':''}">⟳</span></div><div class="actuator-name">Extract</div></div>
         </div>
         <div class="batch-actions">${state.batch.current_step_index<state.batch.steps.length-1?'<button class="btn" onclick="nextStep()">Étape suiv.</button>':''}<button class="btn red" onclick="openStopModal()">Terminer</button></div></div>`;
 }
@@ -284,15 +344,11 @@ function renderPresets(){
     (presets.manual?`<div class="preset-card ${selectedPreset==='manual'?'selected':''}" onclick="selectPreset('manual')"><div class="preset-icon">M</div><div class="preset-name">Manuel</div></div>`:'');
 }
 function selectPreset(k){selectedPreset=k;editSteps=JSON.parse(JSON.stringify(presets[k].steps));document.getElementById('batchName').value=presets[k].name;renderPresets();renderSteps();}
-function renderSteps(){document.getElementById('stepsList').innerHTML=editSteps.map((s,i)=>`<div class="step-mini"><span class="step-info">${i+1}. ${s.name} ${s.temp}°C ${s.duration}h</span><button class="step-delete" onclick="deleteStep(${i})">×</button></div>`).join('')||'<p style="color:var(--tan);font-size:11px;text-align:center;padding:10px;">Sélectionner un préréglage</p>';}
+function renderSteps(){document.getElementById('stepsList').innerHTML=editSteps.map((s,i)=>`<div class="step-row"><span class="step-info">${i+1}. ${s.name} · ${s.temp}°C · ${s.duration}h</span><button class="step-del" onclick="deleteStep(${i})">×</button></div>`).join('')||'<p style="color:var(--lcars-tan);font-size:12px;text-align:center;padding:20px;">Sélectionner un préréglage</p>';}
 function deleteStep(i){editSteps.splice(i,1);renderSteps();}
 function openStepModal(){document.getElementById('stepName').value='Étape '+(editSteps.length+1);openModal('stepModal');}
 function addStepFromModal(){editSteps.push({name:document.getElementById('stepName').value,temp:+document.getElementById('stepTemp').value,humidity:+document.getElementById('stepHumid').value,duration:+document.getElementById('stepDuration').value,ventilation:'off'});renderSteps();closeModal('stepModal');}
-async function startBatch(){
-    if(!editSteps.length){showAlert('Ajoutez une étape',true);return;}
-    const res=await fetch('/api/batch/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({preset:selectedPreset,name:document.getElementById('batchName').value||'Sans nom',steps:editSteps,code:presets[selectedPreset]?.code||'X'})});
-    if((await res.json()).success){showAlert('Démarré');fetchState();showScreen('dashboard');}
-}
+async function startBatch(){if(!editSteps.length){showAlert('Ajoutez une étape',1);return;}await fetch('/api/batch/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({preset:selectedPreset,name:document.getElementById('batchName').value||'Sans nom',steps:editSteps,code:presets[selectedPreset]?.code||'X'})});showAlert('Démarré');fetchState();showScreen('dashboard');}
 function openStopModal(){stopStatus='completed';stopRating=0;document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));document.getElementById('statusOk').classList.add('active');document.querySelectorAll('#stopStars .star').forEach(s=>s.classList.remove('active'));document.getElementById('stopNotes').value='';openModal('stopModal');}
 function setStopStatus(s){stopStatus=s;document.querySelectorAll('.status-btn').forEach(b=>b.classList.remove('active'));document.getElementById(s==='completed'?'statusOk':'statusFail').classList.add('active');}
 function setRating(r){stopRating=r;document.querySelectorAll('#stopStars .star').forEach((s,i)=>s.classList.toggle('active',i<r));}
@@ -300,130 +356,68 @@ async function stopBatch(){closeModal('stopModal');await fetch('/api/batch/stop'
 async function nextStep(){await fetch('/api/batch/next-step',{method:'POST'});fetchState();}
 async function toggle(n){await fetch('/api/actuator/'+n,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});fetchState();}
 async function addEvent(){const i=document.getElementById('eventInput');if(!i.value)return;await fetch('/api/batch/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:i.value})});i.value='';closeModal('eventModal');fetchState();renderEvents();}
-function renderEvents(){document.getElementById('eventsList').innerHTML=(state.events||[]).map(e=>`<div class="event-item"><div class="event-time">${new Date(e.time).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div class="event-text">${e.text}</div></div>`).join('')||'<p style="color:var(--tan);text-align:center;padding:30px;">Aucune note</p>';}
-function renderHistory(h){document.getElementById('historyList').innerHTML=h.slice(0,20).map(b=>`<div class="history-item"><div class="history-header"><span class="history-title">${b.id} - ${b.name}</span><span class="history-badge ${b.status==='completed'?'':'failed'}">${b.rating?'★'.repeat(b.rating):(b.status==='completed'?'OK':'✗')}</span></div><div class="history-content"><div><div class="form-label">Date</div><div style="color:var(--yellow);font-size:11px">${new Date(b.started_at).toLocaleDateString('fr-FR')}</div></div><div><div class="form-label">Durée</div><div style="color:var(--yellow);font-size:11px">${b.total_duration}h</div></div><div><div class="form-label">Étapes</div><div style="color:var(--yellow);font-size:11px">${b.steps?.length||0}</div></div><div><div class="form-label">Notes</div><div style="color:var(--yellow);font-size:11px">${(b.events||[]).length}</div></div></div><div class="history-actions"><button class="btn-sm" onclick="relaunch('${b.id}')">Relancer</button><button class="btn-sm" style="background:var(--purple)" onclick="viewHistory('${b.id}')">Détails</button><button class="btn-sm" style="background:var(--red)" onclick="askDelete('${b.id}')">×</button></div></div>`).join('')||'<p style="color:var(--tan);text-align:center;padding:30px;">Aucun</p>';}
+function renderEvents(){document.getElementById('eventsList').innerHTML=(state.events||[]).map(e=>`<div class="event-item"><div class="event-time">${new Date(e.time).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div><div class="event-text">${e.text}</div></div>`).join('')||'<p style="color:var(--lcars-tan);text-align:center;padding:30px;">Aucune note</p>';}
+function renderHistory(h){document.getElementById('historyList').innerHTML=h.slice(0,20).map(b=>`<div class="history-item"><div class="history-head"><span class="history-title">${b.id} · ${b.name}</span><span class="history-badge ${b.status==='completed'?'':'fail'}">${b.rating?'★'.repeat(b.rating):(b.status==='completed'?'OK':'✗')}</span></div><div class="history-body"><div><div class="history-label">Date</div><div class="history-val">${new Date(b.started_at).toLocaleDateString('fr-FR')}</div></div><div><div class="history-label">Durée</div><div class="history-val">${b.total_duration}h</div></div><div><div class="history-label">Étapes</div><div class="history-val">${b.steps?.length||0}</div></div><div><div class="history-label">Notes</div><div class="history-val">${(b.events||[]).length}</div></div></div><div class="history-actions"><button class="btn-sm" onclick="relaunch('${b.id}')">Relancer</button><button class="btn-sm" style="background:var(--lcars-purple)" onclick="viewHistory('${b.id}')">Détails</button><button class="btn-sm" style="background:var(--lcars-red)" onclick="askDelete('${b.id}')">×</button></div></div>`).join('')||'<p style="color:var(--lcars-tan);text-align:center;padding:30px;">Aucun historique</p>';}
 async function relaunch(id){const b=await(await fetch('/api/history/'+encodeURIComponent(id))).json();if(b.steps){editSteps=JSON.parse(JSON.stringify(b.steps));document.getElementById('batchName').value=b.name;selectedPreset=b.preset;renderPresets();renderSteps();showScreen('create');}}
 async function viewHistory(id){
     const b=await(await fetch('/api/history/'+encodeURIComponent(id))).json();
     document.getElementById('historyModalTitle').textContent=b.id;
-    let graphHtml='';
-    if(b.sensor_history&&b.sensor_history.t1&&b.sensor_history.t1.length>0){
-        graphHtml=`<canvas id="historyCanvas" class="history-graph"></canvas>`;
-    }
-    document.getElementById('historyModalContent').innerHTML=`<p style="color:var(--tan);font-size:10px">NOM</p><p style="color:var(--yellow);margin-bottom:8px">${b.name}</p>
-        <p style="color:var(--tan);font-size:10px">ÉTAPES</p>${b.steps.map((s,i)=>`<p style="color:var(--blue);font-size:11px">${i+1}. ${s.name} - ${s.temp}°C, ${s.humidity}%, ${s.duration}h</p>`).join('')}
-        ${graphHtml}
-        ${b.notes?`<p style="color:var(--tan);font-size:10px;margin-top:8px">NOTES</p><p style="color:var(--yellow);font-size:12px">${b.notes}</p>`:''}
-        <div class="modal-buttons"><button class="btn" onclick="closeModal('historyModal')">Fermer</button><button class="btn orange" onclick="closeModal('historyModal');relaunch('${b.id}')">Relancer</button></div>`;
+    let graphHtml=b.sensor_history?.t1?.length?'<canvas id="historyCanvas" class="history-graph"></canvas>':'';
+    document.getElementById('historyModalContent').innerHTML=`<p style="color:var(--lcars-tan);font-size:10px">NOM</p><p style="color:var(--lcars-yellow);margin-bottom:8px">${b.name}</p>
+        <p style="color:var(--lcars-tan);font-size:10px">ÉTAPES</p>${b.steps.map((s,i)=>`<p style="color:var(--lcars-blue);font-size:12px">${i+1}. ${s.name} · ${s.temp}°C · ${s.humidity}% · ${s.duration}h</p>`).join('')}${graphHtml}
+        ${b.notes?`<p style="color:var(--lcars-tan);font-size:10px;margin-top:8px">NOTES</p><p style="color:var(--lcars-yellow)">${b.notes}</p>`:''}
+        <div class="modal-btns"><button class="btn" onclick="closeModal('historyModal')">Fermer</button><button class="btn orange" onclick="closeModal('historyModal');relaunch('${b.id}')">Relancer</button></div>`;
     openModal('historyModal');
-    if(b.sensor_history&&b.sensor_history.t1&&b.sensor_history.t1.length>0){
-        setTimeout(()=>drawHistoryGraph(b.sensor_history),100);
-    }
+    if(b.sensor_history?.t1?.length)setTimeout(()=>drawHistoryGraph(b.sensor_history),50);
 }
 function drawHistoryGraph(data){
     const hc=document.getElementById('historyCanvas');if(!hc)return;
-    const hctx=hc.getContext('2d');
-    hc.width=hc.offsetWidth*2;hc.height=hc.offsetHeight*2;
-    hctx.scale(2,2);
+    const hctx=hc.getContext('2d');hc.width=hc.offsetWidth*2;hc.height=hc.offsetHeight*2;hctx.scale(2,2);
     const w=hc.offsetWidth,h=hc.offsetHeight,pad=25;
-    hctx.fillStyle='#0a0a12';hctx.fillRect(0,0,w,h);
-    const all=[...data.t1,...data.t2,...data.t3].filter(v=>v>0);
-    if(!all.length)return;
+    hctx.fillStyle='#0a0a0f';hctx.fillRect(0,0,w,h);
+    const all=[...data.t1,...data.t2,...data.t3].filter(v=>v>0);if(!all.length)return;
     const min=Math.floor(Math.min(...all))-2,max=Math.ceil(Math.max(...all))+2;
     hctx.strokeStyle='rgba(255,153,0,0.2)';hctx.lineWidth=1;
     for(let i=0;i<=4;i++){const y=pad+(h-2*pad)*i/4;hctx.beginPath();hctx.moveTo(pad,y);hctx.lineTo(w-5,y);hctx.stroke();}
     hctx.fillStyle='#ffaa66';hctx.font='9px Orbitron';
-    for(let i=0;i<=4;i++){const v=max-(max-min)*i/4;hctx.fillText(v.toFixed(0)+'°',2,pad+(h-2*pad)*i/4+3);}
-    const colors=['#ff6b6b','#4ecdc4','#ffe66d'];
-    [data.t1,data.t2,data.t3].forEach((d,di)=>{
-        hctx.strokeStyle=colors[di];hctx.lineWidth=1.5;hctx.beginPath();
-        d.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-5)*i/(d.length-1||1),y=pad+(h-2*pad)*(1-(v-min)/(max-min||1));i===0||d[i-1]===0?hctx.moveTo(x,y):hctx.lineTo(x,y);});
-        hctx.stroke();
-    });
+    for(let i=0;i<=4;i++){hctx.fillText((max-(max-min)*i/4).toFixed(0)+'°',2,pad+(h-2*pad)*i/4+3);}
+    const colors=['#ff6b35','#f7931e','#fbb03b'];
+    [data.t1,data.t2,data.t3].forEach((d,di)=>{hctx.strokeStyle=colors[di];hctx.lineWidth=1.5;hctx.beginPath();d.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-5)*i/(d.length-1||1),y=pad+(h-2*pad)*(1-(v-min)/(max-min||1));i===0||d[i-1]===0?hctx.moveTo(x,y):hctx.lineTo(x,y);});hctx.stroke();});
 }
 function askDelete(id){deleteId=id;openModal('deleteModal');}
 async function confirmDelete(){closeModal('deleteModal');if(deleteId){await fetch('/api/history/'+encodeURIComponent(deleteId),{method:'DELETE'});fetchHistory();deleteId=null;}}
 function openModal(id){document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('active');}
-function showAlert(t,err){const c=document.getElementById('alertContainer'),a=document.createElement('div');a.className='alert'+(err?' error':'');a.textContent=t;c.appendChild(a);setTimeout(()=>a.remove(),2000);}
-function quitApp(){if(confirm('Quitter ?')){fetch('/api/quit',{method:'POST'});}}
+function showAlert(t,err){const c=document.getElementById('alertBox'),a=document.createElement('div');a.className='alert'+(err?' err':'');a.textContent=t;c.appendChild(a);setTimeout(()=>a.remove(),2000);}
+function quitApp(){if(confirm('Quitter ?'))fetch('/api/quit',{method:'POST'});}
 
-// Graph
 function initCanvas(){canvas=document.getElementById('tempCanvas');ctx=canvas.getContext('2d');resizeCanvas();window.addEventListener('resize',resizeCanvas);}
-function resizeCanvas(){
-    const wrap=canvas.parentElement;
-    canvas.style.width=wrap.clientWidth+'px';
-    canvas.style.height=wrap.clientHeight+'px';
-    canvas.width=wrap.clientWidth*2;
-    canvas.height=wrap.clientHeight*2;
-    ctx.scale(2,2);
-    drawGraph();
-}
-function setGraphInterval(i){
-    graphInterval=i;
-    document.querySelectorAll('.graph-btn').forEach(b=>b.classList.toggle('active',b.dataset.interval===i));
-    document.querySelector('.live-indicator').style.display=i==='live'?'flex':'none';
-    if(i!=='live')fetchGraphData();
-}
-async function fetchGraphData(){
-    try{
-        const data=await(await fetch('/api/sensors/history?interval='+graphInterval)).json();
-        graphData=data;
-        drawGraph();
-    }catch(e){console.error(e);}
-}
+function resizeCanvas(){const wrap=canvas.parentElement;canvas.style.width=wrap.clientWidth+'px';canvas.style.height=wrap.clientHeight+'px';canvas.width=wrap.clientWidth*2;canvas.height=wrap.clientHeight*2;ctx.setTransform(2,0,0,2,0,0);drawGraph();}
+function setGraphInterval(i){graphInterval=i;document.querySelectorAll('.graph-btn').forEach(b=>b.classList.toggle('active',b.dataset.interval===i));if(i!=='live')fetchGraphData();}
+async function fetchGraphData(){try{graphData=await(await fetch('/api/sensors/history?interval='+graphInterval)).json();drawGraph();}catch(e){}}
 function drawGraph(){
-    if(!ctx||!graphData.t1||!graphData.t1.length)return;
+    if(!ctx||!graphData.t1?.length)return;
     const w=canvas.width/2,h=canvas.height/2,pad=30;
-    ctx.clearRect(0,0,w*2,h*2);
-    // Background
-    ctx.fillStyle='rgba(10,10,18,0.5)';ctx.fillRect(0,0,w,h);
-    // Grid
-    ctx.strokeStyle='rgba(255,153,0,0.15)';ctx.lineWidth=1;
+    ctx.clearRect(0,0,w*2,h*2);ctx.fillStyle='rgba(10,10,15,.8)';ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(255,153,0,.12)';ctx.lineWidth=1;
     for(let i=0;i<=5;i++){const y=pad+(h-2*pad)*i/5;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-10,y);ctx.stroke();}
     for(let i=0;i<=6;i++){const x=pad+(w-pad-10)*i/6;ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,h-pad);ctx.stroke();}
-    // Find range
-    const all=[...graphData.t1,...graphData.t2,...graphData.t3].filter(v=>v>0);
-    if(!all.length)return;
+    const all=[...graphData.t1,...graphData.t2,...graphData.t3].filter(v=>v>0);if(!all.length)return;
     const min=Math.floor(Math.min(...all))-2,max=Math.ceil(Math.max(...all))+2;
-    // Y axis
     ctx.fillStyle='#ffaa66';ctx.font='10px Orbitron';
-    for(let i=0;i<=5;i++){const v=max-(max-min)*i/5;ctx.fillText(v.toFixed(0)+'°',3,pad+(h-2*pad)*i/5+4);}
-    // X axis (time)
-    ctx.fillStyle='#ffaa66';
-    const ts=graphData.timestamps;
-    if(ts.length>0){
-        const step=Math.max(1,Math.floor(ts.length/6));
-        for(let i=0;i<ts.length;i+=step){
-            const x=pad+(w-pad-10)*i/(ts.length-1||1);
-            const label=typeof ts[i]==='string'?ts[i].split(' ').pop()?.substring(0,5)||ts[i]:ts[i];
-            ctx.fillText(label,x-12,h-pad+12);
-        }
-    }
-    // Draw lines with glow
-    const colors=['#ff6b6b','#4ecdc4','#ffe66d','#cc99cc'];
-    const datasets=[graphData.t1,graphData.t2,graphData.t3];
-    // Add average
-    const avgData=graphData.t1.map((v,i)=>(v+graphData.t2[i]+graphData.t3[i])/3);
-    datasets.push(avgData);
+    for(let i=0;i<=5;i++){ctx.fillText((max-(max-min)*i/5).toFixed(0)+'°',4,pad+(h-2*pad)*i/5+4);}
+    const ts=graphData.timestamps,step=Math.max(1,Math.floor(ts.length/5));
+    for(let i=0;i<ts.length;i+=step){const x=pad+(w-pad-10)*i/(ts.length-1||1),lbl=typeof ts[i]==='string'?ts[i].substring(0,5):ts[i];ctx.fillText(lbl,x-10,h-pad+12);}
+    const colors=['#ff6b35','#f7931e','#fbb03b','#ffcc00'];
+    const datasets=[graphData.t1,graphData.t2,graphData.t3,graphData.t1.map((v,i)=>(v+graphData.t2[i]+graphData.t3[i])/3)];
     datasets.forEach((d,di)=>{
-        ctx.strokeStyle=colors[di];ctx.lineWidth=2;ctx.shadowColor=colors[di];ctx.shadowBlur=8;
-        ctx.beginPath();
+        ctx.strokeStyle=colors[di];ctx.lineWidth=2;ctx.shadowColor=colors[di];ctx.shadowBlur=6;ctx.beginPath();
         d.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-10)*i/(d.length-1||1),y=pad+(h-2*pad)*(1-(v-min)/(max-min||1));i===0||d[i-1]===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
-        ctx.stroke();
-        ctx.shadowBlur=0;
-        // Draw last point animated
-        if(d.length>0&&d[d.length-1]>0){
-            const lx=pad+(w-pad-10),ly=pad+(h-2*pad)*(1-(d[d.length-1]-min)/(max-min||1));
-            ctx.fillStyle=colors[di];ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fill();
-        }
+        ctx.stroke();ctx.shadowBlur=0;
+        if(d.length&&d[d.length-1]>0){const lx=w-10,ly=pad+(h-2*pad)*(1-(d[d.length-1]-min)/(max-min||1));ctx.fillStyle=colors[di];ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fill();}
     });
 }
-
-initCanvas();
-fetchState();
-fetchPresets();
-setInterval(fetchState,5000);
+initCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
 </script>
 </body>
 </html>
