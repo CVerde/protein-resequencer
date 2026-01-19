@@ -64,9 +64,9 @@
         .actuator-led.off { color: var(--lcars-tan); }
         .actuator-name { font-size: 12px; color: var(--lcars-tan); text-transform: uppercase; margin-top: 2px; }
         
-        /* Empty state avec + cliquable */
+        /* Empty state avec + cliquable et bien centré */
         .empty-state { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        .empty-icon { width: 80px; height: 80px; border: 3px solid var(--lcars-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--lcars-orange); margin-bottom: 16px; cursor: pointer; transition: all 0.3s ease; }
+        .empty-icon { width: 80px; height: 80px; border: 3px solid var(--lcars-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--lcars-orange); margin-bottom: 16px; cursor: pointer; transition: all 0.3s ease; line-height: 1; font-weight: normal; }
         .empty-icon:hover { background: rgba(255, 153, 0, 0.1); transform: scale(1.05); }
         .empty-icon:active { transform: scale(0.95); }
         .empty-title { font-family: 'Orbitron', sans-serif; font-size: 24px; color: var(--lcars-tan); text-transform: uppercase; letter-spacing: 2px; }
@@ -80,17 +80,17 @@
         .form-input { width: 100%; padding: 8px; background: var(--bg-secondary); border: 1px solid var(--lcars-tan); border-radius: 4px; color: var(--lcars-yellow); font-family: 'Antonio', sans-serif; font-size: 16px; }
         .form-input:focus { outline: none; border-color: var(--lcars-orange); }
         
-        /* Préréglages avec icônes visibles et Manuel en pleine largeur */
-        .preset-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; margin-bottom: 8px; }
-        .preset-card { background: rgba(255, 170, 102, 0.1); border: 2px solid var(--lcars-tan); border-radius: 8px; padding: 8px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 70px; }
+        /* Préréglages sur 2 lignes avec typo plus grosse */
+        .preset-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px; }
+        .preset-card { background: rgba(255, 170, 102, 0.1); border: 2px solid var(--lcars-tan); border-radius: 8px; padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 80px; }
         .preset-card:active { animation: pressDown 0.2s ease; }
         .preset-card.selected { background: rgba(255, 153, 0, 0.2); border-color: var(--lcars-orange); }
         .preset-card.custom { border-color: var(--lcars-purple); background: rgba(204, 153, 204, 0.1); }
         .preset-card.custom.selected { background: rgba(204, 153, 204, 0.2); border-color: var(--lcars-purple); }
         /* Manuel en pleine largeur */
         .preset-card.manual { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 12px; min-height: 50px; }
-        .preset-icon { font-size: 24px; line-height: 1; }
-        .preset-name { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--lcars-yellow); text-transform: uppercase; font-weight: 500; }
+        .preset-icon { font-size: 28px; line-height: 1; }
+        .preset-name { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--lcars-yellow); text-transform: uppercase; font-weight: 500; line-height: 1.2; }
         
         .steps-section { flex: 1; display: flex; flex-direction: column; }
         .steps-list { flex: 1; overflow-y: auto; margin-bottom: 8px; }
@@ -103,7 +103,8 @@
         .step-content .form-group { margin-bottom: 4px; }
         .step-content .form-input { padding: 4px; font-size: 14px; }
         
-        .btn-large { background: var(--lcars-orange); border: none; padding: 12px 24px; font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--bg-primary); text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: transform 0.15s ease; font-weight: 600; }
+        /* Bouton Démarrer en vert */
+        .btn-large { background: var(--success); border: none; padding: 12px 24px; font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--bg-primary); text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: transform 0.15s ease; font-weight: 600; }
         .btn-large:active { animation: pressDown 0.2s ease; }
         .btn-small { background: var(--lcars-tan); border: none; padding: 8px 12px; font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--bg-primary); text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: transform 0.15s ease; font-weight: 500; }
         .btn-small:active { animation: pressDown 0.2s ease; }
@@ -203,9 +204,8 @@
             <!-- Events -->
             <div class="screen" id="events">
                 <div style="display: flex; flex-direction: column; height: 100%; gap: 8px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="font-family: 'Orbitron', sans-serif; color: var(--lcars-orange); font-size: 18px; text-transform: uppercase;">Notes</h2>
-                        <button class="btn-small" onclick="openModal('eventModal')">Ajouter</button>
+                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+                        <button class="btn-large" onclick="openModal('eventModal')" style="background: var(--lcars-orange); font-size: 20px; padding: 16px 32px;">Ajouter une note</button>
                     </div>
                     <div class="events-list" id="eventsList"></div>
                 </div>
@@ -235,7 +235,7 @@
     <div class="modal" id="eventModal">
         <div class="modal-content">
             <div class="modal-title">Ajouter une note</div>
-            <textarea class="form-textarea" id="eventInput" placeholder="Tapez votre note ici..." onclick="openKeyboard(this)"></textarea>
+            <textarea class="form-textarea" id="eventInput" placeholder="Tapez votre note ici..." onclick="openKeyboard(this)" onfocus="openKeyboard(this)" ontouchstart="openKeyboard(this)"></textarea>
             <div class="modal-buttons">
                 <button class="btn-small modal-cancel" onclick="closeModal('eventModal')">Annuler</button>
                 <button class="btn-small modal-confirm" onclick="addEvent()">Ajouter</button>
@@ -266,7 +266,7 @@
             </div>
             <div style="margin: 16px 0;">
                 <label class="form-label">Notes</label>
-                <textarea class="form-textarea" id="stopNotes" placeholder="Notes finales..." onclick="openKeyboard(this)"></textarea>
+                <textarea class="form-textarea" id="stopNotes" placeholder="Notes finales..." onclick="openKeyboard(this)" onfocus="openKeyboard(this)" ontouchstart="openKeyboard(this)"></textarea>
             </div>
             <div class="modal-buttons">
                 <button class="btn-small modal-cancel" onclick="closeModal('stopModal')">Annuler</button>
@@ -301,8 +301,15 @@
         function openKeyboard(element) {
             // Focus sur l'élément pour déclencher le clavier virtuel
             element.focus();
-            // Simuler un clic pour s'assurer que le clavier s'ouvre
-            if (element.click) element.click();
+            // Pour les textarea, simuler un tap pour forcer l'ouverture du clavier
+            if (element.tagName === 'TEXTAREA') {
+                element.setAttribute('readonly', false);
+                element.click();
+                setTimeout(() => {
+                    element.focus();
+                    element.setSelectionRange(element.value.length, element.value.length);
+                }, 100);
+            }
         }
         
         function setStopStatus(status) {

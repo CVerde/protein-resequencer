@@ -1,53 +1,67 @@
 # Protein Resequencer
 
-## Migration depuis MINSHARA-F
+## Système de fermentation contrôlée avec interface LCARS
 
-Le projet a été renommé de **MINSHARA-F** vers **Protein Resequencer**.
+### Fonctionnalités :
 
-### Changements effectués :
+#### 🎮 **Préréglages disponibles :**
+- **Natto** 🫘 - Fermentation soja (42°C, 24h)
+- **Tempeh** 🟫 - Fermentation soja/légumineuses (32°C, 36h)
+- **Koji Riz** 🍚 - Fermentation aspergillus (30-32°C, 48h)
+- **Kombucha** 🧪 - Fermentation SCOBY (26°C, 7 jours)
+- **Yaourt** 🥛 - Fermentation lactique (43°C, 8h)
+- **Kimchi** 🌶️ - Lactofermentation légumes (20°C, 48h)
+- **Lactoferment.** 🥒 - Légumes fermentés (22°C, 72h)
+- **Miso** 🥣 - Pâte de soja fermentée (28°C, 30 jours)
+- **Vinaigre** 🍯 - Acétification (28°C, 14 jours)
+- **Désydra.** 💨 - Déshydratation (45°C, 12h)
+- **Manuel** ⚙️ - Configuration libre
 
-1. **MINSHARA-F.desktop** → **protein-resequencer.desktop**
-   - Nom d'affichage : "Protein Resequencer"
-   - Chemins mis à jour vers `/home/pi/protein-resequencer/`
+#### 🔧 **Contrôles :**
+- Température (3 sondes + 1 SHT40)
+- Humidité relative
+- Ventilation interne/extraction
+- Chauffage/humidification
 
-2. **app.py** : En-tête mise à jour vers "Protein Resequencer - Chambre de Fermentation Contrôlée"
-
-3. **start.sh** : Chemins mis à jour et commentaire actualisé
-
-4. **templates/index.html** :
-   - Titre de la page : "Protein Resequencer"
-   - Titre par défaut dans l'interface
-   - Message de confirmation de sortie
+#### 📱 **Interface :**
+- Design LCARS Star Trek
+- Écran tactile optimisé
+- Clavier virtuel intégré
+- Préréglages sur 2 lignes
+- Historique et notes
 
 ### Installation sur Raspberry Pi :
 
 ```bash
-# Arrêter l'ancienne version si elle tourne
-sudo systemctl stop minshara-f 2>/dev/null
-
-# Copier les fichiers
-sudo mkdir -p /home/pi/protein-resequencer
-sudo cp * /home/pi/protein-resequencer/
-sudo cp -r templates /home/pi/protein-resequencer/
-sudo cp -r doc /home/pi/protein-resequencer/
+# Clone depuis GitHub
+git clone https://github.com/CVerde/protein-resequencer.git
+cd protein-resequencer
 
 # Permissions
-sudo chown -R pi:pi /home/pi/protein-resequencer
-sudo chmod +x /home/pi/protein-resequencer/start.sh
+chmod +x *.sh
 
-# Copier le fichier desktop
-sudo cp protein-resequencer.desktop /home/pi/Desktop/
-sudo cp protein-resequencer.desktop /usr/share/applications/
+# Installation des icônes
+cp protein-resequencer.desktop ~/Desktop/
+cp protein-resequencer-update.desktop ~/Desktop/
+chmod +x ~/Desktop/*.desktop
 
-# Démarrer
-/home/pi/protein-resequencer/start.sh
+# Lancement
+./start.sh
 ```
 
-### Fonctionnalités conservées :
+### Workflow de développement :
 
-- Interface LCARS complète
-- Contrôle température/humidité/ventilation  
-- Préréglages système (natto, tempeh, koji, etc.)
-- Préréglages personnalisés
-- Historique et notes
-- Mode kiosque sur écran tactile
+1. **Développement** sur Windows avec VS Code
+2. **Commit/Push** vers GitHub 
+3. **Mise à jour Pi** avec l'icône "PR Update & Start"
+
+### Icônes disponibles :
+- 🟢 **"Protein Resequencer"** - Lancement direct
+- 🔄 **"PR Update & Start"** - Mise à jour depuis GitHub + lancement
+
+### Architecture :
+- **Backend** : Flask (Python)
+- **Frontend** : HTML/CSS/JS avec design LCARS
+- **Données** : JSON (historique, préréglages personnalisés)
+- **Contrôle** : GPIO Raspberry Pi
+

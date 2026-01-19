@@ -44,7 +44,7 @@ SYSTEM_PRESETS = {
     },
     "tempeh": {
         "name": "Tempeh",
-        "icon": "🌿",
+        "icon": "🟫",
         "code": "T",
         "system": True,
         "steps": [
@@ -64,20 +64,10 @@ SYSTEM_PRESETS = {
             {"name": "Sporulation", "temp": 28, "humidity": 75, "duration": 12, "ventilation": "on"}
         ]
     },
-    "koji_barley": {
-        "name": "Koji Orge",
-        "icon": "🌾",
-        "code": "KO",
-        "system": True,
-        "steps": [
-            {"name": "Germination", "temp": 28, "humidity": 85, "duration": 14, "ventilation": "off"},
-            {"name": "Croissance", "temp": 30, "humidity": 80, "duration": 26, "ventilation": "cyclic"},
-            {"name": "Sporulation", "temp": 26, "humidity": 75, "duration": 10, "ventilation": "on"}
-        ]
-    },
+
     "kombucha": {
         "name": "Kombucha",
-        "icon": "🍵",
+        "icon": "🧪",
         "code": "KB",
         "system": True,
         "steps": [
@@ -95,7 +85,7 @@ SYSTEM_PRESETS = {
     },
     "kimchi": {
         "name": "Kimchi",
-        "icon": "🥬",
+        "icon": "🌶️",
         "code": "KI",
         "system": True,
         "steps": [
@@ -122,7 +112,7 @@ SYSTEM_PRESETS = {
     },
     "vinegar": {
         "name": "Vinaigre",
-        "icon": "🍶",
+        "icon": "🍯",
         "code": "V",
         "system": True,
         "steps": [
@@ -130,7 +120,7 @@ SYSTEM_PRESETS = {
         ]
     },
     "dehydrate": {
-        "name": "Déshydratation",
+        "name": "Désydra.",
         "icon": "💨",
         "code": "DH",
         "system": True,
