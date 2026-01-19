@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=MINSHARA-F
-Comment=Chambre de Fermentation
-Exec=/home/pi/fermentation/start.sh
-Icon=/home/pi/fermentation/icon.png
+Name=Protein Resequencer
+Comment=Chambre de Fermentation Contrôlée
+Exec=/home/pi/protein-resequencer/start.sh
+Icon=/home/pi/protein-resequencer/icon.png
 Terminal=false
 Type=Application
 Categories=Utility;

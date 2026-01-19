@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=PR Update & Start
+Comment=Mettre à jour et lancer Protein Resequencer
+Exec=/home/pi/protein-resequencer/update-and-start.sh
+Icon=/home/pi/protein-resequencer/icon.png
+Terminal=true
+Type=Application
+Categories=Utility;
+StartupNotify=true

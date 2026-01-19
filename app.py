@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MINSHARA-F - Chambre de Fermentation
+Protein Resequencer - Chambre de Fermentation Contrôlée
 Contrôleur principal v2
 """
 

@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Protein Resequencer
-Comment=Chambre de Fermentation Contrôlée
-Exec=/home/pi/protein-resequencer/start.sh
-Icon=/home/pi/protein-resequencer/icon.png
-Terminal=false
-Type=Application
-Categories=Utility;
-StartupNotify=true
