@@ -65,3 +65,4 @@ chmod +x ~/Desktop/*.desktop
 - **Données** : JSON (historique, préréglages personnalisés)
 - **Contrôle** : GPIO Raspberry Pi
 
+test
