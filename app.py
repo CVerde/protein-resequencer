@@ -190,23 +190,43 @@ def get_all_presets():
         all_presets[key] = {**preset, "system": False}
     return all_presets
 
+def read_ds18b20():
+    """Lecture des sondes DS18B20 via 1-Wire"""
+    temps = []
+    w1_path = "/sys/bus/w1/devices/"
+    try:
+        for device in os.listdir(w1_path):
+            if device.startswith("28-"):
+                with open(f"{w1_path}{device}/w1_slave", "r") as f:
+                    lines = f.readlines()
+                    if lines[0].strip().endswith("YES"):
+                        pos = lines[1].find("t=")
+                        if pos != -1:
+                            temp = float(lines[1][pos+2:]) / 1000.0
+                            temps.append(temp)
+    except Exception as e:
+        print(f"Erreur lecture DS18B20: {e}")
+    while len(temps) < 3:
+        temps.append(0.0)
+    return temps[:3]
+
+def read_sht40():
+    """Lecture du SHT40 via I2C - À implémenter"""
+    # TODO: implémenter avec smbus2 quand branché
+    return None, None
+
 def read_sensors():
-    """Lecture des capteurs - À implémenter avec les vrais drivers"""
-    import random
-    if state["batch"]:
-        target_temp = state["batch"]["current_step"]["temp"]
-        target_hum = state["batch"]["current_step"]["humidity"]
-        state["sensors"]["temperature"] = [
-            target_temp + random.uniform(-1, 1),
-            target_temp + random.uniform(-1.5, 1.5),
-            target_temp + random.uniform(-0.5, 0.5)
-        ]
-        state["sensors"]["humidity"] = target_hum + random.uniform(-5, 5)
-        state["sensors"]["temp_sht40"] = target_temp + random.uniform(-0.5, 0.5)
+    """Lecture de tous les capteurs"""
+    temps = read_ds18b20()
+    state["sensors"]["temperature"] = temps
+    
+    hum, temp_sht = read_sht40()
+    if hum is not None:
+        state["sensors"]["humidity"] = hum
+        state["sensors"]["temp_sht40"] = temp_sht
     else:
-        state["sensors"]["temperature"] = [22.0, 22.0, 22.0]
         state["sensors"]["humidity"] = 50.0
-        state["sensors"]["temp_sht40"] = 22.0
+        state["sensors"]["temp_sht40"] = sum(temps) / len(temps) if any(temps) else 22.0
 
 def control_actuators():
     """Contrôle des actionneurs basé sur les consignes"""
