@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MINSHARA-F
+Comment=Chambre de Fermentation
+Exec=/home/pi/fermentation/start.sh
+Icon=/home/pi/fermentation/icon.png
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupNotify=true

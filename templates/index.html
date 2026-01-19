@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>MINSHARA-F</title>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --lcars-orange: #ff9900; --lcars-yellow: #ffcc00; --lcars-blue: #9999ff; --lcars-purple: #cc99cc; --lcars-red: #cc4444; --lcars-tan: #ffaa66; --lcars-lavender: #9977aa; --bg-primary: #000; --bg-secondary: #0a0a12; --text-light: #ffcc99; --success: #55cc55; --danger: #cc4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { font-family: 'Antonio', sans-serif; background: var(--bg-primary); color: var(--lcars-orange); height: 100vh; width: 100vw; overflow: hidden; font-size: 18px; }
+        .app { display: grid; grid-template-rows: 48px 1fr 58px; height: 100vh; }
+        
+        /* Header */
+        .header { display: flex; align-items: center; padding: 0 10px; gap: 10px; background: linear-gradient(90deg, var(--lcars-purple) 0%, var(--lcars-purple) 50%, transparent 50%); }
+        .header-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--bg-primary); text-transform: uppercase; letter-spacing: 2px; flex: 1; padding-left: 10px; }
+        .header-status { background: var(--lcars-tan); padding: 8px 16px; border-radius: 15px; font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--bg-primary); text-transform: uppercase; }
+        .header-status.fermenting { background: var(--success); animation: pulse 2s infinite; }
+        .btn-quit { background: var(--danger); border: none; width: 48px; height: 48px; border-radius: 8px; font-size: 28px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-quit:active { transform: scale(0.9); }
+        
+        /* Animations */
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.02); } }
+        @keyframes bounceIn { 0% { transform: scale(0.9); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pressDown { 0% { transform: scale(1); } 50% { transform: scale(0.92); } 100% { transform: scale(1); } }
+        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+        
+        /* Nav */
+        .nav { display: flex; gap: 4px; padding: 6px 10px; background: var(--bg-secondary); }
+        .nav-btn { flex: 1; background: var(--lcars-tan); border: none; padding: 12px 6px; font-family: 'Antonio', sans-serif; font-size: 18px; color: var(--bg-primary); text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: transform 0.15s ease; }
+        .nav-btn:active { animation: pressDown 0.2s ease; }
+        .nav-btn.active { background: var(--lcars-orange); }
+        .nav-btn.blue { background: var(--lcars-blue); }
+        .nav-btn.purple { background: var(--lcars-purple); }
+        
+        /* Main */
+        .main { overflow: hidden; position: relative; }
+        .screen { position: absolute; inset: 0; padding: 8px; display: none; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .screen.active { display: flex; }
+        
+        /* Dashboard */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; flex: 1; }
+        .panel { background: rgba(255, 153, 0, 0.05); border: 2px solid var(--lcars-orange); border-radius: 0 12px 12px 0; display: flex; flex-direction: column; overflow: hidden; }
+        .panel-header { background: var(--lcars-orange); padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--bg-primary); text-transform: uppercase; }
+        .panel-indicator { width: 12px; height: 12px; border-radius: 50%; background: var(--success); }
+        .panel-indicator.off { background: var(--lcars-tan); }
+        .panel-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 6px; }
+        .stat-value { font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 700; color: var(--lcars-yellow); line-height: 1; }
+        .stat-unit { font-size: 20px; color: var(--lcars-orange); }
+        .stat-target { font-size: 16px; color: var(--lcars-blue); margin-top: 2px; }
+        
+        /* Batch info */
+        .batch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; }
+        .batch-field { display: flex; flex-direction: column; }
+        .batch-label { font-size: 14px; color: var(--lcars-blue); text-transform: uppercase; }
+        .batch-value { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--lcars-yellow); }
+        .progress-bar { width: 100%; height: 10px; background: var(--bg-primary); border: 1px solid var(--lcars-orange); border-radius: 5px; overflow: hidden; margin-top: 6px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--lcars-orange), var(--lcars-yellow)); }
+        
+        /* Actuators */
+        .actuators-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; }
+        .actuator { display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(0,0,0,0.3); border-radius: 4px; cursor: pointer; }
+        .actuator:active { background: rgba(255,153,0,0.2); }
+        .actuator-led { width: 16px; height: 16px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .actuator-led.on { background: var(--success); color: var(--bg-primary); }
+        .actuator-led.off { background: var(--bg-primary); border: 2px solid var(--lcars-orange); color: var(--lcars-orange); }
+        .actuator-name { font-size: 16px; text-transform: uppercase; }
+        
+        /* Empty state */
+        .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 15px; }
+        .empty-icon { width: 80px; height: 80px; border: 3px solid var(--lcars-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .empty-title { font-family: 'Orbitron', sans-serif; font-size: 20px; color: var(--lcars-yellow); text-transform: uppercase; }
+        
+        /* Presets */
+        .section-title { color: var(--lcars-blue); text-transform: uppercase; font-size: 18px; letter-spacing: 1px; margin: 8px 0 6px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .section-title::before { content: ''; width: 20px; height: 4px; background: var(--lcars-blue); border-radius: 2px; }
+        .preset-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .preset-card { background: rgba(255, 153, 0, 0.05); border: 2px solid var(--lcars-orange); border-radius: 8px; padding: 8px 4px; text-align: center; cursor: pointer; transition: transform 0.15s ease; }
+        .preset-card:active { animation: pressDown 0.2s ease; }
+        .preset-card.selected { background: var(--lcars-orange); transform: scale(1.02); }
+        .preset-card.selected .preset-name { color: var(--bg-primary); }
+        .preset-card.custom { border-color: var(--lcars-purple); }
+        .preset-icon { font-size: 30px; line-height: 1.1; }
+        .preset-name { font-size: 16px; color: var(--lcars-yellow); text-transform: uppercase; margin-top: 4px; line-height: 1.1; font-weight: 700; }
+        
+        /* Steps */
+        .steps-list { display: flex; flex-direction: column; gap: 6px; }
+        .step-card { background: rgba(153, 153, 255, 0.05); border: 2px solid var(--lcars-blue); border-radius: 0 10px 10px 0; overflow: hidden; }
+        .step-header { background: var(--lcars-blue); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .step-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--bg-primary); text-transform: uppercase; }
+        .step-delete { background: var(--lcars-red); border: none; width: 28px; height: 28px; border-radius: 50%; color: white; cursor: pointer; font-size: 18px; }
+        .step-content { padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .form-group { display: flex; flex-direction: column; gap: 2px; }
+        .form-label { font-size: 14px; color: var(--lcars-tan); text-transform: uppercase; font-weight: 600; }
+        .form-input { background: var(--bg-primary); border: 2px solid var(--lcars-orange); border-radius: 6px; padding: 10px; font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--lcars-yellow); outline: none; width: 100%; }
+        .form-input:focus { border-color: var(--lcars-yellow); box-shadow: 0 0 10px rgba(255,204,0,0.3); }
+        .add-step-btn { background: transparent; border: 2px dashed var(--lcars-blue); border-radius: 8px; padding: 12px; color: var(--lcars-blue); font-family: 'Antonio', sans-serif; font-size: 18px; text-transform: uppercase; cursor: pointer; width: 100%; margin-top: 6px; font-weight: 600; }
+        
+        /* Buttons */
+        .btn-large { background: var(--lcars-orange); border: none; padding: 14px 20px; font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--bg-primary); text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: transform 0.15s ease; }
+        .btn-large:active { animation: pressDown 0.2s ease; }
+        .btn-large.success { background: var(--success); }
+        .btn-large.danger { background: var(--danger); }
+        .btn-large.secondary { background: var(--lcars-lavender); }
+        .btn-row { display: flex; gap: 6px; margin-top: auto; padding-top: 6px; }
+        .btn-row .btn-large { flex: 1; padding: 12px; font-size: 18px; }
+        .btn-small { background: var(--lcars-blue); border: none; padding: 10px 14px; font-family: 'Antonio', sans-serif; font-size: 16px; color: var(--bg-primary); text-transform: uppercase; border-radius: 5px; cursor: pointer; transition: transform 0.15s ease; }
+        .btn-small:active { animation: pressDown 0.15s ease; }
+        
+        /* History */
+        .history-filters { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+        .filter-btn { background: var(--bg-primary); border: 2px solid var(--lcars-orange); border-radius: 15px; padding: 8px 16px; font-family: 'Antonio', sans-serif; font-size: 16px; color: var(--lcars-orange); cursor: pointer; }
+        .filter-btn.active { background: var(--lcars-orange); color: var(--bg-primary); }
+        .history-list { flex: 1; overflow-y: auto; }
+        .history-item { background: rgba(255, 153, 0, 0.05); border: 2px solid var(--lcars-orange); border-radius: 0 10px 10px 0; margin-bottom: 6px; overflow: hidden; }
+        .history-header { background: var(--lcars-tan); padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .history-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--bg-primary); }
+        .history-badge { padding: 4px 12px; border-radius: 8px; font-size: 14px; text-transform: uppercase; font-weight: 600; }
+        .history-badge.success { background: var(--success); color: var(--bg-primary); }
+        .history-badge.failed { background: var(--danger); color: white; }
+        .history-content { padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+        .history-field { text-align: center; }
+        .history-label { font-size: 14px; color: var(--lcars-blue); text-transform: uppercase; }
+        .history-value { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--lcars-yellow); }
+        .history-actions { display: flex; gap: 4px; padding: 8px; border-top: 1px solid rgba(255,153,0,0.2); }
+        .history-actions .btn-small { flex: 1; text-align: center; }
+        
+        /* Events */
+        .events-list { flex: 1; overflow-y: auto; }
+        .event-item { display: flex; gap: 10px; padding: 10px; border-bottom: 1px solid rgba(255,153,0,0.3); }
+        .event-time { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--lcars-blue); white-space: nowrap; }
+        .event-text { font-size: 18px; color: var(--text-light); }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 100; padding: 15px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--bg-secondary); border: 3px solid var(--lcars-orange); border-radius: 0 20px 20px 0; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; animation: bounceIn 0.3s ease; }
+        .modal-header { background: var(--lcars-orange); padding: 12px 15px; }
+        .modal-title { font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--bg-primary); text-transform: uppercase; }
+        .modal-content { padding: 15px; }
+        .modal-input { width: 100%; background: var(--bg-primary); border: 2px solid var(--lcars-orange); border-radius: 6px; padding: 14px; font-family: 'Antonio', sans-serif; font-size: 20px; color: var(--lcars-yellow); outline: none; margin-bottom: 10px; }
+        .modal-input:focus { border-color: var(--lcars-yellow); box-shadow: 0 0 10px rgba(255,204,0,0.3); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .modal-buttons button { flex: 1; padding: 14px; border: none; border-radius: 6px; font-family: 'Antonio', sans-serif; font-size: 18px; text-transform: uppercase; cursor: pointer; transition: transform 0.15s ease; }
+        .modal-buttons button:active { animation: pressDown 0.15s ease; }
+        .modal-cancel { background: var(--lcars-lavender); color: var(--bg-primary); }
+        .modal-confirm { background: var(--success); color: var(--bg-primary); }
+        .modal-danger { background: var(--danger); color: white; }
+        
+        /* Alert */
+        .alert { position: fixed; top: 55px; right: 10px; background: var(--bg-secondary); border: 2px solid var(--success); border-radius: 8px; padding: 12px 15px; z-index: 200; animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .alert.error { border-color: var(--danger); }
+        .alert-text { font-size: 18px; color: var(--text-light); }
+        
+        /* Stars */
+        .stars { display: flex; gap: 6px; }
+        .star { width: 40px; height: 40px; background: var(--bg-primary); border: 2px solid var(--lcars-orange); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--lcars-orange); }
+        .star.filled { background: var(--lcars-orange); color: var(--bg-primary); }
+        
+        /* Checkbox */
+        input[type="checkbox"] { width: 24px; height: 24px; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="header">
+            <span class="header-title" id="pageTitle">Dashboard</span>
+            <div class="header-status" id="statusBadge">En attente</div>
+            <button class="btn-quit" onclick="quitApp()">✕</button>
+        </div>
+        <div class="main">
+            <div id="dashboard" class="screen active"><div class="dashboard-grid" id="dashboardContent"></div></div>
+            <div id="create" class="screen">
+                <div class="section-title">Préréglage</div>
+                <div class="preset-grid" id="presetGrid"></div>
+                <div class="section-title">Étapes</div>
+                <div class="steps-list" id="stepsList"></div>
+                <button class="add-step-btn" onclick="addStep()">+ Ajouter étape</button>
+                <div class="section-title">Nom du batch</div>
+                <input type="text" class="form-input" id="batchName" placeholder="Ex: Tempeh soja" onclick="openKeyboard(this)">
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                    <input type="checkbox" id="savePreset">
+                    <label for="savePreset" style="font-size: 18px; color: var(--lcars-tan);">Sauvegarder sous-réglage</label>
+                </div>
+                <input type="text" class="form-input" id="presetName" placeholder="Nom du sous-réglage" style="margin-top: 6px; display: none;" onclick="openKeyboard(this)">
+                <div class="btn-row">
+                    <button class="btn-large secondary" onclick="showScreen('dashboard')">Annuler</button>
+                    <button class="btn-large success" onclick="startBatch()">Démarrer</button>
+                </div>
+            </div>
+            <div id="history" class="screen">
+                <div class="history-filters">
+                    <button class="filter-btn active" data-sort="date">Date</button>
+                    <button class="filter-btn" data-sort="name">Nom</button>
+                    <button class="filter-btn" data-sort="type">Type</button>
+                    <button class="filter-btn" data-sort="rating">Note</button>
+                </div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+            <div id="events" class="screen">
+                <div class="events-list" id="eventsList"></div>
+                <div class="btn-row"><button class="btn-large" onclick="openModal('eventModal')">+ Ajouter note</button></div>
+            </div>
+        </div>
+        <div class="nav">
+            <button class="nav-btn active" data-screen="dashboard">Accueil</button>
+            <button class="nav-btn blue" data-screen="create">Nouveau</button>
+            <button class="nav-btn" data-screen="events">Notes</button>
+            <button class="nav-btn purple" data-screen="history">Historique</button>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">Ajouter une note</span></div>
+            <div class="modal-content">
+                <input type="text" class="modal-input" id="eventInput" placeholder="Ex: Mycélium visible..." onclick="openKeyboard(this)">
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeModal('eventModal')">Annuler</button>
+                    <button class="modal-confirm" onclick="addEvent()">Ajouter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="stopModal">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">Terminer le batch</span></div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label class="form-label">Résultat</label>
+                    <div style="display: flex; gap: 8px; margin-top: 5px;">
+                        <button class="btn-small" onclick="setStopStatus('completed')" id="statusOk" style="flex:1; background: var(--success); font-size:18px; padding:12px;">Réussi</button>
+                        <button class="btn-small" onclick="setStopStatus('partial')" id="statusPartial" style="flex:1; background: var(--lcars-yellow); color: #000; font-size:18px; padding:12px;">Partiel</button>
+                        <button class="btn-small" onclick="setStopStatus('failed')" id="statusFailed" style="flex:1; background: var(--danger); font-size:18px; padding:12px;">Raté</button>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label class="form-label">Note</label>
+                    <div class="stars" id="ratingStars">
+                        <div class="star" data-value="1">★</div>
+                        <div class="star" data-value="2">★</div>
+                        <div class="star" data-value="3">★</div>
+                        <div class="star" data-value="4">★</div>
+                        <div class="star" data-value="5">★</div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label class="form-label">Commentaire</label>
+                    <input type="text" class="modal-input" id="stopNotes" placeholder="Notes..." style="margin-bottom: 0;" onclick="openKeyboard(this)">
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeModal('stopModal')">Annuler</button>
+                    <button class="modal-danger" onclick="stopBatch()">Terminer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="historyDetailModal">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title" id="historyDetailTitle">Détails</span></div>
+            <div class="modal-content" id="historyDetailContent"></div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="confirmDeleteModal">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">Supprimer ?</span></div>
+            <div class="modal-content">
+                <p style="color: var(--text-light); font-size: 18px; margin-bottom: 15px;">Supprimer ce batch de l'historique ?</p>
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeModal('confirmDeleteModal')">Annuler</button>
+                    <button class="modal-danger" onclick="confirmDeleteHistory()">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="alertContainer"></div>
+    
+    <script>
+        let state = { batch: null, sensors: {}, actuators: {}, mode: 'idle', events: [] };
+        let presets = {};
+        let selectedPreset = null;
+        let editSteps = [];
+        let stopStatus = 'completed';
+        let stopRating = 0;
+        let historyToDelete = null;
+        let currentSort = 'date';
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => { if(btn.dataset.screen) showScreen(btn.dataset.screen); }));
+        document.getElementById('savePreset').addEventListener('change', e => document.getElementById('presetName').style.display = e.target.checked ? 'block' : 'none');
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentSort = btn.dataset.sort; fetchHistory(); }));
+        document.querySelectorAll('#ratingStars .star').forEach(star => star.addEventListener('click', () => { stopRating = parseInt(star.dataset.value); updateStars(); }));
+        
+        function openKeyboard(el) {
+            el.focus();
+            // Tente d'ouvrir le clavier système
+            if (navigator.virtualKeyboard) {
+                navigator.virtualKeyboard.show();
+            }
+        }
+        
+        function updateStars() { document.querySelectorAll('#ratingStars .star').forEach(star => star.classList.toggle('filled', parseInt(star.dataset.value) <= stopRating)); }
+        function setStopStatus(status) { stopStatus = status; document.querySelectorAll('#stopModal .btn-small').forEach(b => b.style.opacity = '0.5'); event.target.style.opacity = '1'; }
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-screen="${id}"]`)?.classList.add('active');
+            document.getElementById('pageTitle').textContent = {dashboard: state.batch ? 'En cours' : 'Dashboard', create: 'Nouveau batch', events: 'Notes', history: 'Historique'}[id] || 'MINSHARA-F';
+            if (id === 'history') fetchHistory();
+            if (id === 'events') renderEvents();
+        }
+        async function fetchState() { try { state = await (await fetch('/api/state')).json(); updateDashboard(); document.getElementById('statusBadge').textContent = state.batch ? 'En cours' : 'En attente'; document.getElementById('statusBadge').className = 'header-status' + (state.batch ? ' fermenting' : ''); } catch(e) {} }
+        async function fetchPresets() { try { presets = await (await fetch('/api/presets')).json(); renderPresets(); } catch(e) {} }
+        async function fetchHistory() { try { renderHistory(await (await fetch(`/api/history?sort=${currentSort}`)).json()); } catch(e) {} }
+        function updateDashboard() {
+            const c = document.getElementById('dashboardContent');
+            if (!state.batch) { c.innerHTML = `<div class="empty-state" style="grid-column: span 2; grid-row: span 2;"><div class="empty-icon">+</div><h2 class="empty-title">Aucune fermentation</h2><button class="btn-large" onclick="showScreen('create')">Nouveau Batch</button></div>`; return; }
+            const avg = (state.sensors.temperature.reduce((a,b)=>a+b,0)/3).toFixed(1), s = state.batch.current_step, p = state.batch.step_progress||0, e = state.batch.elapsed_hours||0;
+            c.innerHTML = `<div class="panel"><div class="panel-header"><span class="panel-title">Température</span><div class="panel-indicator ${state.actuators.heater?'':'off'}"></div></div><div class="panel-content"><span class="stat-value">${avg}<span class="stat-unit">°C</span></span><div class="stat-target">Cible: ${s.temp}°C</div></div></div><div class="panel"><div class="panel-header"><span class="panel-title">Humidité</span><div class="panel-indicator ${state.actuators.humidifier?'':'off'}"></div></div><div class="panel-content"><span class="stat-value">${state.sensors.humidity.toFixed(0)}<span class="stat-unit">%</span></span><div class="stat-target">Cible: ${s.humidity}%</div></div></div><div class="panel"><div class="panel-header"><span class="panel-title">${state.batch.id}</span></div><div class="panel-content"><div class="batch-grid"><div class="batch-field"><span class="batch-label">Type</span><span class="batch-value">${state.batch.name}</span></div><div class="batch-field"><span class="batch-label">Étape</span><span class="batch-value">${state.batch.current_step_index+1}/${state.batch.steps.length}</span></div><div class="batch-field"><span class="batch-label">Phase</span><span class="batch-value">${s.name}</span></div><div class="batch-field"><span class="batch-label">Temps</span><span class="batch-value">${e}h/${s.duration}h</span></div></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div></div></div><div class="panel"><div class="panel-header"><span class="panel-title">Contrôle</span></div><div class="panel-content"><div class="actuators-grid"><div class="actuator" onclick="toggleActuator('heater')"><div class="actuator-led ${state.actuators.heater?'on':'off'}">${state.actuators.heater?'●':'○'}</div><span class="actuator-name">Chauffe</span></div><div class="actuator" onclick="toggleActuator('humidifier')"><div class="actuator-led ${state.actuators.humidifier?'on':'off'}">${state.actuators.humidifier?'●':'○'}</div><span class="actuator-name">Humid.</span></div><div class="actuator" onclick="toggleActuator('fan_internal')"><div class="actuator-led ${state.actuators.fan_internal?'on':'off'}">${state.actuators.fan_internal?'●':'○'}</div><span class="actuator-name">Ventilo</span></div><div class="actuator" onclick="toggleActuator('fan_extract')"><div class="actuator-led ${state.actuators.fan_extract?'on':'off'}">${state.actuators.fan_extract?'●':'○'}</div><span class="actuator-name">Extract.</span></div></div><div style="display:flex;gap:4px;margin-top:8px;width:100%;">${state.batch.current_step_index<state.batch.steps.length-1?'<button class="btn-small" style="flex:1" onclick="nextStep()">Étape suiv.</button>':''}<button class="btn-small" style="flex:1;background:var(--danger);" onclick="openStopModal()">Terminer</button></div></div></div>`;
+        }
+        function renderPresets() {
+            const g = document.getElementById('presetGrid');
+            g.innerHTML = Object.entries(presets).filter(([k,p])=>p.system!==false).map(([k,p])=>`<div class="preset-card ${selectedPreset===k?'selected':''}" onclick="selectPreset('${k}')"><div class="preset-icon">${p.icon}</div><div class="preset-name">${p.name}</div></div>`).join('') + Object.entries(presets).filter(([k,p])=>p.system===false).map(([k,p])=>`<div class="preset-card custom ${selectedPreset===k?'selected':''}" onclick="selectPreset('${k}')"><div class="preset-icon">${p.icon}</div><div class="preset-name">${p.name}</div></div>`).join('');
+        }
+        function selectPreset(k) { selectedPreset = k; editSteps = JSON.parse(JSON.stringify(presets[k].steps)); document.getElementById('batchName').value = presets[k].name; renderPresets(); renderSteps(); }
+        function renderSteps() { document.getElementById('stepsList').innerHTML = editSteps.map((s,i)=>`<div class="step-card"><div class="step-header"><span class="step-title">Étape ${i+1}</span><button class="step-delete" onclick="deleteStep(${i})">×</button></div><div class="step-content"><div class="form-group"><label class="form-label">Nom</label><input type="text" class="form-input" value="${s.name}" onchange="editSteps[${i}].name=this.value" onclick="openKeyboard(this)"></div><div class="form-group"><label class="form-label">Temp</label><input type="number" class="form-input" value="${s.temp}" onchange="editSteps[${i}].temp=+this.value" onclick="openKeyboard(this)"></div><div class="form-group"><label class="form-label">Humid</label><input type="number" class="form-input" value="${s.humidity}" onchange="editSteps[${i}].humidity=+this.value" onclick="openKeyboard(this)"></div><div class="form-group"><label class="form-label">Durée</label><input type="number" class="form-input" value="${s.duration}" onchange="editSteps[${i}].duration=+this.value" onclick="openKeyboard(this)"></div></div></div>`).join(''); }
+        function deleteStep(i) { editSteps.splice(i, 1); renderSteps(); }
+        function addStep() { editSteps.push({name:'Étape',temp:30,humidity:70,duration:12,ventilation:'off'}); renderSteps(); }
+        async function startBatch() {
+            if (!editSteps.length) { showAlert('Erreur', 'Ajoutez une étape', true); return; }
+            const name = document.getElementById('batchName').value || 'Sans nom';
+            if (document.getElementById('savePreset').checked && document.getElementById('presetName').value) {
+                await fetch('/api/presets/custom', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name: document.getElementById('presetName').value, icon: presets[selectedPreset]?.icon||'⚙️', code: 'CU', steps: editSteps}) });
+                fetchPresets();
+            }
+            const res = await fetch('/api/batch/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({preset: selectedPreset, name, steps: editSteps, code: presets[selectedPreset]?.code||'X'}) });
+            const data = await res.json();
+            if (data.success) { showAlert('Démarré', data.batch.id); fetchState(); showScreen('dashboard'); }
+        }
+        function openStopModal() { stopStatus='completed'; stopRating=0; updateStars(); document.getElementById('stopNotes').value=''; document.querySelectorAll('#stopModal .btn-small').forEach(b=>b.style.opacity='0.5'); document.getElementById('statusOk').style.opacity='1'; openModal('stopModal'); }
+        async function stopBatch() { closeModal('stopModal'); await fetch('/api/batch/stop', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:stopStatus,rating:stopRating,notes:document.getElementById('stopNotes').value})}); showAlert('Terminé','Batch archivé'); fetchState(); }
+        async function nextStep() { const res = await fetch('/api/batch/next-step',{method:'POST'}); const data = await res.json(); if(data.success){showAlert('Étape suivante',data.step.name);fetchState();} }
+        async function toggleActuator(n) { await fetch(`/api/actuator/${n}`,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}); fetchState(); }
+        async function addEvent() { const i=document.getElementById('eventInput'); if(!i.value)return; await fetch('/api/batch/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:i.value})}); i.value=''; closeModal('eventModal'); fetchState(); renderEvents(); }
+        function renderEvents() { const l=document.getElementById('eventsList'),ev=state.events||[]; l.innerHTML=ev.length?ev.map(e=>`<div class="event-item"><span class="event-time">${new Date(e.time).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span><span class="event-text">${e.text}</span></div>`).join(''):'<p style="color:var(--lcars-tan);text-align:center;padding:40px;font-size:18px;">Aucun événement</p>'; }
+        function renderHistory(h) { const l=document.getElementById('historyList'); l.innerHTML=h.length?h.slice(0,20).map(b=>`<div class="history-item"><div class="history-header"><span class="history-title">${b.id} — ${b.name}</span><span class="history-badge ${b.status==='completed'?'success':'failed'}">${b.rating?'★'.repeat(b.rating):(b.status==='completed'?'OK':'✗')}</span></div><div class="history-content"><div class="history-field"><span class="history-label">Date</span><span class="history-value">${new Date(b.started_at).toLocaleDateString('fr-FR')}</span></div><div class="history-field"><span class="history-label">Durée</span><span class="history-value">${b.total_duration}h</span></div><div class="history-field"><span class="history-label">Étapes</span><span class="history-value">${b.steps?.length||0}</span></div><div class="history-field"><span class="history-label">Notes</span><span class="history-value">${(b.events||[]).length}</span></div></div><div class="history-actions"><button class="btn-small" onclick="relaunchBatch('${b.id}')">Relancer</button><button class="btn-small" style="background:var(--lcars-purple)" onclick="viewDetail('${b.id}')">Détails</button><button class="btn-small" style="background:var(--danger)" onclick="deleteHistory('${b.id}')">Suppr.</button></div></div>`).join(''):'<p style="color:var(--lcars-tan);text-align:center;padding:40px;font-size:18px;">Aucun historique</p>'; }
+        async function relaunchBatch(id) { const b=await(await fetch(`/api/history/${encodeURIComponent(id)}`)).json(); if(b.steps){editSteps=JSON.parse(JSON.stringify(b.steps));document.getElementById('batchName').value=b.name;selectedPreset=b.preset;renderPresets();renderSteps();showScreen('create');showAlert('Chargé','Paramètres récupérés');} }
+        async function viewDetail(id) { const b=await(await fetch(`/api/history/${encodeURIComponent(id)}`)).json(); document.getElementById('historyDetailTitle').textContent=b.id; document.getElementById('historyDetailContent').innerHTML=`<p style="color:var(--lcars-tan);font-size:16px">NOM</p><p style="color:var(--lcars-yellow);font-family:Orbitron;margin-bottom:10px;font-size:18px;">${b.name}</p><p style="color:var(--lcars-tan);font-size:16px">ÉTAPES</p>${b.steps.map((s,i)=>`<p style="color:var(--lcars-blue);font-size:16px">${i+1}. ${s.name} — ${s.temp}°C, ${s.humidity}%, ${s.duration}h</p>`).join('')}${b.notes?`<p style="color:var(--lcars-tan);font-size:16px;margin-top:10px">NOTES</p><p style="color:var(--text-light);font-size:18px">${b.notes}</p>`:''}<div class="modal-buttons"><button class="modal-cancel" onclick="closeModal('historyDetailModal')">Fermer</button><button class="modal-confirm" onclick="closeModal('historyDetailModal');relaunchBatch('${b.id}')">Relancer</button></div>`; openModal('historyDetailModal'); }
+        function deleteHistory(id) { historyToDelete=id; openModal('confirmDeleteModal'); }
+        async function confirmDeleteHistory() { closeModal('confirmDeleteModal'); if(historyToDelete){await fetch(`/api/history/${encodeURIComponent(historyToDelete)}`,{method:'DELETE'});showAlert('Supprimé','');fetchHistory();historyToDelete=null;} }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function showAlert(t, m, err=false) { const c=document.getElementById('alertContainer'),a=document.createElement('div');a.className='alert'+(err?' error':'');a.innerHTML=`<span class="alert-text"><strong>${t}</strong> ${m}</span>`;c.appendChild(a);setTimeout(()=>a.remove(),3000); }
+        function quitApp() { if(confirm('Quitter MINSHARA-F ?')) { fetch('/api/quit', {method:'POST'}); setTimeout(()=>window.close(), 500); } }
+        fetchState(); fetchPresets(); setInterval(fetchState, 5000);
+    </script>
+</body>
+</html>
