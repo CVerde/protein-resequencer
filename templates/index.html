@@ -31,19 +31,18 @@
         .header-end:active{background:var(--lcars-red);}
         
         /* Timer screen */
-        .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:100%;padding:10px;}
-        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:180px;font-weight:700;color:var(--lcars-yellow);text-align:center;line-height:1;}
+        .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100%;padding:8px;gap:6px;}
+        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:200px;font-weight:700;color:var(--lcars-yellow);text-align:center;line-height:1;width:100%;}
         .timer-display-big.running{color:var(--lcars-green);}
         .timer-display-big.done{color:var(--lcars-red);animation:blink .5s infinite;}
-        .timer-controls{display:flex;gap:8px;justify-content:center;}
-        .timer-btn-big{background:var(--lcars-tan);border:none;padding:12px 20px;font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:6px;}
+        .timer-controls{display:flex;gap:6px;justify-content:center;width:100%;}
+        .timer-btn-big{flex:1;background:var(--lcars-tan);border:none;padding:12px 0;font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:6px;}
         .timer-btn-big:active{transform:scale(0.95);}
         .timer-btn-big.play{background:var(--lcars-green);}
         .timer-btn-big.pause{background:var(--lcars-yellow);}
         .timer-btn-big.reset{background:var(--lcars-red);}
-        .timer-graph{width:100%;height:33%;background:var(--bg2);border-left:4px solid var(--lcars-orange);margin-top:10px;position:relative;flex-shrink:0;}
-        .timer-graph-label{position:absolute;top:6px;left:10px;font-family:'Orbitron',sans-serif;font-size:11px;color:var(--lcars-tan);text-transform:uppercase;}
-        .timer-graph-wrap{position:absolute;inset:28px 10px 10px 10px;}
+        .timer-graph{width:100%;flex:1;background:var(--bg2);border-left:4px solid var(--lcars-orange);position:relative;min-height:0;}
+        .timer-graph-wrap{position:absolute;inset:8px 10px 10px 10px;}
         
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
         @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
@@ -293,7 +292,6 @@
                     <button class="timer-btn-big reset" onclick="resetTimer()">✕</button>
                 </div>
                 <div class="timer-graph">
-                    <div class="timer-graph-label">Température four</div>
                     <div class="timer-graph-wrap"><canvas id="ovenCanvas"></canvas></div>
                 </div>
             </div>
