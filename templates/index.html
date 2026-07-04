@@ -31,16 +31,19 @@
         .header-end:active{background:var(--lcars-red);}
         
         /* Timer screen */
-        .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;height:100%;}
-        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:72px;font-weight:700;color:var(--lcars-yellow);text-align:center;}
-        .timer-display-big.running{color:var(--lcars-green);animation:blink 1s infinite;}
-        .timer-display-big.done{color:var(--lcars-red);animation:blink .3s infinite;}
-        .timer-controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-        .timer-btn-big{background:var(--lcars-tan);border:none;padding:20px 32px;font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:8px;min-width:100px;}
+        .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:space-between;height:100%;padding:10px;}
+        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:120px;font-weight:700;color:var(--lcars-yellow);text-align:center;line-height:1;}
+        .timer-display-big.running{color:var(--lcars-green);}
+        .timer-display-big.done{color:var(--lcars-red);}
+        .timer-controls{display:flex;gap:8px;justify-content:center;}
+        .timer-btn-big{background:var(--lcars-tan);border:none;padding:12px 20px;font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:6px;}
         .timer-btn-big:active{transform:scale(0.95);}
         .timer-btn-big.play{background:var(--lcars-green);}
         .timer-btn-big.pause{background:var(--lcars-yellow);}
         .timer-btn-big.reset{background:var(--lcars-red);}
+        .timer-graph{width:100%;flex:1;background:var(--bg2);border-left:4px solid var(--lcars-orange);margin-top:10px;position:relative;}
+        .timer-graph-label{position:absolute;top:6px;left:10px;font-family:'Orbitron',sans-serif;font-size:11px;color:var(--lcars-tan);text-transform:uppercase;}
+        .timer-graph-wrap{position:absolute;inset:28px 10px 10px 10px;}
         
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
         @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
@@ -286,10 +289,12 @@
                     <button class="timer-btn-big" onclick="addTime(1)">+1</button>
                     <button class="timer-btn-big" onclick="addTime(5)">+5</button>
                     <button class="timer-btn-big" onclick="addTime(10)">+10</button>
-                </div>
-                <div class="timer-controls">
                     <button class="timer-btn-big play" id="timerPlayBtn" onclick="toggleTimer()">▶</button>
                     <button class="timer-btn-big reset" onclick="resetTimer()">✕</button>
+                </div>
+                <div class="timer-graph">
+                    <div class="timer-graph-label">Température four</div>
+                    <div class="timer-graph-wrap"><canvas id="ovenCanvas"></canvas></div>
                 </div>
             </div>
         </div>
@@ -344,7 +349,7 @@ function showScreen(id){
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-screen="'+id+'"]')?.classList.add('active');
     document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',events:'Notes',history:'Historique'}[id];
-    if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}
+    if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}if(id==='timer'){resizeOvenCanvas();}
 }
 function renderBatch(){
     const p=document.getElementById('batchPanel');
@@ -463,9 +468,75 @@ function drawGraph(){
 }
 
 // Timer indépendant
-let timerSeconds=0,timerRunning=false,timerInterval=null;
+let timerSeconds=0,timerRunning=false,timerInterval=null,timerTotalSeconds=0;
+let ovenData=[],ovenCanvas,ovenCtx;
 const timerDisplay=document.getElementById('timerDisplay');
 const timerPlayBtn=document.getElementById('timerPlayBtn');
+
+function initOvenCanvas(){
+    ovenCanvas=document.getElementById('ovenCanvas');
+    if(!ovenCanvas)return;
+    ovenCtx=ovenCanvas.getContext('2d');
+    resizeOvenCanvas();
+    window.addEventListener('resize',resizeOvenCanvas);
+}
+
+function resizeOvenCanvas(){
+    if(!ovenCanvas)return;
+    const wrap=ovenCanvas.parentElement;
+    ovenCanvas.style.width=wrap.clientWidth+'px';
+    ovenCanvas.style.height=wrap.clientHeight+'px';
+    ovenCanvas.width=wrap.clientWidth*2;
+    ovenCanvas.height=wrap.clientHeight*2;
+    ovenCtx.setTransform(2,0,0,2,0,0);
+    drawOvenGraph();
+}
+
+function drawOvenGraph(){
+    if(!ovenCtx)return;
+    const w=ovenCanvas.width/2,h=ovenCanvas.height/2,pad=25;
+    ovenCtx.clearRect(0,0,w*2,h*2);
+    ovenCtx.fillStyle='rgba(10,10,15,.8)';ovenCtx.fillRect(0,0,w,h);
+    // Grille
+    ovenCtx.strokeStyle='rgba(255,153,0,.15)';ovenCtx.lineWidth=1;
+    for(let i=0;i<=4;i++){const y=pad+(h-2*pad)*i/4;ovenCtx.beginPath();ovenCtx.moveTo(pad,y);ovenCtx.lineTo(w-10,y);ovenCtx.stroke();}
+    for(let i=0;i<=6;i++){const x=pad+(w-pad-10)*i/6;ovenCtx.beginPath();ovenCtx.moveTo(x,pad);ovenCtx.lineTo(x,h-pad);ovenCtx.stroke();}
+    // Échelle Y (0-300°C)
+    ovenCtx.fillStyle='#ffaa66';ovenCtx.font='10px Orbitron';
+    for(let i=0;i<=4;i++){ovenCtx.fillText((300-75*i)+'°',2,pad+(h-2*pad)*i/4+4);}
+    // Axe X (temps écoulé / temps total)
+    if(timerTotalSeconds>0){
+        const elapsed=timerTotalSeconds-timerSeconds;
+        const pct=elapsed/timerTotalSeconds;
+        // Ligne de progression
+        ovenCtx.strokeStyle='rgba(255,204,0,.3)';ovenCtx.lineWidth=2;
+        const px=pad+(w-pad-10)*pct;
+        ovenCtx.beginPath();ovenCtx.moveTo(px,pad);ovenCtx.lineTo(px,h-pad);ovenCtx.stroke();
+    }
+    // Courbe température (placeholder: données simulées ou réelles)
+    if(ovenData.length>1){
+        ovenCtx.strokeStyle='#ff6600';ovenCtx.lineWidth=2;ovenCtx.shadowColor='#ff6600';ovenCtx.shadowBlur=6;
+        ovenCtx.beginPath();
+        ovenData.forEach((v,i)=>{
+            const x=pad+(w-pad-10)*i/(ovenData.length-1||1);
+            const y=pad+(h-2*pad)*(1-v/300);
+            i===0?ovenCtx.moveTo(x,y):ovenCtx.lineTo(x,y);
+        });
+        ovenCtx.stroke();ovenCtx.shadowBlur=0;
+        // Point actuel
+        const lx=pad+(w-pad-10)*(ovenData.length-1)/(ovenData.length-1||1);
+        const ly=pad+(h-2*pad)*(1-ovenData[ovenData.length-1]/300);
+        ovenCtx.fillStyle='#ff6600';ovenCtx.beginPath();ovenCtx.arc(lx,ly,4,0,Math.PI*2);ovenCtx.fill();
+        // Valeur actuelle
+        ovenCtx.fillStyle='#ff6600';ovenCtx.font='12px Orbitron';
+        ovenCtx.fillText(ovenData[ovenData.length-1].toFixed(0)+'°C',lx+8,ly+4);
+    }else{
+        // Placeholder
+        ovenCtx.fillStyle='rgba(255,102,0,.3)';ovenCtx.font='14px Orbitron';ovenCtx.textAlign='center';
+        ovenCtx.fillText('Thermocouple non connecté',w/2,h/2);
+        ovenCtx.textAlign='left';
+    }
+}
 
 function updateTimerDisplay(){
     const m=Math.floor(timerSeconds/60),s=timerSeconds%60;
@@ -482,6 +553,8 @@ function toggleTimer(){
     if(timerSeconds<=0)return;
     timerRunning=!timerRunning;
     if(timerRunning){
+        if(timerTotalSeconds===0)timerTotalSeconds=timerSeconds;
+        ovenData=[];
         timerPlayBtn.textContent='⏸';
         timerPlayBtn.classList.remove('play');
         timerPlayBtn.classList.add('pause');
@@ -490,6 +563,9 @@ function toggleTimer(){
         timerInterval=setInterval(()=>{
             timerSeconds--;
             updateTimerDisplay();
+            // TODO: lire température thermocouple ici
+            // ovenData.push(tempFour);
+            drawOvenGraph();
             if(timerSeconds<=0){
                 clearInterval(timerInterval);
                 timerRunning=false;
@@ -513,12 +589,15 @@ function toggleTimer(){
 function resetTimer(){
     clearInterval(timerInterval);
     timerSeconds=0;
+    timerTotalSeconds=0;
     timerRunning=false;
+    ovenData=[];
     timerPlayBtn.textContent='▶';
     timerPlayBtn.classList.add('play');
     timerPlayBtn.classList.remove('pause');
     timerDisplay.classList.remove('running','done');
     updateTimerDisplay();
+    drawOvenGraph();
 }
 
 function playAlarm(){
@@ -527,7 +606,7 @@ function playAlarm(){
     for(let i=0;i<3;i++){playBeep(880,i*0.4,0.15);playBeep(660,i*0.4+0.15,0.15);}
 }
 
-initCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
+initCanvas();initOvenCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
 </script>
 </body>
 </html>
