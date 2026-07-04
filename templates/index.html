@@ -32,9 +32,10 @@
         
         /* Timer screen */
         .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100%;padding:8px;gap:6px;}
-        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:200px;font-weight:700;color:var(--lcars-yellow);text-align:center;line-height:1;width:100%;}
+        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:220px;font-weight:700;color:var(--lcars-yellow);text-align:center;line-height:1;width:100%;font-variant-numeric:tabular-nums;}
         .timer-display-big.running{color:var(--lcars-green);}
-        .timer-display-big.done{color:var(--lcars-red);animation:blink .5s infinite;}
+        .timer-display-big.done{color:var(--lcars-red);animation:blink-soft .8s infinite;}
+        @keyframes blink-soft{0%,100%{opacity:1;}50%{opacity:0.55;}}
         .timer-controls{display:flex;gap:6px;justify-content:center;width:100%;}
         .timer-btn-big{flex:1;background:var(--lcars-tan);border:none;padding:12px 0;font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:6px;}
         .timer-btn-big:active{transform:scale(0.95);}
