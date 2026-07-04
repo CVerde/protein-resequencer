@@ -134,7 +134,14 @@ def read_ds18b20():
     return temps[:3]
 
 def read_sht40():
-    return None, None
+    try:
+        import board
+        import adafruit_sht4x
+        sht = adafruit_sht4x.SHT4x(board.I2C())
+        return sht.relative_humidity, sht.temperature
+    except Exception as e:
+        print(f"SHT40 error: {e}")
+        return None, None
 
 def read_sensors():
     temps = read_ds18b20()

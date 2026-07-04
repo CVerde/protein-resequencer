@@ -11,8 +11,8 @@
             --lcars-blue:#9999ff;--lcars-purple:#cc99cc;--lcars-violet:#9977aa;
             --lcars-tan:#ffaa66;--lcars-peach:#ffcc99;--lcars-cream:#ffddaa;
             --lcars-red:#cc4444;--lcars-green:#55cc55;
-            --t1:#ff6b35;--t2:#f7931e;--t3:#fbb03b;--tavg:#ffcc00;
-            --humid:#4ecdc4;--press:#9999ff;--co2:#cc99cc;
+            --t1:#ff4444;--t2:#44aaff;--t3:#44ff88;--tavg:#ffcc00;
+            --humid:#ff44cc;--press:#9999ff;--co2:#cc99cc;
             --bg:#000;--bg2:#0a0a0f;
         }
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -151,6 +151,7 @@
         .legend-item.t2{color:var(--t2);}.legend-item.t2 .legend-color{background:var(--t2);}
         .legend-item.t3{color:var(--t3);}.legend-item.t3 .legend-color{background:var(--t3);}
         .legend-item.avg{color:var(--tavg);}.legend-item.avg .legend-color{background:var(--tavg);}
+        .legend-item.humid{color:var(--humid);}
         
         /* Lists */
         .list-container{flex:1;overflow-y:auto;}
@@ -252,6 +253,7 @@
                 <div class="legend-item t2"><div class="legend-color"></div>T2</div>
                 <div class="legend-item t3"><div class="legend-color"></div>T3</div>
                 <div class="legend-item avg"><div class="legend-color"></div>MOY</div>
+                <div class="legend-item humid"><div class="legend-color" style="border:2px dashed var(--humid);background:none;"></div>H%</div>
             </div>
         </div>
         <!-- Events -->
@@ -381,7 +383,7 @@ function drawHistoryGraph(data){
     for(let i=0;i<=4;i++){const y=pad+(h-2*pad)*i/4;hctx.beginPath();hctx.moveTo(pad,y);hctx.lineTo(w-5,y);hctx.stroke();}
     hctx.fillStyle='#ffaa66';hctx.font='9px Orbitron';
     for(let i=0;i<=4;i++){hctx.fillText((max-(max-min)*i/4).toFixed(0)+'°',2,pad+(h-2*pad)*i/4+3);}
-    const colors=['#ff6b35','#f7931e','#fbb03b'];
+    const colors=['#ff4444','#44aaff','#44ff88'];
     [data.t1,data.t2,data.t3].forEach((d,di)=>{hctx.strokeStyle=colors[di];hctx.lineWidth=1.5;hctx.beginPath();d.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-5)*i/(d.length-1||1),y=pad+(h-2*pad)*(1-(v-min)/(max-min||1));i===0||d[i-1]===0?hctx.moveTo(x,y):hctx.lineTo(x,y);});hctx.stroke();});
 }
 function askDelete(id){deleteId=id;openModal('deleteModal');}
@@ -408,7 +410,7 @@ function drawGraph(){
     for(let i=0;i<=5;i++){ctx.fillText((max-(max-min)*i/5).toFixed(0)+'°',4,pad+(h-2*pad)*i/5+4);}
     const ts=graphData.timestamps,step=Math.max(1,Math.floor(ts.length/5));
     for(let i=0;i<ts.length;i+=step){const x=pad+(w-pad-10)*i/(ts.length-1||1),lbl=typeof ts[i]==='string'?ts[i].substring(0,5):ts[i];ctx.fillText(lbl,x-10,h-pad+12);}
-    const colors=['#ff6b35','#f7931e','#fbb03b','#ffcc00'];
+    const colors=['#ff4444','#44aaff','#44ff88','#ffcc00'];
     const datasets=[graphData.t1,graphData.t2,graphData.t3,graphData.t1.map((v,i)=>(v+graphData.t2[i]+graphData.t3[i])/3)];
     datasets.forEach((d,di)=>{
         ctx.strokeStyle=colors[di];ctx.lineWidth=2;ctx.shadowColor=colors[di];ctx.shadowBlur=6;ctx.beginPath();
@@ -416,6 +418,20 @@ function drawGraph(){
         ctx.stroke();ctx.shadowBlur=0;
         if(d.length&&d[d.length-1]>0){const lx=w-10,ly=pad+(h-2*pad)*(1-(d[d.length-1]-min)/(max-min||1));ctx.fillStyle=colors[di];ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fill();}
     });
+    // Humidité en pointillés (échelle 0-100% mappée sur l'axe Y)
+    if(graphData.humidity?.length){
+        const hum=graphData.humidity;
+        const humMin=0,humMax=100;
+        ctx.strokeStyle='#ff44cc';ctx.lineWidth=2;ctx.shadowColor='#ff44cc';ctx.shadowBlur=6;
+        ctx.setLineDash([8,4]);ctx.beginPath();
+        hum.forEach((v,i)=>{if(v===0)return;const x=pad+(w-pad-10)*i/(hum.length-1||1),y=pad+(h-2*pad)*(1-(v-humMin)/(humMax-humMin));i===0||hum[i-1]===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+        ctx.stroke();ctx.setLineDash([]);ctx.shadowBlur=0;
+        if(hum.length&&hum[hum.length-1]>0){const lx=w-10,ly=pad+(h-2*pad)*(1-(hum[hum.length-1]-humMin)/(humMax-humMin));ctx.fillStyle='#ff44cc';ctx.beginPath();ctx.arc(lx,ly,5,0,Math.PI*2);ctx.fill();}
+        // Échelle humidité à droite
+        ctx.fillStyle='#ff44cc';ctx.textAlign='right';
+        for(let i=0;i<=5;i++){ctx.fillText((humMax-(humMax-humMin)*i/5).toFixed(0)+'%',w-2,pad+(h-2*pad)*i/5+4);}
+        ctx.textAlign='left';
+    }
 }
 initCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
 </script>
