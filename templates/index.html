@@ -32,9 +32,12 @@
         
         /* Timer screen */
         .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100%;padding:8px;gap:6px;}
-        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:220px;font-weight:700;color:var(--lcars-yellow);text-align:center;line-height:1;width:100%;font-variant-numeric:tabular-nums;}
-        .timer-display-big.running{color:var(--lcars-green);}
-        .timer-display-big.done{color:var(--lcars-red);animation:blink-soft .8s infinite;}
+        .timer-display-big{display:flex;align-items:center;justify-content:center;width:100%;line-height:1;}
+        .timer-digit{font-family:'Orbitron',sans-serif;font-size:220px;font-weight:700;color:var(--lcars-yellow);display:inline-block;width:1.55ch;text-align:center;}
+        .timer-sep{font-family:'Orbitron',sans-serif;font-size:220px;font-weight:700;color:var(--lcars-yellow);display:inline-block;width:0.6ch;text-align:center;}
+        .timer-prefix{font-family:'Orbitron',sans-serif;font-size:220px;font-weight:700;color:var(--lcars-red);display:inline-block;width:0.8ch;text-align:center;}
+        .timer-display-big.running .timer-digit,.timer-display-big.running .timer-sep{color:var(--lcars-green);}
+        .timer-display-big.done .timer-digit,.timer-display-big.done .timer-sep,.timer-display-big.done .timer-prefix{color:var(--lcars-red);animation:blink-soft .8s infinite;}
         @keyframes blink-soft{0%,100%{opacity:1;}50%{opacity:0.55;}}
         .timer-controls{display:flex;gap:6px;justify-content:center;width:100%;}
         .timer-btn-big{flex:1;background:var(--lcars-tan);border:none;padding:12px 0;font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:6px;}
@@ -284,7 +287,9 @@
         <!-- Timer -->
         <div class="screen" id="timer">
             <div class="timer-screen">
-                <div class="timer-display-big" id="timerDisplay">00:00</div>
+            <div class="timer-display-big" id="timerDisplay">
+                    <span class="timer-prefix" id="timerPrefix" style="display:none">+</span><span class="timer-digit" id="td0">0</span><span class="timer-digit" id="td1">0</span><span class="timer-sep">:</span><span class="timer-digit" id="td2">0</span><span class="timer-digit" id="td3">0</span>
+                </div>
                 <div class="timer-controls">
                     <button class="timer-btn-big" onclick="addTime(1)">+1</button>
                     <button class="timer-btn-big" onclick="addTime(5)">+5</button>
@@ -538,13 +543,14 @@ function drawOvenGraph(){
 }
 
 function updateTimerDisplay(){
-    if(timerOverrun){
-        const m=Math.floor(Math.abs(timerSeconds)/60),s=Math.abs(timerSeconds)%60;
-        timerDisplay.textContent='+'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-    }else{
-        const m=Math.floor(timerSeconds/60),s=timerSeconds%60;
-        timerDisplay.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-    }
+    const abs=Math.abs(timerSeconds);
+    const m=Math.floor(abs/60),s=abs%60;
+    const ms=String(m).padStart(2,'0'),ss=String(s).padStart(2,'0');
+    document.getElementById('td0').textContent=ms[0];
+    document.getElementById('td1').textContent=ms[1];
+    document.getElementById('td2').textContent=ss[0];
+    document.getElementById('td3').textContent=ss[1];
+    document.getElementById('timerPrefix').style.display=timerOverrun?'inline-block':'none';
 }
 
 function addTime(min){
