@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Protein Resequencer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Orbitron:wght@400;500;700&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* === THÈME LCARS (défaut) === */
         :root{
             --lcars-orange:#ff9900;--lcars-gold:#cc7700;--lcars-yellow:#ffcc00;
             --lcars-blue:#9999ff;--lcars-purple:#cc99cc;--lcars-violet:#9977aa;
@@ -14,7 +15,52 @@
             --t1:#ff4444;--t2:#44aaff;--t3:#44ff88;--tavg:#ffcc00;
             --humid:#ff44cc;--press:#9999ff;--co2:#cc99cc;
             --bg:#000;--bg2:#0a0a0f;
+            --theme-font:'Orbitron',sans-serif;
+            --theme-font-body:'Antonio',sans-serif;
+            --theme-radius:4px;
+            --theme-border-width:4px;
+            --theme-nav-radius:10px 10px 0 0;
         }
+
+        /* === THÈME WIPEOUT === */
+        [data-theme="wipeout"]{
+            --lcars-orange:#00aaff;--lcars-gold:#0077cc;--lcars-yellow:#00ccff;
+            --lcars-blue:#ffffff;--lcars-purple:#aaaacc;--lcars-violet:#6666aa;
+            --lcars-tan:#aaccff;--lcars-peach:#cce4ff;--lcars-cream:#e8f4ff;
+            --lcars-red:#ff2244;--lcars-green:#00ff88;
+            --t1:#ff2244;--t2:#00aaff;--t3:#00ff88;--tavg:#00ccff;
+            --humid:#cc44ff;--press:#ffaa00;--co2:#aaaacc;
+            --bg:#0a0a12;--bg2:#111120;
+            --theme-font:'Barlow Condensed',sans-serif;
+            --theme-font-body:'Barlow Condensed',sans-serif;
+            --theme-radius:0px;
+            --theme-border-width:2px;
+            --theme-nav-radius:0;
+        }
+        [data-theme="wipeout"] .header-elbow{border-radius:0;background:var(--lcars-gold);}
+        [data-theme="wipeout"] .header-elbow::after{display:none;}
+        [data-theme="wipeout"] .header-bar{margin-left:12px;}
+        [data-theme="wipeout"] .header-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;letter-spacing:6px;font-weight:700;}
+        [data-theme="wipeout"] .header-status{border-radius:0;}
+        [data-theme="wipeout"] .header-end{border-radius:0;}
+        [data-theme="wipeout"] .nav-elbow{border-radius:0;background:var(--lcars-gold);}
+        [data-theme="wipeout"] .nav-btn{border-radius:0;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;}
+        [data-theme="wipeout"] .sensor-box{border-left-width:2px;}
+        [data-theme="wipeout"] .panel{border-left-width:2px;}
+        [data-theme="wipeout"] .sensor-label{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:2px;}
+        [data-theme="wipeout"] .sensor-value{font-family:'Barlow Condensed',sans-serif;}
+        [data-theme="wipeout"] .sensor-unit{font-family:'Barlow Condensed',sans-serif;}
+        [data-theme="wipeout"] .panel-title{font-family:'Barlow Condensed',sans-serif;letter-spacing:3px;}
+        [data-theme="wipeout"] .btn{border-radius:0;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;}
+        [data-theme="wipeout"] .timer-digit{font-family:'Barlow Condensed',sans-serif;}
+        [data-theme="wipeout"] .timer-sep{font-family:'Barlow Condensed',sans-serif;}
+        [data-theme="wipeout"] .timer-prefix{font-family:'Barlow Condensed',sans-serif;}
+        [data-theme="wipeout"] .timer-btn-big{border-radius:0;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;}
+        [data-theme="wipeout"] .graph-btn{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;}
+        [data-theme="wipeout"] .start-btn{border-radius:0;background:var(--lcars-orange);}
+        [data-theme="wipeout"] .start-btn span{font-family:'Barlow Condensed',sans-serif;}
+        [data-theme="wipeout"] html,
+        [data-theme="wipeout"] body{font-family:'Barlow Condensed',sans-serif;}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         html,body{font-family:'Antonio',sans-serif;background:var(--bg);color:var(--lcars-orange);height:100vh;overflow:hidden;}
         .app{display:grid;grid-template-rows:44px 1fr 52px;height:100vh;}
@@ -223,6 +269,7 @@
             <div class="header-status" id="headerStatus">Inactif</div>
         </div>
         <div class="header-end" onclick="quitApp()">✕</div>
+        <div class="header-end" onclick="cycleTheme()" style="width:60px;font-size:11px;font-family:'Orbitron',sans-serif;" id="themeBtn">LCARS</div>
     </div>
     <div class="main">
         <!-- Dashboard -->
@@ -623,6 +670,22 @@ function playAlarm(){
         for(let i=0;i<5;i++) bip(660, i*1.0, 0.4);
     }catch(e){}
 }
+
+// Thème
+const themes=['lcars','wipeout'];
+const themeLabels={lcars:'LCARS',wipeout:'WO3'};
+let currentTheme=localStorage.getItem('theme')||'lcars';
+function applyTheme(t){
+    document.documentElement.setAttribute('data-theme',t==='lcars'?'':t);
+    document.getElementById('themeBtn').textContent=themeLabels[t];
+    localStorage.setItem('theme',t);
+    currentTheme=t;
+}
+function cycleTheme(){
+    const idx=(themes.indexOf(currentTheme)+1)%themes.length;
+    applyTheme(themes[idx]);
+}
+applyTheme(currentTheme);
 
 initCanvas();initOvenCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
 </script>
