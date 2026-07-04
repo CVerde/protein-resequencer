@@ -23,12 +23,24 @@
         .header{display:flex;align-items:stretch;background:var(--bg);}
         .header-elbow{width:80px;background:var(--lcars-purple);border-radius:0 0 20px 0;position:relative;}
         .header-elbow::after{content:'';position:absolute;bottom:0;right:-20px;width:20px;height:100%;background:var(--bg);border-radius:20px 0 0 0;}
-        .header-bar{flex:1;display:flex;align-items:center;margin-left:30px;padding-right:10px;}
+        .header-bar{flex:1;display:flex;align-items:center;margin-left:30px;padding-right:10px;gap:10px;}
         .header-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:500;color:var(--lcars-cream);text-transform:uppercase;letter-spacing:3px;flex:1;}
         .header-status{background:var(--lcars-tan);padding:6px 16px;border-radius:0 0 10px 10px;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:500;color:var(--bg);}
         .header-status.on{background:var(--lcars-green);animation:pulse 2s infinite;}
         .header-end{width:50px;background:var(--lcars-gold);border-radius:0 0 0 15px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
         .header-end:active{background:var(--lcars-red);}
+        
+        /* Timer screen */
+        .timer-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;height:100%;}
+        .timer-display-big{font-family:'Orbitron',sans-serif;font-size:72px;font-weight:700;color:var(--lcars-yellow);text-align:center;}
+        .timer-display-big.running{color:var(--lcars-green);animation:blink 1s infinite;}
+        .timer-display-big.done{color:var(--lcars-red);animation:blink .3s infinite;}
+        .timer-controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+        .timer-btn-big{background:var(--lcars-tan);border:none;padding:20px 32px;font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;color:var(--bg);cursor:pointer;border-radius:8px;min-width:100px;}
+        .timer-btn-big:active{transform:scale(0.95);}
+        .timer-btn-big.play{background:var(--lcars-green);}
+        .timer-btn-big.pause{background:var(--lcars-yellow);}
+        .timer-btn-big.reset{background:var(--lcars-red);}
         
         @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
         @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
@@ -266,12 +278,28 @@
             <div class="section-title" style="margin-bottom:8px;">Historique</div>
             <div class="list-container" id="historyList"></div>
         </div>
+        <!-- Timer -->
+        <div class="screen" id="timer">
+            <div class="timer-screen">
+                <div class="timer-display-big" id="timerDisplay">00:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn-big" onclick="addTime(1)">+1</button>
+                    <button class="timer-btn-big" onclick="addTime(5)">+5</button>
+                    <button class="timer-btn-big" onclick="addTime(10)">+10</button>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-btn-big play" id="timerPlayBtn" onclick="toggleTimer()">▶</button>
+                    <button class="timer-btn-big reset" onclick="resetTimer()">✕</button>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="nav">
         <div class="nav-elbow"></div>
         <button class="nav-btn active" data-screen="dashboard" onclick="showScreen('dashboard')">Accueil</button>
         <button class="nav-btn" data-screen="create" onclick="showScreen('create')">Nouveau</button>
         <button class="nav-btn" data-screen="sensors" onclick="showScreen('sensors')">Capteurs</button>
+        <button class="nav-btn" data-screen="timer" onclick="showScreen('timer')">Timer</button>
         <button class="nav-btn" data-screen="events" onclick="showScreen('events')">Notes</button>
         <button class="nav-btn" data-screen="history" onclick="showScreen('history')">Histo</button>
     </div>
@@ -315,7 +343,7 @@ function showScreen(id){
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-screen="'+id+'"]')?.classList.add('active');
-    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',events:'Notes',history:'Historique'}[id];
+    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',events:'Notes',history:'Historique'}[id];
     if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}
 }
 function renderBatch(){
@@ -433,6 +461,72 @@ function drawGraph(){
         ctx.textAlign='left';
     }
 }
+
+// Timer indépendant
+let timerSeconds=0,timerRunning=false,timerInterval=null;
+const timerDisplay=document.getElementById('timerDisplay');
+const timerPlayBtn=document.getElementById('timerPlayBtn');
+
+function updateTimerDisplay(){
+    const m=Math.floor(timerSeconds/60),s=timerSeconds%60;
+    timerDisplay.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+function addTime(min){
+    timerSeconds+=min*60;
+    timerDisplay.classList.remove('done');
+    updateTimerDisplay();
+}
+
+function toggleTimer(){
+    if(timerSeconds<=0)return;
+    timerRunning=!timerRunning;
+    if(timerRunning){
+        timerPlayBtn.textContent='⏸';
+        timerPlayBtn.classList.remove('play');
+        timerPlayBtn.classList.add('pause');
+        timerDisplay.classList.add('running');
+        timerDisplay.classList.remove('done');
+        timerInterval=setInterval(()=>{
+            timerSeconds--;
+            updateTimerDisplay();
+            if(timerSeconds<=0){
+                clearInterval(timerInterval);
+                timerRunning=false;
+                timerPlayBtn.textContent='▶';
+                timerPlayBtn.classList.add('play');
+                timerPlayBtn.classList.remove('pause');
+                timerDisplay.classList.remove('running');
+                timerDisplay.classList.add('done');
+                playAlarm();
+            }
+        },1000);
+    }else{
+        clearInterval(timerInterval);
+        timerPlayBtn.textContent='▶';
+        timerPlayBtn.classList.add('play');
+        timerPlayBtn.classList.remove('pause');
+        timerDisplay.classList.remove('running');
+    }
+}
+
+function resetTimer(){
+    clearInterval(timerInterval);
+    timerSeconds=0;
+    timerRunning=false;
+    timerPlayBtn.textContent='▶';
+    timerPlayBtn.classList.add('play');
+    timerPlayBtn.classList.remove('pause');
+    timerDisplay.classList.remove('running','done');
+    updateTimerDisplay();
+}
+
+function playAlarm(){
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const playBeep=(freq,start,dur)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;o.type='square';g.gain.value=0.3;o.start(ctx.currentTime+start);o.stop(ctx.currentTime+start+dur);};
+    for(let i=0;i<3;i++){playBeep(880,i*0.4,0.15);playBeep(660,i*0.4+0.15,0.15);}
+}
+
 initCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
 </script>
 </body>
