@@ -226,20 +226,24 @@ def control_actuators():
     for k, v in state["actuators"].items():
         set_relay(k, v)
 
-# HACCP frigo
-last_haccp_log = 0
+# HACCP frigo — relevés aux heures fixes (0, 3, 6, 9, 12, 15, 18, 21)
+HACCP_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]
+last_haccp_hour = -1
 def log_haccp(fridge_temp):
-    global last_haccp_log
-    now = time.time()
-    if now - last_haccp_log < HACCP_INTERVAL:
+    global last_haccp_hour
+    now = datetime.now()
+    current_hour = now.hour
+    if current_hour not in HACCP_HOURS:
         return
-    last_haccp_log = now
-    entry = {"time": datetime.now().isoformat(), "temp": fridge_temp}
+    if current_hour == last_haccp_hour:
+        return
+    last_haccp_hour = current_hour
+    entry = {"time": now.isoformat(), "temp": fridge_temp}
     try:
         data = load_json(HACCP_LOG_FILE, [])
         data.append(entry)
-        # Garder 30 jours max
-        cutoff = (datetime.now() - timedelta(days=30)).isoformat()
+        # Garder 90 jours
+        cutoff = (now - timedelta(days=90)).isoformat()
         data = [e for e in data if e["time"] > cutoff]
         save_json(HACCP_LOG_FILE, data)
     except Exception as e:
@@ -460,6 +464,12 @@ def quit_app():
 @app.route('/api/haccp')
 def get_haccp():
     data = load_json(HACCP_LOG_FILE, [])
+    day = request.args.get('day')  # format YYYY-MM-DD
+    if day:
+        data = [e for e in data if e["time"].startswith(day)]
+    month = request.args.get('month')  # format YYYY-MM
+    if month:
+        data = [e for e in data if e["time"].startswith(month)]
     return jsonify(data)
 
 if __name__ == '__main__':

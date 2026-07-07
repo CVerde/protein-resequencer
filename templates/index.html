@@ -328,18 +328,17 @@
             <div class="header-status" id="headerStatus">Inactif</div>
         </div>
         <div class="header-end" onclick="quitApp()">✕</div>
-        <div class="header-end" onclick="cycleTheme()" style="width:60px;font-size:11px;font-family:'Orbitron',sans-serif;" id="themeBtn">LCARS</div>
     </div>
     <div class="main">
         <!-- Dashboard -->
         <div class="screen active" id="dashboard">
-            <div class="sensors-row">
+            <div class="sensors-row" style="grid-template-columns:repeat(3,1fr);">
                 <div class="sensor-box"><div class="sensor-label">T1</div><div class="sensor-reading"><span class="sensor-value t1" id="t1">--</span><span class="sensor-unit">°C</span></div></div>
                 <div class="sensor-box t2"><div class="sensor-label">T2</div><div class="sensor-reading"><span class="sensor-value t2" id="t2">--</span><span class="sensor-unit">°C</span></div></div>
-                <div class="sensor-box t3"><div class="sensor-label">T3</div><div class="sensor-reading"><span class="sensor-value t3" id="t3">--</span><span class="sensor-unit">°C</span></div></div>
                 <div class="sensor-box avg"><div class="sensor-label">MOY</div><div class="sensor-reading"><span class="sensor-value avg" id="tavg">--</span><span class="sensor-unit">°C</span></div></div>
             </div>
             <div class="batch-panel" id="batchPanel"></div>
+            <div class="sensor-box" style="border-color:#4488cc;margin-top:6px;"><div class="sensor-label" style="color:#6699bb;">Froid</div><div class="sensor-reading"><span class="sensor-value" id="t3" style="color:#4488cc;">--</span><span class="sensor-unit">°C</span></div></div>
         </div>
         <!-- Create -->
         <div class="screen" id="create">
@@ -408,15 +407,49 @@
                 </div>
             </div>
         </div>
+        <!-- Froid (HACCP) -->
+        <div class="screen" id="fridge">
+            <div style="padding:4px 0;font-family:'Orbitron',sans-serif;font-size:13px;color:var(--lcars-tan);text-transform:uppercase;letter-spacing:1px;">Température actuelle enceinte froid : <span id="fridgeTemp" style="font-size:22px;color:var(--t3);">--</span><span style="color:var(--lcars-tan);font-size:14px;"> °C</span></div>
+            <div class="section" style="margin-top:6px;padding:6px 8px;">
+                <div class="section-title" style="margin-bottom:4px;">Relevés du jour</div>
+                <div id="fridgeTodayReadings" style="display:grid;grid-template-columns:repeat(8,1fr);gap:2px;font-family:'Orbitron',sans-serif;font-size:11px;text-align:center;"></div>
+            </div>
+            <div class="section flex" style="margin-top:6px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <button class="btn-sm" onclick="fridgeCalMonth(-1)">◄</button>
+                    <div class="section-title" id="fridgeCalTitle" style="margin:0;"></div>
+                    <button class="btn-sm" onclick="fridgeCalMonth(1)">►</button>
+                </div>
+                <div id="fridgeCalendar" style="flex:1;overflow-y:auto;"></div>
+            </div>
+        </div>
+        <!-- Options -->
+        <div class="screen" id="options">
+            <div class="section" style="margin-bottom:10px;">
+                <div class="section-title">Thème</div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button class="btn" onclick="applyTheme('lcars')" id="themeBtnLcars">LCARS</button>
+                    <button class="btn" onclick="applyTheme('wipeout')" id="themeBtnWo3">WO3</button>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">Sondes</div>
+                <div style="margin-top:8px;font-size:14px;color:var(--lcars-yellow);">
+                    <div>T1 (chambre) : 28-0000007020af</div>
+                    <div>T2 (chambre) : 28-00000071b49c</div>
+                    <div>T3 (frigo) : 28-00000073a825</div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="nav">
         <div class="nav-elbow"></div>
         <button class="nav-btn active" data-screen="dashboard" onclick="showScreen('dashboard')">Accueil</button>
-        <button class="nav-btn" data-screen="create" onclick="showScreen('create')">Nouveau</button>
         <button class="nav-btn" data-screen="sensors" onclick="showScreen('sensors')">Capteurs</button>
         <button class="nav-btn" data-screen="timer" onclick="showScreen('timer')">Timer</button>
-        <button class="nav-btn" data-screen="events" onclick="showScreen('events')">Notes</button>
+        <button class="nav-btn" data-screen="fridge" onclick="showScreen('fridge')">Froid</button>
         <button class="nav-btn" data-screen="history" onclick="showScreen('history')">Histo</button>
+        <button class="nav-btn" data-screen="options" onclick="showScreen('options')">Options</button>
     </div>
 </div>
 <div class="alert-box" id="alertBox"></div>
@@ -425,6 +458,7 @@
 <div class="modal" id="stepModal"><div class="modal-box"><div class="modal-title">Ajouter étape</div><div class="form-row"><div><div class="form-label">Nom</div><input class="form-input" id="stepName" value="Étape" inputmode="text"></div><div><div class="form-label">Durée (h)</div><input class="form-input" id="stepDuration" type="number" value="12" inputmode="numeric"></div></div><div class="form-row"><div><div class="form-label">Temp °C</div><input class="form-input" id="stepTemp" type="number" value="30" inputmode="numeric"></div><div><div class="form-label">Humid %</div><input class="form-input" id="stepHumid" type="number" value="70" inputmode="numeric"></div></div><div class="modal-btns"><button class="btn" onclick="closeModal('stepModal')">Annuler</button><button class="btn orange" onclick="addStepFromModal()">OK</button></div></div></div>
 <div class="modal" id="historyModal"><div class="modal-box"><div class="modal-title" id="historyModalTitle">Détails</div><div id="historyModalContent"></div></div></div>
 <div class="modal" id="deleteModal"><div class="modal-box"><div class="modal-title">Confirmer suppression</div><p style="color:var(--lcars-yellow);text-align:center;margin:16px 0;">Supprimer ce batch ?</p><div class="modal-btns"><button class="btn" onclick="closeModal('deleteModal')">Annuler</button><button class="btn red" onclick="confirmDelete()">Supprimer</button></div></div></div>
+<div class="modal" id="fridgeDayModal"><div class="modal-box" id="fridgeDayContent"></div></div>
 <script>
 let state={},presets={},selectedPreset=null,editSteps=[],stopStatus='completed',stopRating=0,deleteId=null;
 let graphInterval='live',canvas,ctx,graphData={timestamps:[],t1:[],t2:[],t3:[],humidity:[]};
@@ -434,11 +468,14 @@ async function fetchState(){
         state=await(await fetch('/api/state')).json();
         const t=state.sensors.temperature||[0,0,0];
         updateVal('t1',t[0]);updateVal('t2',t[1]);updateVal('t3',t[2]);
-        document.getElementById('tavg').textContent=((t[0]+t[1]+t[2])/3).toFixed(1);
+        document.getElementById('tavg').textContent=((t[0]+t[1])/2).toFixed(1);
         document.getElementById('st1').textContent=t[0].toFixed(1);
         document.getElementById('st2').textContent=t[1].toFixed(1);
         document.getElementById('st3').textContent=t[2].toFixed(1);
         document.getElementById('shum').textContent=state.sensors.humidity.toFixed(0);
+        // Frigo
+        const ft=state.sensors.fridge_temp||state.sensors.temperature[2]||0;
+        document.getElementById('fridgeTemp').textContent=ft.toFixed(1);
         document.getElementById('headerStatus').textContent=state.batch?'En cours':'Inactif';
         document.getElementById('headerStatus').className='header-status'+(state.batch?' on':'');
         if(graphInterval==='live'){
@@ -458,8 +495,8 @@ function showScreen(id){
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-screen="'+id+'"]')?.classList.add('active');
-    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',events:'Notes',history:'Historique'}[id];
-    if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}if(id==='timer'){resizeOvenCanvas();}
+    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',fridge:'Froid',history:'Historique',options:'Options'}[id];
+    if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}if(id==='timer'){resizeOvenCanvas();}if(id==='fridge'){fetchHaccp();}if(id==='options'){updateThemeButtons();}
 }
 function renderBatch(){
     const p=document.getElementById('batchPanel');
@@ -738,15 +775,100 @@ const themeLabels={lcars:'LCARS',wipeout:'WO3'};
 let currentTheme=localStorage.getItem('theme')||'lcars';
 function applyTheme(t){
     document.documentElement.setAttribute('data-theme',t==='lcars'?'':t);
-    document.getElementById('themeBtn').textContent=themeLabels[t];
     localStorage.setItem('theme',t);
     currentTheme=t;
+    updateThemeButtons();
 }
-function cycleTheme(){
-    const idx=(themes.indexOf(currentTheme)+1)%themes.length;
-    applyTheme(themes[idx]);
+function updateThemeButtons(){
+    const bl=document.getElementById('themeBtnLcars'),bw=document.getElementById('themeBtnWo3');
+    if(bl)bl.style.opacity=currentTheme==='lcars'?'1':'0.5';
+    if(bw)bw.style.opacity=currentTheme==='wipeout'?'1':'0.5';
 }
 applyTheme(currentTheme);
+
+// Fridge HACCP
+let haccpData=[],fridgeCalDate=new Date();
+const HACCP_HOURS=[0,3,6,9,12,15,18,21];
+
+async function fetchHaccp(){
+    const today=new Date().toISOString().slice(0,10);
+    try{haccpData=await(await fetch('/api/haccp?day='+today)).json();}catch(e){}
+    renderFridgeTodayReadings();
+    renderFridgeCalendar();
+}
+
+function renderFridgeTodayReadings(){
+    const el=document.getElementById('fridgeTodayReadings');
+    let html='';
+    HACCP_HOURS.forEach(h=>{
+        const hStr=String(h).padStart(2,'0')+':00';
+        const entry=haccpData.find(d=>{const dt=new Date(d.time);return dt.getHours()===h;});
+        const temp=entry?entry.temp.toFixed(1)+'°':'--';
+        const color=entry?(entry.temp<=4?'var(--lcars-green)':entry.temp<=8?'var(--lcars-yellow)':'var(--lcars-red)'):'var(--lcars-tan)';
+        html+=`<div><div style="color:var(--lcars-tan);">${hStr}</div><div style="color:${color};font-size:13px;">${temp}</div></div>`;
+    });
+    el.innerHTML=html;
+}
+
+function fridgeCalMonth(dir){
+    fridgeCalDate.setMonth(fridgeCalDate.getMonth()+dir);
+    renderFridgeCalendar();
+}
+
+async function renderFridgeCalendar(){
+    const y=fridgeCalDate.getFullYear(),m=fridgeCalDate.getMonth();
+    const monthStr=y+'-'+String(m+1).padStart(2,'0');
+    const months=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    document.getElementById('fridgeCalTitle').textContent=months[m]+' '+y;
+    let monthData=[];
+    try{monthData=await(await fetch('/api/haccp?month='+monthStr)).json();}catch(e){}
+    const daysInMonth=new Date(y,m+1,0).getDate();
+    const firstDay=(new Date(y,m,1).getDay()+6)%7; // lundi=0
+    const dayNames=['Lu','Ma','Me','Je','Ve','Sa','Di'];
+    let html='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-family:\'Orbitron\',sans-serif;font-size:10px;text-align:center;">';
+    dayNames.forEach(d=>{html+=`<div style="color:var(--lcars-tan);padding:4px 0;">${d}</div>`;});
+    for(let i=0;i<firstDay;i++){html+='<div></div>';}
+    const today=new Date();
+    for(let d=1;d<=daysInMonth;d++){
+        const dayStr=monthStr+'-'+String(d).padStart(2,'0');
+        const dayEntries=monthData.filter(e=>e.time.startsWith(dayStr));
+        const hasData=dayEntries.length>0;
+        const allOk=hasData&&dayEntries.every(e=>e.temp<=4);
+        const hasAlert=hasData&&dayEntries.some(e=>e.temp>8);
+        const hasWarn=hasData&&!hasAlert&&dayEntries.some(e=>e.temp>4);
+        const isToday=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d;
+        let bg='transparent',border='1px solid rgba(255,255,255,.05)',fg='var(--lcars-tan)';
+        if(hasData){
+            if(allOk){bg='rgba(85,204,85,.15)';fg='var(--lcars-green)';}
+            else if(hasAlert){bg='rgba(204,68,68,.15)';fg='var(--lcars-red)';}
+            else if(hasWarn){bg='rgba(255,204,0,.15)';fg='var(--lcars-yellow)';}
+        }
+        if(isToday)border='2px solid var(--lcars-orange)';
+        html+=`<div onclick="showFridgeDay('${dayStr}')" style="background:${bg};border:${border};padding:4px 0;cursor:pointer;color:${fg};">${d}</div>`;
+    }
+    html+='</div>';
+    document.getElementById('fridgeCalendar').innerHTML=html;
+}
+
+async function showFridgeDay(dayStr){
+    let dayData=[];
+    try{dayData=await(await fetch('/api/haccp?day='+dayStr)).json();}catch(e){}
+    let content='<div class="modal-title">'+dayStr+'</div>';
+    if(!dayData.length){content+='<p style="color:var(--lcars-tan);">Aucun relevé</p>';}
+    else{
+        content+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-family:\'Orbitron\',sans-serif;font-size:11px;text-align:center;">';
+        dayData.forEach(e=>{
+            const t=new Date(e.time);
+            const hStr=t.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+            const color=e.temp<=4?'var(--lcars-green)':e.temp<=8?'var(--lcars-yellow)':'var(--lcars-red)';
+            content+=`<div><div style="color:var(--lcars-tan);">${hStr}</div><div style="color:${color};font-size:14px;">${e.temp.toFixed(1)}°</div></div>`;
+        });
+        content+='</div>';
+    }
+    content+='<div class="modal-btns"><button class="btn" onclick="closeModal(\'fridgeDayModal\')">Fermer</button></div>';
+    document.getElementById('fridgeDayContent').innerHTML=content;
+    openModal('fridgeDayModal');
+}
 
 initCanvas();initOvenCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
 </script>
