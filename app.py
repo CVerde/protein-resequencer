@@ -447,6 +447,18 @@ def toggle_actuator(name):
         return jsonify({"success": True, "state": state["actuators"][name]})
     return jsonify({"error": "Inconnu"}), 400
 
+@app.route('/api/pwm/<name>', methods=['POST'])
+def set_pwm(name):
+    data = request.json or {}
+    value = data.get('value', 0)
+    # TODO: PWM réel via MOSFET + GPIO hardware PWM
+    # Quand MOSFET installé:
+    # import pigpio
+    # pi = pigpio.pi()
+    # pi.set_PWM_dutycycle(PWM_PIN, int(value * 2.55))
+    print(f"PWM {name}: {value}%")
+    return jsonify({"success": True, "name": name, "value": value})
+
 @app.route('/api/settings', methods=['GET', 'POST'])
 def settings():
     if request.method == 'POST':

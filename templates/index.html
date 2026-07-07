@@ -145,7 +145,7 @@
         [data-theme="neobrutalist"] .nav-elbow{background:#a259ff;border-radius:0;border-right:4px solid #000;}
         [data-theme="neobrutalist"] .nav-btn{border-radius:0;background:#fff;color:#000;border:3px solid #000;font-weight:700;margin:2px;}
         [data-theme="neobrutalist"] .nav-btn.active{background:#ffde59;box-shadow:4px 4px 0 #000;}
-        [data-theme="neobrutalist"] .nav-btn:nth-child(3),.nav-btn:nth-child(4),.nav-btn:nth-child(5),.nav-btn:nth-child(6){background:#fff;}
+        [data-theme="neobrutalist"] .nav-btn:nth-child(3),[data-theme="neobrutalist"] .nav-btn:nth-child(4),[data-theme="neobrutalist"] .nav-btn:nth-child(5),[data-theme="neobrutalist"] .nav-btn:nth-child(6){background:#fff;}
         [data-theme="neobrutalist"] .sensor-box{background:#fff;border:3px solid #000;border-left:8px solid #ff3131;}
         [data-theme="neobrutalist"] .sensor-box.t2{border-left-color:#3191ff;}
         [data-theme="neobrutalist"] .sensor-box.avg{border-left-color:#ffde59;}
@@ -346,6 +346,65 @@
         [data-theme="flat"] .start-btn span{color:#fff;}
         [data-theme="flat"] .modal-box{background:#fff;border:none;border-left:4px solid #3498db;border-radius:0;}
         [data-theme="flat"] .form-input{border:1px solid #bdc3c7;border-radius:3px;background:#fff;color:#2c3e50;}
+
+        /* === THÈME FLAT DARK === */
+        [data-theme="flat-dark"]{
+            --lcars-orange:#3498db;--lcars-gold:#2980b9;--lcars-yellow:#2ecc71;
+            --lcars-blue:#3498db;--lcars-purple:#9b59b6;--lcars-violet:#8e44ad;
+            --lcars-tan:#7f8c8d;--lcars-peach:#555;--lcars-cream:#ddd;
+            --lcars-red:#e74c3c;--lcars-green:#2ecc71;
+            --t1:#e74c3c;--t2:#3498db;--t3:#2ecc71;--tavg:#f39c12;
+            --humid:#9b59b6;--press:#e67e22;--co2:#95a5a6;
+            --bg:#1a1a2e;--bg2:#16213e;
+        }
+        [data-theme="flat-dark"] html,[data-theme="flat-dark"] body{background:#1a1a2e;color:#ecf0f1;}
+        [data-theme="flat-dark"] .app{background:#1a1a2e;}
+        [data-theme="flat-dark"] .header{background:#16213e;}
+        [data-theme="flat-dark"] .header-elbow{background:#3498db;border-radius:0;}
+        [data-theme="flat-dark"] .header-elbow::after{display:none;}
+        [data-theme="flat-dark"] .header-title{color:#ecf0f1;}
+        [data-theme="flat-dark"] .header-status{background:#0f3460;color:#7f8c8d;border:none;border-radius:4px;}
+        [data-theme="flat-dark"] .header-status.on{background:#2ecc71;color:#fff;animation:none;}
+        [data-theme="flat-dark"] .header-end{background:#e74c3c;border-radius:0;color:#fff;}
+        [data-theme="flat-dark"] .main{background:#1a1a2e;}
+        [data-theme="flat-dark"] .nav{background:#16213e;}
+        [data-theme="flat-dark"] .nav-elbow{background:#2980b9;border-radius:0;}
+        [data-theme="flat-dark"] .nav-btn{border-radius:0;background:#16213e;color:#7f8c8d;font-weight:700;}
+        [data-theme="flat-dark"] .nav-btn.active{background:#3498db;color:#fff;}
+        [data-theme="flat-dark"] .nav-btn:nth-child(3),[data-theme="flat-dark"] .nav-btn:nth-child(4),[data-theme="flat-dark"] .nav-btn:nth-child(5),[data-theme="flat-dark"] .nav-btn:nth-child(6){background:#16213e;}
+        [data-theme="flat-dark"] .sensor-box{background:#16213e;border:none;border-left:4px solid;border-radius:0;}
+        [data-theme="flat-dark"] .sensor-box::after{display:none;}
+        [data-theme="flat-dark"] .sensor-label{color:#7f8c8d;}
+        [data-theme="flat-dark"] .sensor-value{color:#ecf0f1;}
+        [data-theme="flat-dark"] .sensor-value.t1{color:#e74c3c;}
+        [data-theme="flat-dark"] .sensor-value.t2{color:#3498db;}
+        [data-theme="flat-dark"] .sensor-value.avg{color:#f39c12;}
+        [data-theme="flat-dark"] .sensor-unit{color:#555;}
+        [data-theme="flat-dark"] .panel{background:#16213e;border:none;border-left:4px solid #3498db;}
+        [data-theme="flat-dark"] .panel-title{color:#ecf0f1;}
+        [data-theme="flat-dark"] .batch-item{background:#0f3460;border:none;border-left:3px solid #3498db;}
+        [data-theme="flat-dark"] .batch-val{color:#ecf0f1;}
+        [data-theme="flat-dark"] .btn{border:none;border-radius:3px;font-weight:700;}
+        [data-theme="flat-dark"] .btn.green{background:#2ecc71;color:#fff;}
+        [data-theme="flat-dark"] .btn.red{background:#e74c3c;color:#fff;}
+        [data-theme="flat-dark"] .graph-container{border:none;border-left:4px solid #3498db;background:#16213e;}
+        [data-theme="flat-dark"] .graph-btn{border-radius:3px;background:#0f3460;color:#7f8c8d;}
+        [data-theme="flat-dark"] .graph-btn.active{background:#3498db;color:#fff;}
+        [data-theme="flat-dark"] .section{background:#16213e;border:none;border-left:4px solid #3498db;}
+        [data-theme="flat-dark"] .section-title{color:#ecf0f1;}
+        [data-theme="flat-dark"] .timer-digit{color:#ecf0f1;}
+        [data-theme="flat-dark"] .timer-sep{color:#555;}
+        [data-theme="flat-dark"] .timer-display-big.running .timer-digit{color:#2ecc71;}
+        [data-theme="flat-dark"] .timer-btn-big{border-radius:3px;background:#0f3460;color:#ecf0f1;}
+        [data-theme="flat-dark"] .timer-btn-big.play{background:#2ecc71;color:#fff;}
+        [data-theme="flat-dark"] .timer-btn-big.reset{background:#e74c3c;color:#fff;}
+        [data-theme="flat-dark"] .timer-graph{border:none;border-left:4px solid #3498db;background:#16213e;}
+        [data-theme="flat-dark"] .actuator{border:1px solid #0f3460;border-radius:3px;background:#16213e;}
+        [data-theme="flat-dark"] .actuator.on{background:#2ecc71;border-color:#27ae60;}
+        [data-theme="flat-dark"] .start-btn{border-radius:50%;background:#3498db;box-shadow:none;}
+        [data-theme="flat-dark"] .start-btn span{color:#fff;}
+        [data-theme="flat-dark"] .modal-box{background:#16213e;border:none;border-left:4px solid #3498db;}
+        [data-theme="flat-dark"] .form-input{border:1px solid #0f3460;border-radius:3px;background:#1a1a2e;color:#ecf0f1;}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         html,body{font-family:'Antonio',sans-serif;background:var(--bg);color:var(--lcars-orange);height:100vh;overflow:hidden;}
         .app{display:grid;grid-template-rows:44px 1fr 52px;height:100vh;}
@@ -660,7 +719,39 @@
                     <button class="btn" onclick="applyTheme('neumorphism')" id="themeBtnneumorphism">NEUMO</button>
                     <button class="btn" onclick="applyTheme('glassmorphism')" id="themeBtngласsmorphism">GLASS</button>
                     <button class="btn" onclick="applyTheme('flat')" id="themeBtnflat">FLAT</button>
+                    <button class="btn" onclick="applyTheme('flat-dark')" id="themeBtnflat-dark">FLAT DARK</button>
                 </div>
+            </div>
+            <div class="section" style="margin-bottom:10px;">
+                <div class="section-title">Test actionneurs</div>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px;">
+                    <button class="btn" id="testFan1Btn" onclick="testActuator('fan_internal')">Ventilo interne : OFF</button>
+                    <button class="btn" id="testFan2Btn" onclick="testActuator('fan_extract')">Ventilo extract : OFF</button>
+                    <button class="btn" id="testMisterBtn" onclick="testActuator('humidifier')">Mister : OFF</button>
+                    <button class="btn" id="testHeaterBtn" onclick="testActuator('heater')">Chauffage : OFF</button>
+                </div>
+            </div>
+            <div class="section" style="margin-bottom:10px;">
+                <div class="section-title">Contrôle vitesse ventilos (PWM)</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
+                    <div style="text-align:center;">
+                        <div style="font-size:40px;height:50px;display:flex;align-items:center;justify-content:center;">
+                            <span id="fanAnim1" style="display:inline-block;font-size:40px;color:var(--lcars-tan);">⟳</span>
+                        </div>
+                        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--lcars-tan);margin:4px 0;">INTERNE</div>
+                        <input type="range" min="0" max="100" value="0" id="pwmFan1" oninput="setPwm('fan_internal',this.value)" style="width:100%;accent-color:var(--lcars-orange);">
+                        <div style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--lcars-yellow);" id="pwmVal1">0%</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:40px;height:50px;display:flex;align-items:center;justify-content:center;">
+                            <span id="fanAnim2" style="display:inline-block;font-size:40px;color:var(--lcars-tan);">⟳</span>
+                        </div>
+                        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--lcars-tan);margin:4px 0;">EXTRACTION</div>
+                        <input type="range" min="0" max="100" value="0" id="pwmFan2" oninput="setPwm('fan_extract',this.value)" style="width:100%;accent-color:var(--lcars-orange);">
+                        <div style="font-family:'Orbitron',sans-serif;font-size:18px;color:var(--lcars-yellow);" id="pwmVal2">0%</div>
+                    </div>
+                </div>
+                <div style="font-size:11px;color:var(--lcars-tan);margin-top:8px;opacity:.6;">Nécessite MOSFET IRLZ44N pour contrôle réel. Simulation animation seulement.</div>
             </div>
             <div class="section">
                 <div class="section-title">Sondes</div>
@@ -820,12 +911,14 @@ function setGraphInterval(i){graphInterval=i;document.querySelectorAll('.graph-b
 async function fetchGraphData(){try{graphData=await(await fetch('/api/sensors/history?interval='+graphInterval)).json();drawGraph();}catch(e){}}
 function drawGraph(){
     if(!ctx||!graphData.t1?.length)return;
-    const wo=document.documentElement.getAttribute('data-theme')==='wipeout';
+    const theme=document.documentElement.getAttribute('data-theme')||'';
+    const wo=theme==='wipeout';
+    const light=theme==='flat'||theme==='neobrutalist'||theme==='neumorphism';
     const w=canvas.width/2,h=canvas.height/2,pad=30;
     ctx.clearRect(0,0,w*2,h*2);
-    ctx.fillStyle=wo?'rgba(80,72,64,.9)':'rgba(10,10,15,.8)';ctx.fillRect(0,0,w,h);
-    const gridColor=wo?'rgba(200,192,176,.08)':'rgba(255,153,0,.12)';
-    const labelColor=wo?'#a8a090':'#ffaa66';
+    ctx.fillStyle=wo?'rgba(80,72,64,.9)':light?'rgba(240,243,248,.95)':'rgba(10,10,15,.8)';ctx.fillRect(0,0,w,h);
+    const gridColor=wo?'rgba(200,192,176,.08)':light?'rgba(0,0,0,.08)':'rgba(255,153,0,.12)';
+    const labelColor=wo?'#a8a090':light?'#7f8c8d':'#ffaa66';
     const labelFont=wo?'10px SST':'10px Orbitron';
     ctx.strokeStyle=gridColor;ctx.lineWidth=1;
     for(let i=0;i<=5;i++){const y=pad+(h-2*pad)*i/5;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-10,y);ctx.stroke();}
@@ -902,14 +995,16 @@ function resizeOvenCanvas(){
 
 function drawOvenGraph(){
     if(!ovenCtx)return;
-    const wo=document.documentElement.getAttribute('data-theme')==='wipeout';
+    const theme=document.documentElement.getAttribute('data-theme')||'';
+    const wo=theme==='wipeout';
+    const light=theme==='flat'||theme==='neobrutalist'||theme==='neumorphism';
     const w=ovenCanvas.width/2,h=ovenCanvas.height/2,pad=25;
     ovenCtx.clearRect(0,0,w*2,h*2);
-    ovenCtx.fillStyle=wo?'rgba(80,72,64,.9)':'rgba(10,10,15,.8)';ovenCtx.fillRect(0,0,w,h);
-    const gridColor=wo?'rgba(200,192,176,.08)':'rgba(255,153,0,.15)';
-    const labelColor=wo?'#a8a090':'#ffaa66';
+    ovenCtx.fillStyle=wo?'rgba(80,72,64,.9)':light?'rgba(240,243,248,.95)':'rgba(10,10,15,.8)';ovenCtx.fillRect(0,0,w,h);
+    const gridColor=wo?'rgba(200,192,176,.08)':light?'rgba(0,0,0,.08)':'rgba(255,153,0,.15)';
+    const labelColor=wo?'#a8a090':light?'#7f8c8d':'#ffaa66';
     const labelFont=wo?'10px SST':'10px Orbitron';
-    const curveColor=wo?'#cc8866':'#ff6600';
+    const curveColor=wo?'#cc8866':light?'#e67e22':'#ff6600';
     ovenCtx.strokeStyle=gridColor;ovenCtx.lineWidth=1;
     for(let i=0;i<=4;i++){const y=pad+(h-2*pad)*i/4;ovenCtx.beginPath();ovenCtx.moveTo(pad,y);ovenCtx.lineTo(w-10,y);ovenCtx.stroke();}
     for(let i=0;i<=6;i++){const x=pad+(w-pad-10)*i/6;ovenCtx.beginPath();ovenCtx.moveTo(x,pad);ovenCtx.lineTo(x,h-pad);ovenCtx.stroke();}
@@ -1024,8 +1119,8 @@ function playAlarm(){
 }
 
 // Thème
-const themes=['lcars','wipeout','neobrutalist','neumorphism','glassmorphism','flat'];
-const themeLabels={lcars:'LCARS',wipeout:'WO3',neobrutalist:'BRUTAL',neumorphism:'NEUMO',glassmorphism:'GLASS',flat:'FLAT'};
+const themes=['lcars','wipeout','neobrutalist','neumorphism','glassmorphism','flat','flat-dark'];
+const themeLabels={lcars:'LCARS',wipeout:'WO3',neobrutalist:'BRUTAL',neumorphism:'NEUMO',glassmorphism:'GLASS',flat:'FLAT',['flat-dark']:'FLAT DARK'};
 let currentTheme=localStorage.getItem('theme')||'lcars';
 function applyTheme(t){
     document.documentElement.setAttribute('data-theme',t==='lcars'?'':t);
@@ -1037,6 +1132,55 @@ function updateThemeButtons(){
     themes.forEach(t=>{const el=document.getElementById('themeBtn'+t);if(el)el.style.opacity=currentTheme===t?'1':'0.4';});
 }
 applyTheme(currentTheme);
+
+// Test actionneurs
+async function testActuator(name){
+    try{
+        const res=await(await fetch('/api/actuator/'+name,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();
+        const labels={fan_internal:'Ventilo interne',fan_extract:'Ventilo extract',humidifier:'Mister',heater:'Chauffage'};
+        const btnId={fan_internal:'testFan1Btn',fan_extract:'testFan2Btn',humidifier:'testMisterBtn',heater:'testHeaterBtn'}[name];
+        const btn=document.getElementById(btnId);
+        if(btn){
+            const onoff=res.state?'ON':'OFF';
+            btn.textContent=labels[name]+' : '+onoff;
+            btn.style.background=res.state?'var(--lcars-green)':'';
+            btn.style.color=res.state?'#000':'';
+        }
+    }catch(e){console.error(e);}
+}
+
+// PWM ventilos
+let fanAnimFrames={fan_internal:null,fan_extract:null};
+let fanAngles={fan_internal:0,fan_extract:0};
+let fanSpeeds={fan_internal:0,fan_extract:0};
+
+function setPwm(name,val){
+    val=parseInt(val);
+    fanSpeeds[name]=val;
+    const isInternal=name==='fan_internal';
+    document.getElementById(isInternal?'pwmVal1':'pwmVal2').textContent=val+'%';
+    const anim=document.getElementById(isInternal?'fanAnim1':'fanAnim2');
+    if(val===0){
+        anim.style.color='var(--lcars-tan)';
+        if(fanAnimFrames[name]){cancelAnimationFrame(fanAnimFrames[name]);fanAnimFrames[name]=null;}
+        anim.style.transform='rotate(0deg)';
+    }else{
+        anim.style.color='var(--lcars-green)';
+        if(!fanAnimFrames[name])animateFan(name);
+    }
+    // Envoyer au Pi (PWM réel quand MOSFET installé)
+    fetch('/api/pwm/'+name,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:val})}).catch(()=>{});
+}
+
+function animateFan(name){
+    const isInternal=name==='fan_internal';
+    const anim=document.getElementById(isInternal?'fanAnim1':'fanAnim2');
+    const speed=fanSpeeds[name];
+    if(speed<=0){fanAnimFrames[name]=null;return;}
+    fanAngles[name]+=speed*0.15;
+    anim.style.transform='rotate('+fanAngles[name]+'deg)';
+    fanAnimFrames[name]=requestAnimationFrame(()=>animateFan(name));
+}
 
 // Fridge HACCP
 let haccpData=[],fridgeCalDate=new Date();
@@ -1127,7 +1271,7 @@ async function showFridgeDay(dayStr){
     openModal('fridgeDayModal');
 }
 
-initCanvas();initOvenCanvas();fetchState();fetchPresets();setInterval(fetchState,5000);
+initCanvas();initOvenCanvas();fetchState();fetchPresets();setInterval(fetchState,2000);
 </script>
 </body>
 </html>
