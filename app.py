@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Protein Resequencer - Chambre de Fermentation Contrôlée
-Contrôleur principal v3 - avec historique capteurs
+Contrôleur principal v4 - GPIO relais, HACCP frigo
 """
 
 from flask import Flask, render_template, jsonify, request
@@ -13,6 +13,43 @@ import threading
 import time
 
 app = Flask(__name__)
+
+# GPIO relay mapping
+RELAY_PINS = {
+    "fan_internal": 17,   # M1
+    "fan_extract": 27,    # M2
+    "humidifier": 22,     # M3
+    "heater": 23,         # M4 -> SSR
+}
+
+# Sondes DS18B20 par adresse
+SENSOR_MAP = {
+    "28-0000007020af": "t1",  # chambre
+    "28-00000071b49c": "t2",  # chambre
+    "28-00000073a825": "t3",  # frigo HACCP
+}
+HACCP_LOG_FILE = "haccp.json"
+HACCP_INTERVAL = 900  # 15 min entre chaque relevé
+
+# Init GPIO
+gpio_available = False
+try:
+    import gpiod
+    chip = gpiod.Chip('gpiochip0')
+    relay_lines = {}
+    for name, pin in RELAY_PINS.items():
+        line = chip.get_line(pin)
+        line.request(consumer="protein-resequencer", type=gpiod.LINE_REQ_DIR_OUT, default_val=1)
+        relay_lines[name] = line
+    gpio_available = True
+    print("GPIO initialisé")
+except Exception as e:
+    print(f"GPIO non disponible: {e}")
+    relay_lines = {}
+
+def set_relay(name, state_on):
+    if name in relay_lines:
+        relay_lines[name].set_value(0 if state_on else 1)  # active low
 
 # Historique des capteurs (stockage en mémoire)
 SENSOR_HISTORY_MAX = 3600  # 1h de données à 1s = 3600 points
@@ -115,23 +152,21 @@ def get_all_presets():
     return all_presets
 
 def read_ds18b20():
-    temps = []
+    result = {"t1": 0.0, "t2": 0.0, "t3": 0.0}
     w1_path = "/sys/bus/w1/devices/"
     try:
-        for device in sorted(os.listdir(w1_path)):
-            if device.startswith("28-"):
+        for device in os.listdir(w1_path):
+            if device.startswith("28-") and device in SENSOR_MAP:
                 with open(f"{w1_path}{device}/w1_slave", "r") as f:
                     lines = f.readlines()
                     if lines[0].strip().endswith("YES"):
                         pos = lines[1].find("t=")
                         if pos != -1:
                             temp = float(lines[1][pos+2:]) / 1000.0
-                            temps.append(round(temp, 1))
+                            result[SENSOR_MAP[device]] = round(temp, 1)
     except Exception as e:
         print(f"Erreur DS18B20: {e}")
-    while len(temps) < 3:
-        temps.append(0.0)
-    return temps[:3]
+    return [result["t1"], result["t2"], result["t3"]]
 
 def read_sht40():
     try:
@@ -146,13 +181,18 @@ def read_sht40():
 def read_sensors():
     temps = read_ds18b20()
     state["sensors"]["temperature"] = temps
+    state["sensors"]["fridge_temp"] = temps[2]  # T3 = frigo
     hum, temp_sht = read_sht40()
     if hum is not None:
         state["sensors"]["humidity"] = hum
         state["sensors"]["temp_sht40"] = temp_sht
     else:
         state["sensors"]["humidity"] = 50.0
-        state["sensors"]["temp_sht40"] = sum(temps) / len(temps) if any(temps) else 22.0
+        state["sensors"]["temp_sht40"] = sum(temps[:2]) / 2 if any(temps[:2]) else 22.0
+    
+    # Log HACCP frigo
+    if temps[2] > 0:
+        log_haccp(temps[2])
     
     # Enregistrer dans l'historique
     now = datetime.now().isoformat()
@@ -164,10 +204,13 @@ def read_sensors():
 
 def control_actuators():
     if not state["batch"]:
-        state["actuators"] = {k: False for k in state["actuators"]}
+        for k in state["actuators"]:
+            state["actuators"][k] = False
+            set_relay(k, False)
         return
     step = state["batch"]["current_step"]
-    avg_temp = sum(state["sensors"]["temperature"]) / 3
+    temps = state["sensors"]["temperature"]
+    avg_temp = (temps[0] + temps[1]) / 2 if (temps[0] and temps[1]) else (temps[0] or temps[1] or 22.0)
     state["actuators"]["heater"] = avg_temp < step["temp"] - 0.5
     state["actuators"]["humidifier"] = state["sensors"]["humidity"] < step["humidity"] - 5
     if step["ventilation"] == "on":
@@ -180,6 +223,27 @@ def control_actuators():
     else:
         state["actuators"]["fan_internal"] = False
         state["actuators"]["fan_extract"] = False
+    for k, v in state["actuators"].items():
+        set_relay(k, v)
+
+# HACCP frigo
+last_haccp_log = 0
+def log_haccp(fridge_temp):
+    global last_haccp_log
+    now = time.time()
+    if now - last_haccp_log < HACCP_INTERVAL:
+        return
+    last_haccp_log = now
+    entry = {"time": datetime.now().isoformat(), "temp": fridge_temp}
+    try:
+        data = load_json(HACCP_LOG_FILE, [])
+        data.append(entry)
+        # Garder 30 jours max
+        cutoff = (datetime.now() - timedelta(days=30)).isoformat()
+        data = [e for e in data if e["time"] > cutoff]
+        save_json(HACCP_LOG_FILE, data)
+    except Exception as e:
+        print(f"HACCP log error: {e}")
 
 def generate_batch_id(preset_code):
     history = load_history()
@@ -375,6 +439,7 @@ def toggle_actuator(name):
     if name in state["actuators"]:
         data = request.json or {}
         state["actuators"][name] = data.get('state', not state["actuators"][name])
+        set_relay(name, state["actuators"][name])
         return jsonify({"success": True, "state": state["actuators"][name]})
     return jsonify({"error": "Inconnu"}), 400
 
@@ -391,6 +456,11 @@ def quit_app():
     subprocess.Popen(['pkill', '-f', 'chromium.*localhost:5000'])
     os._exit(0)
     return jsonify({"success": True})
+
+@app.route('/api/haccp')
+def get_haccp():
+    data = load_json(HACCP_LOG_FILE, [])
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
