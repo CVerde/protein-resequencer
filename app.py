@@ -203,9 +203,10 @@ def read_sensors():
 
 def control_actuators():
     if not state["batch"]:
-        for k in state["actuators"]:
-            state["actuators"][k] = False
-            set_relay(k, False)
+        if not state.get("manual_override"):
+            for k in state["actuators"]:
+                state["actuators"][k] = False
+                set_relay(k, False)
         return
     step = state["batch"]["current_step"]
     temps = state["sensors"]["temperature"]
@@ -443,6 +444,9 @@ def toggle_actuator(name):
         data = request.json or {}
         state["actuators"][name] = data.get('state', not state["actuators"][name])
         set_relay(name, state["actuators"][name])
+        # Activer mode manuel si pas de batch
+        if not state["batch"]:
+            state["manual_override"] = any(state["actuators"].values())
         return jsonify({"success": True, "state": state["actuators"][name]})
     return jsonify({"error": "Inconnu"}), 400
 
