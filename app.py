@@ -37,7 +37,7 @@ relay_lines = {}
 try:
     from gpiozero import OutputDevice
     for name, pin in RELAY_PINS.items():
-        relay_lines[name] = OutputDevice(pin, active_high=False, initial_value=False)
+        relay_lines[name] = OutputDevice(pin, active_high=True, initial_value=True)
     gpio_available = True
     print("GPIO initialisé (gpiozero)")
 except Exception as e:
@@ -46,9 +46,9 @@ except Exception as e:
 def set_relay(name, state_on):
     if name in relay_lines:
         if state_on:
-            relay_lines[name].on()
+            relay_lines[name].off()   # LOW = relay ON
         else:
-            relay_lines[name].off()
+            relay_lines[name].on()    # HIGH = relay OFF
 
 # Historique des capteurs (stockage en mémoire)
 SENSOR_HISTORY_MAX = 3600  # 1h de données à 1s = 3600 points
