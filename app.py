@@ -33,23 +33,22 @@ HACCP_INTERVAL = 900  # 15 min entre chaque relevé
 
 # Init GPIO
 gpio_available = False
+relay_lines = {}
 try:
-    import gpiod
-    chip = gpiod.Chip('gpiochip0')
-    relay_lines = {}
+    from gpiozero import OutputDevice
     for name, pin in RELAY_PINS.items():
-        line = chip.get_line(pin)
-        line.request(consumer="protein-resequencer", type=gpiod.LINE_REQ_DIR_OUT, default_val=1)
-        relay_lines[name] = line
+        relay_lines[name] = OutputDevice(pin, active_high=False, initial_value=False)
     gpio_available = True
-    print("GPIO initialisé")
+    print("GPIO initialisé (gpiozero)")
 except Exception as e:
     print(f"GPIO non disponible: {e}")
-    relay_lines = {}
 
 def set_relay(name, state_on):
     if name in relay_lines:
-        relay_lines[name].set_value(0 if state_on else 1)  # active low
+        if state_on:
+            relay_lines[name].on()
+        else:
+            relay_lines[name].off()
 
 # Historique des capteurs (stockage en mémoire)
 SENSOR_HISTORY_MAX = 3600  # 1h de données à 1s = 3600 points
