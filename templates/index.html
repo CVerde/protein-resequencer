@@ -459,6 +459,10 @@
         .main{overflow:hidden;position:relative;background:var(--bg);}
         .screen{position:absolute;inset:0;padding:8px;display:none;flex-direction:column;overflow:hidden;}
         .screen.active{display:flex;}
+        #music{padding:0;min-width:0;min-height:0;}
+        #roonFrame{display:block;width:100%;height:100%;border:0;background:#000;}
+        .option-toggle{display:flex;align-items:center;gap:10px;margin-top:10px;color:var(--lcars-yellow);font-size:15px;cursor:pointer;}
+        .option-toggle input{width:22px;height:22px;margin:0;accent-color:var(--lcars-orange);}
         
         /* Sensor boxes - grandes typos */
         .sensors-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px;}
@@ -470,6 +474,7 @@
         .sensor-box.press{border-color:var(--press);}
         .sensor-box.co2{border-color:var(--co2);}
         .sensor-box::after{content:'';position:absolute;top:0;left:0;width:50%;height:2px;background:linear-gradient(90deg,currentColor,transparent);animation:scan 3s linear infinite;opacity:.5;}
+        [data-theme=""] .sensor-box::after{display:none;}
         .sensor-label{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:500;color:var(--lcars-tan);margin-bottom:2px;}
         .sensor-reading{display:flex;align-items:baseline;gap:4px;}
         .sensor-value{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:700;transition:all .2s;}
@@ -721,6 +726,10 @@
                     <button class="btn" onclick="applyTheme('flat')" id="themeBtnflat">FLAT</button>
                     <button class="btn" onclick="applyTheme('flat-dark')" id="themeBtnflat-dark">FLAT DARK</button>
                 </div>
+                <label class="option-toggle">
+                    <input type="checkbox" id="songrLegacyUi" onchange="setSongrLegacyUi(this.checked)">
+                    <span>Utiliser l’UI legacy de Songr</span>
+                </label>
             </div>
             <div class="section" style="margin-bottom:10px;">
                 <div class="section-title">Test actionneurs</div>
@@ -764,12 +773,12 @@
         </div>
 
         <!-- Music / Roon -->
-        <div class="screen" id="music" style="padding:0;">
+        <div class="screen" id="music">
             <iframe
                 src="http://localhost:3333"
                 id="roonFrame"
-                style="width:86.96%;height:86.96%;border:0;background:#000;transform:scale(1.15);transform-origin:top left;"
                 allow="autoplay"
+                title="Songr"
             ></iframe>
         </div>
     </div>
@@ -1167,10 +1176,32 @@ function applyTheme(t){
     localStorage.setItem('theme',t);
     currentTheme=t;
     updateThemeButtons();
+    syncSongrTheme();
 }
 function updateThemeButtons(){
     themes.forEach(t=>{const el=document.getElementById('themeBtn'+t);if(el)el.style.opacity=currentTheme===t?'1':'0.4';});
 }
+let songrLegacyUi=localStorage.getItem('songrLegacyUi')==='true';
+function syncSongrTheme(){
+    const frame=document.getElementById('roonFrame');
+    if(!frame?.contentWindow)return;
+    frame.contentWindow.postMessage({
+        type:'protein-resequencer-theme',
+        theme:currentTheme,
+        legacy:songrLegacyUi
+    },'http://localhost:3333');
+}
+function setSongrLegacyUi(enabled){
+    songrLegacyUi=Boolean(enabled);
+    localStorage.setItem('songrLegacyUi',String(songrLegacyUi));
+    syncSongrTheme();
+}
+const songrLegacyCheckbox=document.getElementById('songrLegacyUi');
+if(songrLegacyCheckbox)songrLegacyCheckbox.checked=songrLegacyUi;
+document.getElementById('roonFrame')?.addEventListener('load',syncSongrTheme);
+window.addEventListener('message',event=>{
+    if(event.origin==='http://localhost:3333'&&event.data?.type==='songr-theme-ready')syncSongrTheme();
+});
 applyTheme(currentTheme);
 
 // Test actionneurs
