@@ -762,6 +762,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- Music / Roon -->
+        <div class="screen" id="music" style="padding:0;">
+            <iframe
+                src="http://localhost:3333"
+                id="roonFrame"
+                style="width:86.96%;height:86.96%;border:0;background:#000;transform:scale(1.15);transform-origin:top left;"
+                allow="autoplay"
+            ></iframe>
+        </div>
     </div>
     <div class="nav">
         <div class="nav-elbow"></div>
@@ -771,6 +781,7 @@
         <button class="nav-btn" data-screen="fridge" onclick="showScreen('fridge')">Froid</button>
         <button class="nav-btn" data-screen="history" onclick="showScreen('history')">Histo</button>
         <button class="nav-btn" data-screen="options" onclick="showScreen('options')">Options</button>
+        <button class="nav-btn" data-screen="music" onclick="showScreen('music')">Music</button>
     </div>
 </div>
 <div class="alert-box" id="alertBox"></div>
@@ -827,7 +838,7 @@ function showScreen(id){
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-screen="'+id+'"]')?.classList.add('active');
-    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',fridge:'Froid',history:'Historique',options:'Options'}[id];
+    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',fridge:'Froid',history:'Historique',options:'Options',music:'Music'}[id];
     if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}if(id==='timer'){resizeOvenCanvas();}if(id==='fridge'){fetchHaccp();}if(id==='options'){updateThemeButtons();}
 }
 function renderBatch(){
