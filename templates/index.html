@@ -1047,6 +1047,19 @@ function drawOvenGraph(){
     }
 }
 
+function syncTimerButtonState(){
+    if(!timerPlayBtn)return;
+    if(timerRunning){
+        timerPlayBtn.textContent='⏸';
+        timerPlayBtn.classList.remove('play');
+        timerPlayBtn.classList.add('pause');
+    }else{
+        timerPlayBtn.textContent='▶';
+        timerPlayBtn.classList.remove('pause');
+        timerPlayBtn.classList.add('play');
+    }
+}
+
 function updateTimerDisplay(){
     const abs=Math.abs(timerSeconds);
     const m=Math.floor(abs/60),s=abs%60;
@@ -1058,10 +1071,25 @@ function updateTimerDisplay(){
     document.getElementById('td3').textContent=ss[0];
     document.getElementById('td4').textContent=ss[1];
     document.getElementById('timerPrefix').style.display=timerOverrun?'inline-block':'none';
+    if(timerRunning){
+        timerDisplay.classList.add('running');
+        timerDisplay.classList.remove('done');
+    }else if(timerOverrun){
+        timerDisplay.classList.remove('running');
+        timerDisplay.classList.add('done');
+    }else{
+        timerDisplay.classList.remove('running','done');
+    }
+    syncTimerButtonState();
 }
 
 function addTime(min){
-    if(!timerOverrun){timerSeconds+=min*60;}
+    clearInterval(timerInterval);
+    timerInterval=null;
+    timerRunning=false;
+    timerOverrun=false;
+    timerTotalSeconds=0;
+    timerSeconds += min * 60;
     timerDisplay.classList.remove('done');
     updateTimerDisplay();
 }
@@ -1072,41 +1100,42 @@ function toggleTimer(){
     if(timerRunning){
         if(timerTotalSeconds===0)timerTotalSeconds=timerSeconds;
         ovenData=[];
-        timerPlayBtn.textContent='⏸';
-        timerPlayBtn.classList.remove('play');
-        timerPlayBtn.classList.add('pause');
         timerDisplay.classList.add('running');
         timerDisplay.classList.remove('done');
         timerInterval=setInterval(()=>{
+            if(!timerRunning)return;
             timerSeconds--;
             updateTimerDisplay();
             drawOvenGraph();
-            if(timerSeconds===0&&!timerOverrun){
-                timerOverrun=true;
-                timerDisplay.classList.remove('running');
-                timerDisplay.classList.add('done');
-                playAlarm();
+            if(timerSeconds<=0){
+                if(timerOverrun===false){
+                    timerOverrun=true;
+                    timerRunning=false;
+                    clearInterval(timerInterval);
+                    timerInterval=null;
+                    timerDisplay.classList.remove('running');
+                    timerDisplay.classList.add('done');
+                    syncTimerButtonState();
+                    playAlarm();
+                }
             }
         },1000);
     }else{
         clearInterval(timerInterval);
-        timerPlayBtn.textContent='▶';
-        timerPlayBtn.classList.add('play');
-        timerPlayBtn.classList.remove('pause');
-        if(!timerOverrun)timerDisplay.classList.remove('running');
+        timerInterval=null;
+        timerDisplay.classList.remove('running');
     }
+    updateTimerDisplay();
 }
 
 function resetTimer(){
     clearInterval(timerInterval);
+    timerInterval=null;
     timerSeconds=0;
     timerTotalSeconds=0;
     timerRunning=false;
     timerOverrun=false;
     ovenData=[];
-    timerPlayBtn.textContent='▶';
-    timerPlayBtn.classList.add('play');
-    timerPlayBtn.classList.remove('pause');
     timerDisplay.classList.remove('running','done');
     updateTimerDisplay();
     drawOvenGraph();
