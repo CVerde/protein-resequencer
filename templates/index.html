@@ -810,7 +810,7 @@ function toggleCurve(k){
     if(el)el.style.opacity=curveVisible[k]?'1':'0.3';
     drawGraph();
 }
-let graphInterval='live',canvas,ctx,graphData={timestamps:[],t1:[],t2:[],t3:[],humidity:[]};
+let graphInterval='live',canvas,ctx,graphData={timestamps:[],t1:[],t2:[],t3:[],humidity:[],oven:[]};
 
 async function fetchState(){
     try{
@@ -823,8 +823,15 @@ async function fetchState(){
         document.getElementById('st3').textContent=t[2].toFixed(1);
         document.getElementById('savg').textContent=((t[0]+t[1])/2).toFixed(1);
         document.getElementById('shum').textContent=state.sensors.humidity.toFixed(0);
-        document.getElementById('sovenTemp').textContent='--';
-        document.getElementById('ovenTemp').textContent='--';
+        const oven=state.sensors.oven_temp;
+        const ovenConnected=state.sensors.oven_connected&&Number.isFinite(oven);
+        document.getElementById('sovenTemp').textContent=ovenConnected?oven.toFixed(1):'--';
+        document.getElementById('ovenTemp').textContent=ovenConnected?oven.toFixed(1):'--';
+        if(ovenConnected){
+            ovenData.push(oven);
+            if(ovenData.length>300)ovenData.shift();
+        }
+        if(document.getElementById('timer').classList.contains('active'))drawOvenGraph();
         // Frigo
         const ft=state.sensors.fridge_temp||state.sensors.temperature[2]||0;
         document.getElementById('fridgeTemp').textContent=ft.toFixed(1);
@@ -832,8 +839,8 @@ async function fetchState(){
         document.getElementById('headerStatus').className='header-status'+(state.batch?' on':'');
         if(graphInterval==='live'){
             graphData.timestamps.push(new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
-            graphData.t1.push(t[0]);graphData.t2.push(t[1]);graphData.t3.push(t[2]);graphData.humidity.push(state.sensors.humidity);
-            if(graphData.timestamps.length>60){graphData.timestamps.shift();graphData.t1.shift();graphData.t2.shift();graphData.t3.shift();graphData.humidity.shift();}
+            graphData.t1.push(t[0]);graphData.t2.push(t[1]);graphData.t3.push(t[2]);graphData.humidity.push(state.sensors.humidity);graphData.oven.push(ovenConnected?oven:null);
+            if(graphData.timestamps.length>60){graphData.timestamps.shift();graphData.t1.shift();graphData.t2.shift();graphData.t3.shift();graphData.humidity.shift();graphData.oven.shift();}
             if(document.getElementById('sensors').classList.contains('active'))drawGraph();
         }
         renderBatch();
@@ -1037,7 +1044,7 @@ function drawOvenGraph(){
         const px=pad+(w-pad-10)*pct;
         ovenCtx.beginPath();ovenCtx.moveTo(px,pad);ovenCtx.lineTo(px,h-pad);ovenCtx.stroke();
     }
-    if(ovenData.length>1){
+    if(ovenData.length>0){
         ovenCtx.strokeStyle=curveColor;ovenCtx.lineWidth=wo?1:2;
         if(!wo){ovenCtx.shadowColor=curveColor;ovenCtx.shadowBlur=6;}
         ovenCtx.beginPath();

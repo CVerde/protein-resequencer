@@ -43,6 +43,22 @@ try:
 except Exception as e:
     print(f"GPIO non disponible: {e}")
 
+# Thermocouple type K via MAX6675 (numérotation GPIO/BCM)
+MAX6675_SCK_PIN = 11   # pin physique 23
+MAX6675_CS_PIN = 8     # pin physique 24
+MAX6675_SO_PIN = 9     # pin physique 21
+max6675_available = False
+max6675_lock = threading.Lock()
+try:
+    from gpiozero import DigitalInputDevice, DigitalOutputDevice
+    max6675_sck = DigitalOutputDevice(MAX6675_SCK_PIN, initial_value=False)
+    max6675_cs = DigitalOutputDevice(MAX6675_CS_PIN, initial_value=True)
+    max6675_so = DigitalInputDevice(MAX6675_SO_PIN, pull_up=None)
+    max6675_available = True
+    print("MAX6675 initialisé (GPIO11/8/9)")
+except Exception as e:
+    print(f"MAX6675 non disponible: {e}")
+
 def set_relay(name, state_on):
     if name in relay_lines:
         if state_on:
@@ -57,7 +73,8 @@ sensor_history = {
     "t1": deque(maxlen=SENSOR_HISTORY_MAX),
     "t2": deque(maxlen=SENSOR_HISTORY_MAX),
     "t3": deque(maxlen=SENSOR_HISTORY_MAX),
-    "humidity": deque(maxlen=SENSOR_HISTORY_MAX)
+    "humidity": deque(maxlen=SENSOR_HISTORY_MAX),
+    "oven": deque(maxlen=SENSOR_HISTORY_MAX)
 }
 
 # État global du système
@@ -66,7 +83,9 @@ state = {
     "sensors": {
         "temperature": [0.0, 0.0, 0.0],
         "humidity": 0.0,
-        "temp_sht40": 0.0
+        "temp_sht40": 0.0,
+        "oven_temp": None,
+        "oven_connected": False
     },
     "actuators": {
         "heater": False,
@@ -177,10 +196,35 @@ def read_sht40():
         print(f"SHT40 error: {e}")
         return None, None
 
+def read_max6675():
+    """Lit une trame 16 bits du MAX6675. Retourne None si la sonde est absente."""
+    if not max6675_available:
+        return None
+    with max6675_lock:
+        value = 0
+        max6675_sck.off()
+        max6675_cs.off()
+        time.sleep(0.0001)
+        for _ in range(16):
+            value = (value << 1) | int(max6675_so.value)
+            max6675_sck.on()
+            time.sleep(0.00001)
+            max6675_sck.off()
+            time.sleep(0.00001)
+        max6675_cs.on()
+
+    # D2 vaut 1 lorsque le thermocouple est ouvert/débranché.
+    if value & 0x4:
+        return None
+    return round(((value >> 3) & 0xFFF) * 0.25, 2)
+
 def read_sensors():
     temps = read_ds18b20()
+    oven_temp = read_max6675()
     state["sensors"]["temperature"] = temps
     state["sensors"]["fridge_temp"] = temps[2]  # T3 = frigo
+    state["sensors"]["oven_temp"] = oven_temp
+    state["sensors"]["oven_connected"] = oven_temp is not None
     hum, temp_sht = read_sht40()
     if hum is not None:
         state["sensors"]["humidity"] = hum
@@ -200,6 +244,7 @@ def read_sensors():
     sensor_history["t2"].append(temps[1])
     sensor_history["t3"].append(temps[2])
     sensor_history["humidity"].append(state["sensors"]["humidity"])
+    sensor_history["oven"].append(oven_temp)
 
 def control_actuators():
     if not state["batch"]:
@@ -293,6 +338,7 @@ def get_sensor_history():
     t2 = list(sensor_history["t2"])
     t3 = list(sensor_history["t3"])
     humidity = list(sensor_history["humidity"])
+    oven = list(sensor_history["oven"])
     
     # Sous-échantillonner
     if step > 1 and len(timestamps) > step:
@@ -301,13 +347,15 @@ def get_sensor_history():
         t2 = t2[::step]
         t3 = t3[::step]
         humidity = humidity[::step]
+        oven = oven[::step]
     
     return jsonify({
         "timestamps": timestamps[-60:],  # 60 derniers points
         "t1": t1[-60:],
         "t2": t2[-60:],
         "t3": t3[-60:],
-        "humidity": humidity[-60:]
+        "humidity": humidity[-60:],
+        "oven": oven[-60:]
     })
 
 @app.route('/api/presets')
@@ -402,7 +450,8 @@ def stop_batch():
             "t1": list(sensor_history["t1"]),
             "t2": list(sensor_history["t2"]),
             "t3": list(sensor_history["t3"]),
-            "humidity": list(sensor_history["humidity"])
+            "humidity": list(sensor_history["humidity"]),
+            "oven": list(sensor_history["oven"])
         }
         history.insert(0, {**state["batch"], "ended_at": datetime.now().isoformat(),
             "events": state["events"], "status": data.get('status', 'completed'),

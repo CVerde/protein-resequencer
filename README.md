@@ -32,6 +32,13 @@
 
 ### Installation sur Raspberry Pi :
 
+#### Thermocouple four MAX6675
+
+Le MAX6675 est lu directement par GPIO : VCC sur 3,3 V (pin 17), GND (pin 9),
+SCK sur GPIO11 (pin 23), CS sur GPIO8 (pin 24) et SO sur GPIO9 (pin 21).
+La sonde type K se branche sur T+ et T-. SPI n'a pas besoin d'être activé dans
+`raspi-config` pour cette implémentation.
+
 ```bash
 # Clone depuis GitHub
 git clone https://github.com/CVerde/protein-resequencer.git
