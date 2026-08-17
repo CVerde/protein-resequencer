@@ -49,11 +49,12 @@ MAX6675_CS_PIN = 8     # pin physique 24
 MAX6675_SO_PIN = 9     # pin physique 21
 max6675_available = False
 max6675_lock = threading.Lock()
+max6675_samples = deque(maxlen=5)
 try:
     from gpiozero import DigitalInputDevice, DigitalOutputDevice
     max6675_sck = DigitalOutputDevice(MAX6675_SCK_PIN, initial_value=False)
     max6675_cs = DigitalOutputDevice(MAX6675_CS_PIN, initial_value=True)
-    max6675_so = DigitalInputDevice(MAX6675_SO_PIN, pull_up=None)
+    max6675_so = DigitalInputDevice(MAX6675_SO_PIN, pull_up=None, active_state=True)
     max6675_available = True
     print("MAX6675 initialisé (GPIO11/8/9)")
 except Exception as e:
@@ -215,8 +216,17 @@ def read_max6675():
 
     # D2 vaut 1 lorsque le thermocouple est ouvert/débranché.
     if value & 0x4:
+        max6675_samples.clear()
         return None
-    return round(((value >> 3) & 0xFFF) * 0.25, 2)
+    temperature = ((value >> 3) & 0xFFF) * 0.25
+    max6675_samples.append(temperature)
+    ordered = sorted(max6675_samples)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        filtered = ordered[middle]
+    else:
+        filtered = (ordered[middle - 1] + ordered[middle]) / 2
+    return round(filtered, 2)
 
 def read_sensors():
     temps = read_ds18b20()
