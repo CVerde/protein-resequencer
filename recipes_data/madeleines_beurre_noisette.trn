@@ -1,0 +1,18 @@
+title: Madeleines au beurre noisette sans miel
+servings: 12 madeleines moyennes-grosses
+
+ingredient oeufs | 2 | œufs
+ingredient sucre | 100 g | sucre
+ingredient farine | 120 g | farine
+ingredient bicarbonate | 2 g | bicarbonate
+ingredient sel | 1 pincée | sel
+ingredient citron | 5 g | jus de citron
+ingredient beurre | 120 g | beurre
+
+step beurre_noisette | CUIRE | beurre | jusqu'à coloration noisette, laisser tiédir
+step pate | MELANGER | oeufs, sucre, farine, bicarbonate, sel, citron, beurre_noisette |
+step repos | REPOSER | pate | 2 h minimum au réfrigérateur
+step cuisson | CUIRE | repos | enfourner à 220°C puis 190°C, 9–11 min
+step refroidissement | REFROIDIR | cuisson |
+
+finish: refroidissement

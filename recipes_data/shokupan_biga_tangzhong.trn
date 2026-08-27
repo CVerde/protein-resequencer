@@ -1,0 +1,23 @@
+title: Shokupan biga express + tangzhong
+servings: 1 pain
+
+ingredient farine_biga | 120 g | farine
+ingredient eau_biga | 55 g | eau
+ingredient levure_biga | 1 g | levure fraîche
+ingredient farine_tangzhong | 20 g | farine
+ingredient lait_tangzhong | 100 g | lait
+ingredient farine_finale | 100 g | farine
+ingredient sel | 5 g | sel
+ingredient sucre | 15 g | sucre
+ingredient levure_finale | 4 g | levure fraîche
+ingredient lait_final | 60 g | lait
+ingredient beurre | 20 g | beurre
+
+step biga | MELANGER | farine_biga, eau_biga, levure_biga |
+step tangzhong | CUIRE | farine_tangzhong, lait_tangzhong | jusqu'à épaississement
+step pate | PETRIR | biga, tangzhong, farine_finale, sel, sucre, levure_finale, lait_final, beurre |
+step pousse | REPOSER | pate | jusqu'au développement souhaité
+step cuisson | CUIRE | pousse | jusqu'à cuisson complète
+step refroidissement | REFROIDIR | cuisson |
+
+finish: refroidissement

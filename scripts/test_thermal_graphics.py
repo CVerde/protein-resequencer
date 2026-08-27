@@ -3,10 +3,13 @@
 
 import argparse
 import os
-import time
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from printer.thermal import ThermalPrinter
 
 
 WIDTH = 384
@@ -92,37 +95,6 @@ def create_test_image():
     return image
 
 
-def raster_command(image):
-    """Encode une image 1-bit en commande ESC/POS GS v 0."""
-    image = image.convert("1")
-    width_bytes = (image.width + 7) // 8
-    data = bytearray()
-    pixels = image.load()
-    for y in range(image.height):
-        for byte_x in range(width_bytes):
-            value = 0
-            for bit in range(8):
-                x = byte_x * 8 + bit
-                if x < image.width and pixels[x, y] == 0:
-                    value |= 0x80 >> bit
-            data.append(value)
-    return (
-        b"\x1d\x76\x30\x00"
-        + bytes((width_bytes & 0xFF, width_bytes >> 8, image.height & 0xFF, image.height >> 8))
-        + data
-    )
-
-
-def print_image(device, image, stripe_height=128):
-    with open(device, "wb", buffering=0) as printer:
-        printer.write(b"\x1b@\x1ba\x00")
-        for top in range(0, image.height, stripe_height):
-            stripe = image.crop((0, top, image.width, min(top + stripe_height, image.height)))
-            printer.write(raster_command(stripe))
-            time.sleep(0.08)
-        printer.write(b"\n\n\n")
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--device", default=DEFAULT_DEVICE)
@@ -138,7 +110,9 @@ def main():
     if not args.no_print:
         if not os.path.exists(args.device):
             raise SystemExit(f"Imprimante absente : {args.device}")
-        print_image(args.device, image)
+        printer = ThermalPrinter(device=args.device)
+        printer.print_image(image)
+        printer.feed(3)
         print(f"Test graphique envoyé à {args.device}")
 
 

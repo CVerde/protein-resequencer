@@ -1,0 +1,19 @@
+title: Brioche express au lait en poudre
+servings: 1 brioche
+
+ingredient farine | 300 g | farine
+ingredient lait_poudre | 20 g | lait en poudre
+ingredient sucre | 35 g | sucre
+ingredient sel | 5 g | sel
+ingredient levure | 8 g | levure fraîche
+ingredient oeuf | 1 | œuf
+ingredient eau | 140 g | eau tiède
+ingredient beurre | 50 g | beurre mou
+
+step pate | PETRIR | farine, lait_poudre, sucre, sel, levure, oeuf, eau, beurre | 10–13 min
+step pointage | REPOSER | pate | 1 h à 1 h 30
+step appret | REPOSER | pointage | 45 à 75 min
+step cuisson | CUIRE | appret | 175–180°C, 25–35 min
+step refroidissement | REFROIDIR | cuisson |
+
+finish: refroidissement

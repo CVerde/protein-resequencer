@@ -39,6 +39,39 @@ SCK sur GPIO11 (pin 23), CS sur GPIO8 (pin 24) et SO sur GPIO9 (pin 21).
 La sonde type K se branche sur T+ et T-. SPI n'a pas besoin d'être activé dans
 `raspi-config` pour cette implémentation.
 
+#### Imprimante thermique EM5820
+
+L'EM5820 est alimentée séparément en 5 V (4 A recommandé) et reliée au
+Raspberry Pi par USB. Elle est détectée comme `/dev/usb/lp0` et reçoit des
+commandes ESC/POS via le module indépendant `printer`.
+
+Le compte qui lance Flask doit appartenir au groupe `lp` :
+
+```bash
+sudo usermod -aG lp pi
+sudo reboot
+```
+
+Le périphérique peut être remplacé avec la variable `THERMAL_PRINTER_DEVICE`.
+La couche physique reste indépendante du moteur de recettes.
+
+#### Recettes TRN
+
+L'onglet **Recettes** permet de créer, valider, prévisualiser et imprimer des
+fichiers `.trn`. Le moteur transforme chaque fichier en graphe de recette, puis
+en tableau monochrome de 384 dots avant de l'envoyer à l'EM5820.
+
+- Grammaire et exemple : `doc/FORMAT-RECETTES-TRN.md`
+- Modèle vierge : `doc/template-recette.trn`
+- Mission prête pour un agent : `doc/TEMPLATE-AGENT-RECETTES.md`
+- Recettes enregistrées : `recipes_data/`
+
+Lancer les tests sans utiliser l'imprimante :
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
 ```bash
 # Clone depuis GitHub
 git clone https://github.com/CVerde/protein-resequencer.git

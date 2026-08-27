@@ -582,6 +582,21 @@
         .history-val{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--lcars-yellow);}
         .history-actions{display:flex;gap:4px;padding:6px;}
         .history-actions .btn-sm{flex:1;text-align:center;}
+
+        /* Recipe/TRN editor */
+        .recipes-layout{display:grid;grid-template-columns:150px minmax(260px,1fr) 260px;gap:6px;flex:1;min-height:0;}
+        .recipe-pane{background:var(--bg2);border-left:4px solid var(--lcars-orange);padding:7px;display:flex;flex-direction:column;min-width:0;min-height:0;}
+        .recipe-list{flex:1;overflow-y:auto;margin-top:6px;}
+        .recipe-card{background:var(--bg);border-left:3px solid var(--lcars-blue);padding:7px;margin-bottom:4px;cursor:pointer;color:var(--lcars-yellow);font-size:12px;}
+        .recipe-card.active{border-color:var(--lcars-orange);background:rgba(255,153,0,.12);}
+        .recipe-card.invalid{border-color:var(--lcars-red);}
+        .recipe-meta{color:var(--lcars-tan);font-size:10px;margin-top:3px;}
+        .recipe-editor{flex:1;min-height:0;width:100%;resize:none;background:#08080c;color:#f4d36f;border:1px solid var(--lcars-tan);padding:7px;font:13px/1.25 monospace;}
+        .recipe-actions{display:flex;gap:4px;margin-top:6px;}
+        .recipe-actions .btn{flex:1;padding:8px 4px;font-size:10px;}
+        .recipe-preview{flex:1;min-height:0;overflow:auto;background:#eee;text-align:center;}
+        .recipe-preview img{display:block;width:100%;height:auto;image-rendering:auto;}
+        .recipe-errors{color:var(--lcars-red);font:11px/1.25 monospace;max-height:70px;overflow:auto;margin-top:4px;white-space:pre-wrap;}
         
         /* Modal */
         .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:12px;}
@@ -673,6 +688,32 @@
         <div class="screen" id="events">
             <button class="btn orange" onclick="openModal('eventModal')" style="margin-bottom:8px;">+ Ajouter note</button>
             <div class="list-container" id="eventsList"></div>
+        </div>
+        <!-- Recettes TRN -->
+        <div class="screen" id="recipes">
+            <div class="recipes-layout">
+                <div class="recipe-pane">
+                    <button class="btn green" onclick="newRecipe()">+ Nouvelle</button>
+                    <div class="recipe-list" id="recipeList"></div>
+                </div>
+                <div class="recipe-pane">
+                    <div style="display:flex;gap:5px;margin-bottom:5px;">
+                        <input class="form-input" id="recipeSlug" placeholder="nom-du-fichier" style="padding:6px;font-size:13px;">
+                    </div>
+                    <textarea class="recipe-editor" id="recipeSource" spellcheck="false"></textarea>
+                    <div class="recipe-errors" id="recipeErrors"></div>
+                    <div class="recipe-actions">
+                        <button class="btn" onclick="validateRecipeSource()">Valider</button>
+                        <button class="btn green" onclick="saveRecipe()">Enregistrer</button>
+                        <button class="btn red" onclick="deleteRecipeFile()">Supprimer</button>
+                    </div>
+                </div>
+                <div class="recipe-pane">
+                    <div class="section-title">Aperçu thermique 384 px</div>
+                    <div class="recipe-preview" id="recipePreview"><p style="color:#333;padding:20px;">Enregistre une recette pour générer son aperçu.</p></div>
+                    <div class="recipe-actions"><button class="btn orange" onclick="printCurrentRecipe()">Imprimer</button></div>
+                </div>
+            </div>
         </div>
         <!-- History -->
         <div class="screen" id="history">
@@ -788,6 +829,7 @@
         <button class="nav-btn" data-screen="sensors" onclick="showScreen('sensors')">Capteurs</button>
         <button class="nav-btn" data-screen="timer" onclick="showScreen('timer')">Timer</button>
         <button class="nav-btn" data-screen="fridge" onclick="showScreen('fridge')">Froid</button>
+        <button class="nav-btn" data-screen="recipes" onclick="showScreen('recipes')">Recettes</button>
         <button class="nav-btn" data-screen="history" onclick="showScreen('history')">Histo</button>
         <button class="nav-btn" data-screen="options" onclick="showScreen('options')">Options</button>
         <button class="nav-btn" data-screen="music" onclick="showScreen('music')">Music</button>
@@ -802,6 +844,7 @@
 <div class="modal" id="fridgeDayModal"><div class="modal-box" id="fridgeDayContent"></div></div>
 <script>
 let state={},presets={},selectedPreset=null,editSteps=[],stopStatus='completed',stopRating=0,deleteId=null;
+let recipes=[],currentRecipeSlug=null;
 let curveVisible={t1:true,t2:true,avg:true,humid:true,oven:true,fridge:true};
 function toggleCurve(k){
     curveVisible[k]=!curveVisible[k];
@@ -849,13 +892,56 @@ async function fetchState(){
 function updateVal(id,val){const el=document.getElementById(id),nv=val.toFixed(1);if(el.textContent!==nv){el.textContent=nv;el.classList.remove('updated');void el.offsetWidth;el.classList.add('updated');}}
 async function fetchPresets(){presets=await(await fetch('/api/presets')).json();renderPresets();}
 async function fetchHistory(){renderHistory(await(await fetch('/api/history')).json());}
+function escapeHtml(value){const d=document.createElement('div');d.textContent=String(value??'');return d.innerHTML;}
+async function fetchRecipes(){
+    try{recipes=await(await fetch('/api/recipes')).json();renderRecipeList();}
+    catch(e){showAlert('Chargement recettes impossible',1);}
+}
+function renderRecipeList(){
+    document.getElementById('recipeList').innerHTML=recipes.map(r=>`<div class="recipe-card ${r.slug===currentRecipeSlug?'active':''} ${r.valid?'':'invalid'}" onclick="loadRecipe('${r.slug}')"><div>${escapeHtml(r.title)}</div><div class="recipe-meta">${r.valid?`${r.ingredients} ingrédients · ${r.steps} étapes`:'FICHIER INVALIDE'}</div></div>`).join('')||'<p class="recipe-meta">Aucune recette</p>';
+}
+async function loadRecipe(slug){
+    const r=await fetch('/api/recipes/'+encodeURIComponent(slug)),data=await r.json();
+    if(!r.ok){showAlert(data.error||'Recette introuvable',1);return;}
+    currentRecipeSlug=slug;document.getElementById('recipeSlug').value=slug;
+    document.getElementById('recipeSource').value=data.source;document.getElementById('recipeErrors').textContent='';
+    document.getElementById('recipePreview').innerHTML=`<img alt="Aperçu ${escapeHtml(data.recipe.title)}" src="/api/recipes/${encodeURIComponent(slug)}/preview.png?t=${Date.now()}">`;
+    renderRecipeList();
+}
+function newRecipe(){
+    currentRecipeSlug=null;document.getElementById('recipeSlug').value='nouvelle-recette';
+    document.getElementById('recipeSource').value=`# Recette TRN Protein Resequencer\ntitle: Nouvelle recette\nservings: 4 personnes\nprep: Préparer le matériel\n\ningredient ingredient1 | 100 g | Premier ingrédient\ningredient ingredient2 | 50 g | Deuxième ingrédient\n\nstep melange | MELANGER | ingredient1, ingredient2\nstep cuisson | CUIRE | melange | 180 C / 20 min\n\nfinish: cuisson\n`;
+    document.getElementById('recipeErrors').textContent='';document.getElementById('recipePreview').innerHTML='<p style="color:#333;padding:20px;">Valide puis enregistre la recette.</p>';renderRecipeList();
+}
+async function validateRecipeSource(){
+    const r=await fetch('/api/recipes/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:document.getElementById('recipeSource').value})});
+    const data=await r.json();document.getElementById('recipeErrors').textContent=r.ok?'Format TRN valide':(data.errors||[data.error]).join('\n');
+    showAlert(r.ok?'Recette valide':'Recette invalide',!r.ok);return r.ok;
+}
+async function saveRecipe(){
+    const slug=document.getElementById('recipeSlug').value.trim();
+    const r=await fetch('/api/recipes/'+encodeURIComponent(slug),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:document.getElementById('recipeSource').value})});
+    const data=await r.json();
+    if(!r.ok){document.getElementById('recipeErrors').textContent=(data.errors||[data.error]).join('\n');showAlert('Recette invalide',1);return;}
+    currentRecipeSlug=slug;showAlert('Recette enregistrée');await fetchRecipes();await loadRecipe(slug);
+}
+async function deleteRecipeFile(){
+    if(!currentRecipeSlug||!confirm('Supprimer cette recette ?'))return;
+    const r=await fetch('/api/recipes/'+encodeURIComponent(currentRecipeSlug),{method:'DELETE'});
+    if(!r.ok){showAlert('Suppression impossible',1);return;}currentRecipeSlug=null;newRecipe();fetchRecipes();showAlert('Recette supprimée');
+}
+async function printCurrentRecipe(){
+    if(!currentRecipeSlug){showAlert('Enregistre la recette avant impression',1);return;}
+    const r=await fetch('/api/recipes/'+encodeURIComponent(currentRecipeSlug)+'/print',{method:'POST'}),data=await r.json();
+    showAlert(r.ok?'Recette imprimée':(data.error||'Impression impossible'),!r.ok);
+}
 function showScreen(id){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-screen="'+id+'"]')?.classList.add('active');
-    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',fridge:'Froid',history:'Historique',options:'Options',music:'Music'}[id];
-    if(id==='history')fetchHistory();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}if(id==='timer'){resizeOvenCanvas();}if(id==='fridge'){fetchHaccp();}if(id==='options'){updateThemeButtons();}
+    document.getElementById('pageTitle').textContent={dashboard:'Accueil',create:'Nouveau',sensors:'Capteurs',timer:'Timer',fridge:'Froid',recipes:'Recettes TRN',history:'Historique',options:'Options',music:'Music'}[id];
+    if(id==='history')fetchHistory();if(id==='recipes')fetchRecipes();if(id==='events')renderEvents();if(id==='sensors'){resizeCanvas();drawGraph();}if(id==='timer'){resizeOvenCanvas();}if(id==='fridge'){fetchHaccp();}if(id==='options'){updateThemeButtons();}
 }
 function renderBatch(){
     const p=document.getElementById('batchPanel');

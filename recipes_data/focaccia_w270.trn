@@ -1,0 +1,21 @@
+title: Focaccia express W270
+servings: 1 plaque 30 x 40 cm
+
+ingredient farine | 500 g | farine W270
+ingredient eau_autolyse | 380 g | eau
+ingredient eau_pate | 20 g | eau
+ingredient sel_pate | 10 g | sel
+ingredient levure | 5 g | levure sèche instantanée
+ingredient huile_pate | 20 g | huile d'olive
+ingredient huile_saumure | 30 g | huile d'olive
+ingredient eau_saumure | 30 g | eau
+ingredient sel_finition | une pincée | sel
+
+step autolyse | REPOSER | farine, eau_autolyse | 20 min
+step pate | PETRIR | autolyse, eau_pate, sel_pate, levure, huile_pate | 9–11 min
+step pointage | REPOSER | pate | 26–28°C, 2 h, rabats à 30, 60 et 90 min
+step saumure | MELANGER | huile_saumure, eau_saumure, sel_finition |
+step cuisson | CUIRE | pointage, saumure | 230°C, 20–25 min
+step refroidissement | REFROIDIR | cuisson | 15 min
+
+finish: refroidissement

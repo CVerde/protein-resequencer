@@ -4,15 +4,21 @@ Protein Resequencer - Chambre de Fermentation Contrôlée
 Contrôleur principal v4 - GPIO relais, HACCP frigo
 """
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
 from datetime import datetime, timedelta
 from collections import deque
+from io import BytesIO
 import json
 import os
 import threading
 import time
 
+import printer
+from recipes import RecipeFormatError, parse_recipe, render_thermal
+from recipes.storage import RecipeStore
+
 app = Flask(__name__)
+recipe_store = RecipeStore()
 
 # GPIO relay mapping
 RELAY_PINS = {
@@ -371,6 +377,70 @@ def get_sensor_history():
 @app.route('/api/presets')
 def get_presets():
     return jsonify(get_all_presets())
+
+@app.route('/api/recipes')
+def get_recipes():
+    return jsonify(recipe_store.list())
+
+@app.route('/api/recipes/validate', methods=['POST'])
+def validate_recipe():
+    try:
+        recipe = parse_recipe((request.json or {}).get('source', ''))
+        return jsonify({"valid": True, "recipe": recipe.to_dict()})
+    except RecipeFormatError as e:
+        return jsonify({"valid": False, "errors": e.errors}), 400
+
+@app.route('/api/recipes/<slug>', methods=['GET', 'PUT', 'DELETE'])
+def recipe_item(slug):
+    try:
+        if request.method == 'GET':
+            source, recipe = recipe_store.read(slug)
+            return jsonify({"slug": slug, "source": source, "recipe": recipe.to_dict()})
+        if request.method == 'PUT':
+            recipe = recipe_store.save(slug, (request.json or {}).get('source', ''))
+            return jsonify({"success": True, "slug": slug, "recipe": recipe.to_dict()})
+        recipe_store.delete(slug)
+        return jsonify({"success": True})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except RecipeFormatError as e:
+        return jsonify({"error": "Recette invalide", "errors": e.errors}), 400
+    except FileNotFoundError:
+        return jsonify({"error": "Recette introuvable"}), 404
+
+@app.route('/api/recipes/<slug>/preview.png')
+def recipe_preview(slug):
+    try:
+        _, recipe = recipe_store.read(slug)
+        image = render_thermal(recipe)
+        output = BytesIO()
+        image.save(output, format='PNG')
+        output.seek(0)
+        return send_file(output, mimetype='image/png', download_name=f'{slug}.png')
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except RecipeFormatError as e:
+        return jsonify({"error": "Recette invalide", "errors": e.errors}), 400
+    except FileNotFoundError:
+        return jsonify({"error": "Recette introuvable"}), 404
+
+@app.route('/api/recipes/<slug>/print', methods=['POST'])
+def print_recipe(slug):
+    if not printer.is_available():
+        return jsonify({"error": "Imprimante indisponible ou permission refusée"}), 503
+    try:
+        _, recipe = recipe_store.read(slug)
+        printer.print_image(render_thermal(recipe))
+        printer.feed(3)
+        return jsonify({"success": True})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except RecipeFormatError as e:
+        return jsonify({"error": "Recette invalide", "errors": e.errors}), 400
+    except FileNotFoundError:
+        return jsonify({"error": "Recette introuvable"}), 404
+    except OSError as e:
+        return jsonify({"error": f"Erreur imprimante: {e}"}), 503
 
 @app.route('/api/presets/custom', methods=['POST'])
 def create_custom_preset():

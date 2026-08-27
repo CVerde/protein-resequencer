@@ -1,0 +1,23 @@
+title: Cake jambon olives en moule Pullman fermé
+servings: 1 cake
+prep: Remplir le moule à 55–60% maximum et fermer le couvercle
+
+ingredient oeufs | 3 | œufs
+ingredient farine | 150 g | farine
+ingredient bicarbonate | 4 g | bicarbonate
+ingredient lait_poudre | 15 g | lait en poudre
+ingredient eau | 85 g | eau
+ingredient huile | 80 g | huile
+ingredient beurre | 60 g | beurre
+ingredient jambon | 150 g | jambon
+ingredient olives | 100 g | olives
+ingredient citron | 12 g | jus de citron
+ingredient sel | quantité non définie | sel
+ingredient poivre | quantité non définie | poivre
+
+step beurre_noisette | CUIRE | beurre | jusqu'à coloration noisette
+step pate | MELANGER | oeufs, farine, bicarbonate, lait_poudre, eau, huile, beurre_noisette, jambon, olives, citron, sel, poivre |
+step cuisson | CUIRE | pate | moule fermé, 160–165°C, 55–70 min, cœur 94–96°C
+step refroidissement | REFROIDIR | cuisson |
+
+finish: refroidissement

@@ -1,0 +1,22 @@
+title: Shokupan Pullman express au tangzhong
+servings: 1 pain
+prep: Moule Pullman 20 x 10 x 11 cm avec couvercle
+
+ingredient farine_tangzhong | 39 g | farine
+ingredient lait_tangzhong | 195 g | lait
+ingredient farine_pate | 461 g | farine W270
+ingredient lait_poudre | 33 g | lait en poudre
+ingredient sucre | 44 g | sucre
+ingredient sel | 8 g | sel
+ingredient levure | 6 g | levure sèche instantanée
+ingredient eau | 135 à 145 g | eau
+ingredient beurre | 50 g | beurre doux
+
+step tangzhong | CUIRE | farine_tangzhong, lait_tangzhong | 65°C
+step autolyse | REPOSER | tangzhong, farine_pate, lait_poudre, eau | 15 min
+step pate | PETRIR | autolyse, levure, sucre, sel, beurre | jusqu'à membrane fine, pâte 24–25°C
+step pointage | REPOSER | pate | 26–27°C, 60 min
+step cuisson | CUIRE | pointage | moule fermé, 180°C, 36 min, cœur 94–95°C
+step refroidissement | REFROIDIR | cuisson | 2 h minimum
+
+finish: refroidissement

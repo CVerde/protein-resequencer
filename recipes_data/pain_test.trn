@@ -1,0 +1,13 @@
+# Exemple minimal de fichier TRN Protein Resequencer
+title: Pain test
+servings: 1 petit pain
+prep: Préchauffer le four à 250 C
+
+ingredient farine | 100 g | Farine
+ingredient eau | 70 g | Eau
+
+step melange | MELANGER | farine, eau
+step petrissage | PETRIR | melange | 8 min
+step cuisson | CUIRE | petrissage | 250 C / 12 min
+
+finish: cuisson

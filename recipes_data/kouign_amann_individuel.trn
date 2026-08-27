@@ -1,0 +1,14 @@
+title: Kouign-amann individuel
+servings: portions individuelles de 70 à 90 g
+
+ingredient pate | quantité non définie | pâte levée à kouign-amann
+ingredient sucre_interieur | quantité non définie | sucre
+ingredient sucre_moule | quantité non définie | sucre
+ingredient beurre | quantité non définie | beurre
+
+step tourage | MELANGER | pate, beurre, sucre_interieur | tourer et former des carrés de 10–12 cm
+step moulage | REPOSER | tourage, sucre_moule | replier les coins, mettre en moule, 20–40 min
+step cuisson | CUIRE | moulage | 200°C puis 180°C après 10 min, 25–30 min total
+step refroidissement | REFROIDIR | cuisson | démouler très chaud
+
+finish: refroidissement

@@ -1,0 +1,22 @@
+title: Cake jambon olives sans fromage
+servings: 1 cake
+
+ingredient oeufs | 3 | œufs
+ingredient farine | 150 g | farine
+ingredient bicarbonate | 4 g | bicarbonate
+ingredient lait_poudre | 15 g | lait en poudre
+ingredient eau | 85 g | eau
+ingredient huile | 80 g | huile
+ingredient beurre | 60 g | beurre
+ingredient jambon | 150 g | jambon
+ingredient olives | 100 g | olives
+ingredient citron | 12 g | jus de citron
+ingredient sel | quantité non définie | sel
+ingredient poivre | quantité non définie | poivre
+
+step beurre_noisette | CUIRE | beurre | jusqu'à coloration noisette
+step pate | MELANGER | oeufs, farine, bicarbonate, lait_poudre, eau, huile, beurre_noisette, jambon, olives, citron, sel, poivre |
+step cuisson | CUIRE | pate | 165–170°C, 45–55 min
+step refroidissement | REFROIDIR | cuisson |
+
+finish: refroidissement

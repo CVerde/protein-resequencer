@@ -1,0 +1,13 @@
+# Dupliquer ce fichier puis remplacer les valeurs d'exemple
+title: Nom de la recette
+servings: 4 personnes
+source: Origine de la recette
+prep: Préparation préalable
+
+ingredient ingredient1 | 100 g | Premier ingrédient
+ingredient ingredient2 | 50 g | Deuxième ingrédient
+
+step melange | MELANGER | ingredient1, ingredient2
+step cuisson | CUIRE | melange | 180 C / 20 min
+
+finish: cuisson
