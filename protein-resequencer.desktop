@@ -2,7 +2,7 @@
 Name=Protein Resequencer
 Comment=Chambre de Fermentation Contrôlée
 Exec=/home/pi/protein-resequencer/start.sh
-Icon=/home/pi/protein-resequencer/icon.png
+Icon=/home/pi/protein-resequencer/icon.svg
 Terminal=false
 Type=Application
 Categories=Utility;
