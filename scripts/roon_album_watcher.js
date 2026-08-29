@@ -15,6 +15,9 @@ const PYTHON = process.env.PYTHON || "python3";
 const PRINT_SCRIPT = path.join(__dirname, "print_album_art.py");
 const ZONE_IDS = new Set((process.env.ROON_PRINT_ZONE_IDS || "")
   .split(",").map(value => value.trim()).filter(Boolean));
+const CATALOG_CACHE_MS = 5 * 60 * 1000;
+let catalogCache = null;
+let catalogCachedAt = 0;
 
 function log(message) {
   process.stdout.write(`[${new Date().toISOString()}] ${message}\n`);
@@ -34,11 +37,47 @@ function parisTime(now = new Date()) {
   }).format(now);
 }
 
+function normalizeText(value) {
+  return String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ").trim().toLocaleLowerCase("fr-FR");
+}
+
 function albumKey(nowPlaying) {
-  const normalize = value => String(value || "").trim().toLocaleLowerCase("fr-FR");
-  const artist = normalize(nowPlaying.artist);
-  const album = normalize(nowPlaying.album);
+  const artist = normalizeText(nowPlaying.artist);
+  const album = normalizeText(nowPlaying.album);
   return artist && album ? `${artist}|${album}` : `image:${nowPlaying.image_key || ""}`;
+}
+
+function findCatalogYear(index, nowPlaying) {
+  if (Number.isInteger(nowPlaying.year)) return nowPlaying.year;
+  const wantedArtist = normalizeText(nowPlaying.artist);
+  const wantedAlbum = normalizeText(nowPlaying.album);
+  const albums = index && Array.isArray(index.albums) ? index.albums : [];
+  const match = albums.find(album => normalizeText(album.artist) === wantedArtist &&
+    normalizeText(album.title) === wantedAlbum);
+  if (!match) return "";
+  return match.originalReleaseYear || match.editionReleaseYear ||
+    (match.originalReleaseDate && match.originalReleaseDate.year) ||
+    (match.releaseDate && match.releaseDate.year) || "";
+}
+
+async function resolveYear(nowPlaying, fetchImpl = fetch) {
+  if (Number.isInteger(nowPlaying.year)) return nowPlaying.year;
+  try {
+    const now = Date.now();
+    if (!catalogCache || now - catalogCachedAt >= CATALOG_CACHE_MS) {
+      const response = await fetchImpl(`${SONGR_URL}/api/catalog/index`, {
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!response.ok) throw new Error(`catalogue HTTP ${response.status}`);
+      catalogCache = await response.json();
+      catalogCachedAt = now;
+    }
+    return findCatalogYear(catalogCache, nowPlaying);
+  } catch (error) {
+    log(`Année Songr indisponible : ${error.message}`);
+    return "";
+  }
 }
 
 function readState(today = parisDate()) {
@@ -88,6 +127,7 @@ async function handleNowPlaying(data, fetchImpl = fetch, printImpl = runPrinter)
   const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "roon-album-"));
   const imagePath = path.join(temporaryDirectory, "cover");
   try {
+    const enrichedNowPlaying = { ...nowPlaying, year: await resolveYear(nowPlaying, fetchImpl) };
     const imageUrl = `${SONGR_URL}/api/image/${encodeURIComponent(nowPlaying.image_key)}` +
       "?scale=fit&width=384&height=384";
     const response = await fetchImpl(imageUrl);
@@ -95,11 +135,12 @@ async function handleNowPlaying(data, fetchImpl = fetch, printImpl = runPrinter)
     const contentType = response.headers.get("content-type") || "";
     if (!contentType.startsWith("image/")) throw new Error(`type de pochette invalide : ${contentType}`);
     fs.writeFileSync(imagePath, Buffer.from(await response.arrayBuffer()));
-    await printImpl(imagePath, nowPlaying);
+    await printImpl(imagePath, enrichedNowPlaying);
     const freshState = readState();
     freshState.albums[key] = {
       artist: nowPlaying.artist, album: nowPlaying.album,
-      image_key: nowPlaying.image_key, printed_at: new Date().toISOString(), zone_id: data.zone_id
+      year: enrichedNowPlaying.year || null, image_key: nowPlaying.image_key,
+      printed_at: new Date().toISOString(), zone_id: data.zone_id
     };
     writeState(freshState);
     log(`Imprimé : ${nowPlaying.artist} — ${nowPlaying.album}`);
@@ -125,4 +166,5 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { albumKey, allowedEvent, handleNowPlaying, parisDate, parisTime, readState, writeState };
+module.exports = { albumKey, allowedEvent, findCatalogYear, handleNowPlaying, normalizeText,
+  parisDate, parisTime, readState, resolveYear, writeState };

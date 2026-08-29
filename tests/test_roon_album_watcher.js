@@ -21,6 +21,14 @@ test("formats broadcast time in Europe/Paris", () => {
   assert.strictEqual(watcher.parisTime(new Date("2026-01-15T20:05:00Z")), "21:05");
 });
 
+test("finds the original release year in the Songr catalog", () => {
+  const index = { albums: [{
+    artist: "Björk", title: "Début", originalReleaseYear: 1993,
+    editionReleaseYear: 2013,
+  }] };
+  assert.strictEqual(watcher.findCatalogYear(index, { artist: "Bjork", album: "Debut" }), 1993);
+});
+
 test("only accepts playing events with artwork and album metadata", () => {
   const base = { zone_id: "zone", now_playing: {
     state: "playing", artist: "Goodge", album: "Soul Spectrums", image_key: "image"
