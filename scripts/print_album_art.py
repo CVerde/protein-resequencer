@@ -77,7 +77,8 @@ def render_album_ticket(image, album, artist, track="", year="", played_at=""):
         box = draw.textbbox((0, 0), line, font=detail_font)
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=detail_font, fill=0)
         y += 18
-    return canvas.convert("1", dither=Image.Dither.FLOYDSTEINBERG)
+    ticket = canvas.convert("1", dither=Image.Dither.FLOYDSTEINBERG)
+    return ticket.rotate(180)
 
 
 def main():
