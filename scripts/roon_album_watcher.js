@@ -37,6 +37,15 @@ function parisTime(now = new Date()) {
   }).format(now);
 }
 
+function parisBroadcastTime(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.day}/${values.month}/${values.year} à ${values.hour}:${values.minute}`;
+}
+
 function normalizeText(value) {
   return String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[^\p{L}\p{N}]+/gu, " ").trim().toLocaleLowerCase("fr-FR");
@@ -108,7 +117,7 @@ function runPrinter(imagePath, nowPlaying) {
     const child = spawn(PYTHON, [PRINT_SCRIPT, imagePath,
       "--album", nowPlaying.album, "--artist", nowPlaying.artist,
       "--track", nowPlaying.title || "", "--year", String(nowPlaying.year || ""),
-      "--played-at", parisTime()], { stdio: "inherit" });
+      "--played-at", parisBroadcastTime()], { stdio: "inherit" });
     child.once("error", reject);
     child.once("exit", code => code === 0 ? resolve() : reject(new Error(`impression terminée avec le code ${code}`)));
   });
@@ -167,4 +176,4 @@ function main() {
 if (require.main === module) main();
 
 module.exports = { albumKey, allowedEvent, findCatalogYear, handleNowPlaying, normalizeText,
-  parisDate, parisTime, readState, resolveYear, writeState };
+  parisBroadcastTime, parisDate, parisTime, readState, resolveYear, writeState };

@@ -51,7 +51,7 @@ def render_album_ticket(image, album, artist, track="", year="", played_at=""):
     info_lines = []
     info_lines.append(f"Année : {year or 'inconnue'}")
     if played_at:
-        info_lines.append(f"Diffusé à {played_at}")
+        info_lines.append(f"Diffusé le {played_at}")
     text_height = (10 + len(album_lines) * 48 + len(artist_lines) * 40 +
                    len(track_lines) * 36 + len(info_lines) * 36 + 12)
     canvas = Image.new("L", (WIDTH, MARGIN + COVER_SIZE + text_height), 255)

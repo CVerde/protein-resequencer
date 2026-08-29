@@ -19,6 +19,10 @@ test("normalise album and artist for daily deduplication", () => {
 
 test("formats broadcast time in Europe/Paris", () => {
   assert.strictEqual(watcher.parisTime(new Date("2026-01-15T20:05:00Z")), "21:05");
+  assert.strictEqual(
+    watcher.parisBroadcastTime(new Date("2026-01-15T20:05:00Z")),
+    "15/01/26 à 21:05"
+  );
 });
 
 test("finds the original release year in the Songr catalog", () => {
