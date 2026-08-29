@@ -42,18 +42,18 @@ def render_album_ticket(image, album, artist, track="", year="", played_at=""):
     cover_canvas.paste(cover, ((COVER_SIZE - cover.width) // 2, (COVER_SIZE - cover.height) // 2))
     cover_gray = ImageOps.autocontrast(cover_canvas.convert("L"), cutoff=1)
 
-    album_font = load_font(20, bold=True)
-    artist_font = load_font(16)
-    detail_font = load_font(14)
-    album_lines = wrapped_lines(album, 31)[:3]
-    artist_lines = wrapped_lines(artist, 38)[:2]
-    track_lines = wrapped_lines(track, 42)[:2] if track else []
+    album_font = load_font(40, bold=True)
+    artist_font = load_font(32)
+    detail_font = load_font(28)
+    album_lines = wrapped_lines(album, 15)[:3]
+    artist_lines = wrapped_lines(artist, 19)[:2]
+    track_lines = wrapped_lines(track, 21)[:2] if track else []
     info_lines = []
     info_lines.append(f"Année : {year or 'inconnue'}")
     if played_at:
         info_lines.append(f"Diffusé à {played_at}")
-    text_height = (10 + len(album_lines) * 24 + len(artist_lines) * 20 +
-                   len(track_lines) * 18 + len(info_lines) * 18 + 12)
+    text_height = (10 + len(album_lines) * 48 + len(artist_lines) * 40 +
+                   len(track_lines) * 36 + len(info_lines) * 36 + 12)
     canvas = Image.new("L", (WIDTH, MARGIN + COVER_SIZE + text_height), 255)
     canvas.paste(cover_gray, (MARGIN, MARGIN))
     draw = ImageDraw.Draw(canvas)
@@ -63,20 +63,20 @@ def render_album_ticket(image, album, artist, track="", year="", played_at=""):
     for line in album_lines:
         box = draw.textbbox((0, 0), line, font=album_font)
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=album_font, fill=0)
-        y += 24
+        y += 48
     for line in artist_lines:
         box = draw.textbbox((0, 0), line, font=artist_font)
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=artist_font, fill=0)
-        y += 20
+        y += 40
     for line in track_lines:
         display = f"♪ {line}"
         box = draw.textbbox((0, 0), display, font=detail_font)
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), display, font=detail_font, fill=0)
-        y += 18
+        y += 36
     for line in info_lines:
         box = draw.textbbox((0, 0), line, font=detail_font)
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=detail_font, fill=0)
-        y += 18
+        y += 36
     ticket = canvas.convert("1", dither=Image.Dither.FLOYDSTEINBERG)
     return ticket.rotate(180)
 
