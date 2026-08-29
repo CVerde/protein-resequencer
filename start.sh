@@ -5,12 +5,16 @@ cd /home/pi/protein-resequencer || exit 1
 # Arrêter les anciennes instances
 pkill -f "python3 app.py" 2>/dev/null
 pkill -f "chromium.*localhost:5000" 2>/dev/null
+pkill -f "scripts/roon_album_watcher.js" 2>/dev/null
 
 sleep 1
 
 # Serveur Flask
 python3 app.py &
 SERVER_PID=$!
+
+# Impression automatique des nouvelles pochettes Roon (échec non bloquant)
+node scripts/roon_album_watcher.js >> /tmp/protein-resequencer-roon-print.log 2>&1 &
 
 sleep 2
 
