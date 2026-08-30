@@ -175,6 +175,27 @@ async function rolloverIfNeeded(printImpl = printReport, now = new Date()) {
   return true;
 }
 
+async function enrichMissingYears(fetchImpl = fetch) {
+  const state = readState();
+  let changed = false;
+  const resolved = new Map();
+  for (const track of state.tracks) {
+    if (track.year) continue;
+    const key = `${normalizeText(track.artist)}|${normalizeText(track.album)}`;
+    if (!resolved.has(key)) resolved.set(key, await resolveYear(track, fetchImpl));
+    const year = resolved.get(key);
+    if (year) {
+      track.year = year;
+      changed = true;
+    }
+  }
+  if (changed) {
+    writeState(state);
+    log("Années manquantes du rapport courant mises à jour");
+  }
+  return changed;
+}
+
 async function recordNowPlaying(data, fetchImpl = fetch, now = new Date()) {
   if (!allowedEvent(data)) return "ignored";
   const state = readState();
@@ -201,7 +222,10 @@ function main() {
   const enqueue = task => { queue = queue.then(task).catch(error => log(`Erreur : ${error.message}`)); };
   socket.on("connect", () => {
     log(`Connecté à Songr (${socket.id})`);
-    enqueue(() => rolloverIfNeeded());
+    enqueue(async () => {
+      await rolloverIfNeeded();
+      await enrichMissingYears();
+    });
   });
   socket.on("disconnect", reason => log(`Déconnecté de Songr : ${reason}`));
   socket.on("connect_error", error => log(`Connexion Songr impossible : ${error.message}`));
@@ -214,6 +238,6 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { allowedEvent, emptyState, findCatalogYear, findMusicBrainzYear, normalizeText,
-  parisDate, parisTime, readState, recordNowPlaying, resolveMusicBrainzYear, resolveYear,
-  rolloverIfNeeded, trackKey, writeState };
+module.exports = { allowedEvent, emptyState, enrichMissingYears, findCatalogYear,
+  findMusicBrainzYear, normalizeText, parisDate, parisTime, readState, recordNowPlaying,
+  resolveMusicBrainzYear, resolveYear, rolloverIfNeeded, trackKey, writeState };

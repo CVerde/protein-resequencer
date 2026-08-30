@@ -60,3 +60,18 @@ test("prints yesterday before starting a new day", async () => {
   assert.strictEqual(printed.date, "2026-08-29");
   assert.strictEqual(watcher.readState().date, "2026-08-30");
 });
+
+test("enriches tracks already recorded without a year", async () => {
+  watcher.writeState({ date: "2026-08-30", tracks: [{
+    time: "16h20", title: "Take it slow", album: "A thousand doors, just one key",
+    year: null, artist: "Feldup", zoneId: "zone",
+  }], lastByZone: {} });
+  const fakeFetch = async url => url.includes("/api/catalog/index")
+    ? { ok: true, json: async () => ({ albums: [] }) }
+    : { ok: true, json: async () => ({ "release-groups": [{
+      score: 100, title: "A thousand doors, just one key",
+      "first-release-date": "2025-01-01", "artist-credit": [{ name: "Feldup" }],
+    }] }) };
+  assert.strictEqual(await watcher.enrichMissingYears(fakeFetch), true);
+  assert.strictEqual(watcher.readState().tracks[0].year, 2025);
+});
