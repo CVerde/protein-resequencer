@@ -110,21 +110,32 @@ function findMusicBrainzYear(result, nowPlaying) {
 async function resolveMusicBrainzYear(nowPlaying, fetchImpl = fetch) {
   const key = `${normalizeText(nowPlaying.artist)}|${normalizeText(nowPlaying.album)}`;
   if (musicBrainzCache.has(key)) return musicBrainzCache.get(key);
-  const wait = Math.max(0, 1100 - (Date.now() - lastMusicBrainzRequestAt));
-  if (wait) await new Promise(resolve => setTimeout(resolve, wait));
   try {
     const query = `releasegroup:"${String(nowPlaying.album).replaceAll('"', '\\"')}" AND ` +
       `artist:"${String(nowPlaying.artist).replaceAll('"', '\\"')}"`;
     const parameters = new URLSearchParams({ query, fmt: "json", limit: "5" });
-    lastMusicBrainzRequestAt = Date.now();
-    const response = await fetchImpl(`https://musicbrainz.org/ws/2/release-group/?${parameters}`, {
-      headers: { "User-Agent": "ProteinResequencer/1.0 (https://github.com/CVerde/protein-resequencer)" },
-      signal: AbortSignal.timeout(6000),
-    });
-    if (!response.ok) throw new Error(`MusicBrainz HTTP ${response.status}`);
-    const year = findMusicBrainzYear(await response.json(), nowPlaying);
-    musicBrainzCache.set(key, year);
-    return year;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const throttle = Math.max(0, 1100 - (Date.now() - lastMusicBrainzRequestAt));
+      if (throttle) await new Promise(resolve => setTimeout(resolve, throttle));
+      lastMusicBrainzRequestAt = Date.now();
+      const response = await fetchImpl(`https://musicbrainz.org/ws/2/release-group/?${parameters}`, {
+        headers: { "User-Agent": "ProteinResequencer/1.0 (https://github.com/CVerde/protein-resequencer)" },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (response.ok) {
+        const year = findMusicBrainzYear(await response.json(), nowPlaying);
+        musicBrainzCache.set(key, year);
+        return year;
+      }
+      if (![429, 503].includes(response.status) || attempt === 2) {
+        throw new Error(`MusicBrainz HTTP ${response.status}`);
+      }
+      const retryAfter = Number(response.headers && response.headers.get("retry-after"));
+      const delay = Number.isFinite(retryAfter) && retryAfter > 0
+        ? retryAfter * 1000 : [2000, 5000][attempt];
+      log(`MusicBrainz HTTP ${response.status}, nouvelle tentative dans ${delay / 1000}s`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
   } catch (error) {
     log(`Année MusicBrainz indisponible : ${error.message}`);
     return "";
@@ -234,6 +245,7 @@ function main() {
     await recordNowPlaying(data);
   }));
   setInterval(() => enqueue(() => rolloverIfNeeded()), 10_000);
+  setInterval(() => enqueue(() => enrichMissingYears()), 30 * 60 * 1000);
 }
 
 if (require.main === module) main();
