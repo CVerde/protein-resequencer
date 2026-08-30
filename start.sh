@@ -6,6 +6,7 @@ cd /home/pi/protein-resequencer || exit 1
 pkill -f "python3 app.py" 2>/dev/null
 pkill -f "chromium.*localhost:5000" 2>/dev/null
 pkill -f "scripts/roon_album_watcher.js" 2>/dev/null
+pkill -f "scripts/roon_daily_report.js" 2>/dev/null
 
 sleep 1
 
@@ -13,8 +14,8 @@ sleep 1
 python3 app.py &
 SERVER_PID=$!
 
-# Impression automatique des nouvelles pochettes Roon (échec non bloquant)
-node scripts/roon_album_watcher.js >> /tmp/protein-resequencer-roon-print.log 2>&1 &
+# Journal des écoutes Roon et impression quotidienne à minuit (échec non bloquant)
+node scripts/roon_daily_report.js >> /tmp/protein-resequencer-roon-report.log 2>&1 &
 
 sleep 2
 

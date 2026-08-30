@@ -70,22 +70,22 @@ Lancer les tests sans utiliser l'imprimante :
 
 ```bash
 python3 -m unittest discover -s tests -v
-node --test tests/test_roon_album_watcher.js
+node --test tests/test_roon_daily_report.js
 ```
 
-#### Pochettes Roon automatiques
+#### Compte rendu quotidien Roon
 
-Au lancement, `scripts/roon_album_watcher.js` écoute les événements
-`now-playing-updated` de Songr sur le port 3333. Pour chaque album en lecture,
-il récupère la pochette, la convertit en ticket monochrome de 384 dots et
-l'imprime une seule fois par journée (heure de Paris), même en shuffle et après
-redémarrage. Les zones arrêtées ou en pause sont ignorées.
+Au lancement, `scripts/roon_daily_report.js` écoute les événements
+`now-playing-updated` de Songr sur le port 3333 et mémorise chaque changement
+réel de morceau. À minuit (heure de Paris), il imprime la liste chronologique
+complète de la journée, sans pochette. Un rapport manqué pendant un arrêt est
+imprimé au redémarrage suivant.
 
 Le journal est stocké hors du dépôt dans
-`/home/pi/.local/state/protein-resequencer/printed-albums.json`. Par défaut,
+`/home/pi/.local/state/protein-resequencer/roon-daily-report.json`. Par défaut,
 toutes les zones sont surveillées. `ROON_PRINT_ZONE_IDS` permet de fournir une
 liste d'identifiants de zones séparés par des virgules. Les logs sont dans
-`/tmp/protein-resequencer-roon-print.log`.
+`/tmp/protein-resequencer-roon-report.log`.
 
 ```bash
 # Clone depuis GitHub
