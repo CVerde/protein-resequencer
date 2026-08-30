@@ -84,6 +84,8 @@ imprimé au redémarrage suivant.
 L'année vient d'abord du catalogue local Songr. Si elle y manque, le watcher
 interroge MusicBrainz avec une correspondance stricte artiste/album et respecte
 sa limite d'une requête par seconde.
+Si aucune source ne fournit l'année avant l'impression, la date est simplement
+omise du compte rendu plutôt que remplacée par une mention « inconnue ».
 
 Le journal est stocké hors du dépôt dans
 `/home/pi/.local/state/protein-resequencer/roon-daily-report.json`. Par défaut,

@@ -19,10 +19,11 @@ class DailyRoonReportTest(unittest.TestCase):
                              "year": 1993, "artist": "Artiste"})
         self.assertEqual(text, "14h07 -  Titre, sur Album, 1993 par Artiste")
 
-    def test_entry_mentions_an_unknown_year(self):
+    def test_entry_omits_an_unknown_year(self):
         text = format_entry({"time": "14h07", "title": "Titre", "album": "Album",
                              "year": None, "artist": "Artiste"})
-        self.assertIn("année inconnue", text)
+        self.assertEqual(text, "14h07 -  Titre, sur Album par Artiste")
+        self.assertNotIn("inconnue", text)
 
 
 if __name__ == "__main__":

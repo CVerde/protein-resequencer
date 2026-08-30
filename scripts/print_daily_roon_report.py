@@ -47,9 +47,10 @@ def wrap_pixels(draw, text, font, max_width):
 
 
 def format_entry(entry):
-    year = entry.get("year") or "année inconnue"
-    return (f'{entry["time"]} -  {entry["title"]}, sur {entry["album"]}, '
-            f'{year} par {entry["artist"]}')
+    year = entry.get("year")
+    dated = f', {year}' if year else ''
+    return (f'{entry["time"]} -  {entry["title"]}, sur {entry["album"]}'
+            f'{dated} par {entry["artist"]}')
 
 
 def render_report(report):
