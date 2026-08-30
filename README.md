@@ -81,6 +81,9 @@ réel de morceau. À minuit (heure de Paris), il imprime la liste chronologique
 complète de la journée, sans pochette. Un rapport manqué pendant un arrêt est
 imprimé au redémarrage suivant.
 
+L'en-tête indique la date longue en français, le nombre de pistes et leur durée
+cumulée, puis laisse deux lignes blanches avant la liste chronologique.
+
 L'année vient d'abord du catalogue local Songr. Si elle y manque, le watcher
 interroge MusicBrainz avec une correspondance stricte artiste/album et respecte
 sa limite d'une requête par seconde.

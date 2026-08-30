@@ -2,6 +2,7 @@
 """Imprime le compte rendu quotidien des écoutes Roon."""
 
 import argparse
+import datetime
 import json
 import os
 import sys
@@ -53,24 +54,50 @@ def format_entry(entry):
             f'{dated} par {entry["artist"]}')
 
 
+def format_long_date(value):
+    weekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+    months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+              "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+    date = datetime.date.fromisoformat(value)
+    return f"{weekdays[date.weekday()]} {date.day} {months[date.month - 1]} {date.year}"
+
+
+def format_total_duration(entries):
+    minutes = round(sum(float(entry.get("duration") or 0) for entry in entries) / 60)
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours}h{minutes:02d}min"
+
+
 def render_report(report):
     font = load_font(24)
-    header_font = load_font(30, bold=True)
+    header_font = load_font(26, bold=True)
+    summary_font = load_font(21, bold=True)
     probe = Image.new("L", (WIDTH, 10), 255)
     draw = ImageDraw.Draw(probe)
-    date = report["date"].split("-")
-    heading = f"ÉCOUTES DU {date[2]}/{date[1]}/{date[0]}"
     entries = report.get("tracks", [])
+    heading = format_long_date(report["date"])
+    count = len(entries)
+    summary = f"{count} track{'s' if count != 1 else ''} lu{'s' if count != 1 else ''}, total : {format_total_duration(entries)}"
+    heading_lines = wrap_pixels(draw, heading, header_font, WIDTH - 2 * MARGIN)
+    summary_lines = wrap_pixels(draw, summary, summary_font, WIDTH - 2 * MARGIN)
     blocks = [wrap_pixels(draw, format_entry(entry), font, WIDTH - 2 * MARGIN)
               for entry in entries]
     if not blocks:
         blocks = [["Aucun titre diffusé."]]
-    height = 18 + 38 + 12 + sum(len(lines) * 31 + 15 for lines in blocks) + 18
+    header_height = len(heading_lines) * 35 + len(summary_lines) * 31 + 2 * 31 + 18
+    height = 12 + header_height + sum(len(lines) * 31 + 15 for lines in blocks) + 18
     canvas = Image.new("L", (WIDTH, height), 255)
     draw = ImageDraw.Draw(canvas)
-    box = draw.textbbox((0, 0), heading, font=header_font)
-    draw.text(((WIDTH - (box[2] - box[0])) // 2, 12), heading, font=header_font, fill=0)
-    y = 62
+    y = 12
+    for line in heading_lines:
+        box = draw.textbbox((0, 0), line, font=header_font)
+        draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=header_font, fill=0)
+        y += 35
+    for line in summary_lines:
+        box = draw.textbbox((0, 0), line, font=summary_font)
+        draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=summary_font, fill=0)
+        y += 31
+    y += 2 * 31
     for lines in blocks:
         for line in lines:
             draw.text((MARGIN, y), line, font=font, fill=0)

@@ -48,6 +48,17 @@ function normalizeText(value) {
     .replace(/[^\p{L}\p{N}]+/gu, " ").trim().toLocaleLowerCase("fr-FR");
 }
 
+function artistParts(value) {
+  return String(value || "").split(/\s*(?:\/|&|\bfeat(?:uring)?\.?\b|\bwith\b|\bavec\b)\s*/iu)
+    .map(normalizeText).filter(Boolean);
+}
+
+function artistMatches(left, right) {
+  const leftParts = artistParts(left);
+  const rightParts = artistParts(right);
+  return leftParts.some(part => rightParts.includes(part));
+}
+
 function trackKey(nowPlaying) {
   return [nowPlaying.artist, nowPlaying.album, nowPlaying.title].map(normalizeText).join("|");
 }
@@ -80,10 +91,9 @@ function allowedEvent(data) {
 
 function findCatalogYear(index, nowPlaying) {
   if (Number.isInteger(nowPlaying.year)) return nowPlaying.year;
-  const artist = normalizeText(nowPlaying.artist);
   const album = normalizeText(nowPlaying.album);
   const albums = index && Array.isArray(index.albums) ? index.albums : [];
-  const match = albums.find(item => normalizeText(item.artist) === artist &&
+  const match = albums.find(item => artistMatches(item.artist, nowPlaying.artist) &&
     normalizeText(item.title) === album);
   if (!match) return "";
   return match.originalReleaseYear || match.editionReleaseYear ||
@@ -92,7 +102,6 @@ function findCatalogYear(index, nowPlaying) {
 }
 
 function findMusicBrainzYear(result, nowPlaying) {
-  const wantedArtist = normalizeText(nowPlaying.artist);
   const wantedAlbum = normalizeText(nowPlaying.album);
   const groups = result && Array.isArray(result["release-groups"])
     ? result["release-groups"] : [];
@@ -101,7 +110,7 @@ function findMusicBrainzYear(result, nowPlaying) {
       ? group["artist-credit"].map(credit => credit.name || (credit.artist && credit.artist.name))
       : [];
     return Number(group.score || 0) >= 90 && normalizeText(group.title) === wantedAlbum &&
-      artists.some(artist => normalizeText(artist) === wantedArtist);
+      artists.some(artist => artistMatches(artist, nowPlaying.artist));
   });
   const year = match && String(match["first-release-date"] || "").match(/^(\d{4})/);
   return year ? Number(year[1]) : "";
@@ -111,8 +120,9 @@ async function resolveMusicBrainzYear(nowPlaying, fetchImpl = fetch) {
   const key = `${normalizeText(nowPlaying.artist)}|${normalizeText(nowPlaying.album)}`;
   if (musicBrainzCache.has(key)) return musicBrainzCache.get(key);
   try {
+    const searchArtist = String(nowPlaying.artist).split("/")[0].trim();
     const query = `releasegroup:"${String(nowPlaying.album).replaceAll('"', '\\"')}" AND ` +
-      `artist:"${String(nowPlaying.artist).replaceAll('"', '\\"')}"`;
+      `artist:"${searchArtist.replaceAll('"', '\\"')}"`;
     const parameters = new URLSearchParams({ query, fmt: "json", limit: "5" });
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const throttle = Math.max(0, 1100 - (Date.now() - lastMusicBrainzRequestAt));
@@ -216,7 +226,9 @@ async function recordNowPlaying(data, fetchImpl = fetch, now = new Date()) {
   const year = await resolveYear(item, fetchImpl);
   state.tracks.push({
     time: parisTime(now), title: item.title, album: item.album,
-    year: year || null, artist: item.artist, zoneId: data.zone_id,
+    year: year || null, artist: item.artist,
+    duration: Number.isFinite(Number(item.duration)) ? Number(item.duration) : null,
+    zoneId: data.zone_id,
   });
   state.lastByZone[data.zone_id] = key;
   writeState(state);
@@ -250,6 +262,6 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { allowedEvent, emptyState, enrichMissingYears, findCatalogYear,
+module.exports = { allowedEvent, artistMatches, artistParts, emptyState, enrichMissingYears, findCatalogYear,
   findMusicBrainzYear, normalizeText, parisDate, parisTime, readState, recordNowPlaying,
   resolveMusicBrainzYear, resolveYear, rolloverIfNeeded, trackKey, writeState };

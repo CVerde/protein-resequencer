@@ -22,6 +22,15 @@ test("finds original year with accent-insensitive matching", () => {
   assert.strictEqual(watcher.findCatalogYear(index, { artist: "Bjork", album: "Debut" }), 1993);
 });
 
+test("matches an album artist inside a collaborative track credit", () => {
+  assert.strictEqual(watcher.artistMatches("Bo Ningen", "Bo Ningen / Bobby Gillespie"), true);
+  const index = { albums: [{ artist: "Bo Ningen", title: "Sudden Fictions",
+    originalReleaseYear: 2020 }] };
+  assert.strictEqual(watcher.findCatalogYear(index, {
+    artist: "Bo Ningen / Bobby Gillespie", album: "Sudden Fictions",
+  }), 2020);
+});
+
 test("accepts only an exact high-score MusicBrainz release group", () => {
   const result = { "release-groups": [{
     score: 100, title: "A thousand doors, just one key",
@@ -36,7 +45,7 @@ test("accepts only an exact high-score MusicBrainz release group", () => {
 test("records a track only once until the zone changes track", async () => {
   watcher.writeState(watcher.emptyState("2026-08-30"));
   const data = { zone_id: "zone", now_playing: {
-    state: "playing", artist: "Björk", album: "Debut", title: "Human Behaviour",
+    state: "playing", artist: "Björk", album: "Debut", title: "Human Behaviour", duration: 252,
   }};
   const fetchCatalog = async () => ({ ok: true, json: async () => ({ albums: [{
     artist: "Björk", title: "Debut", originalReleaseYear: 1993,
@@ -49,6 +58,7 @@ test("records a track only once until the zone changes track", async () => {
   assert.strictEqual(state.tracks.length, 1);
   assert.strictEqual(state.tracks[0].time, "14h07");
   assert.strictEqual(state.tracks[0].year, 1993);
+  assert.strictEqual(state.tracks[0].duration, 252);
 });
 
 test("prints yesterday before starting a new day", async () => {
