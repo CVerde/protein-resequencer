@@ -22,6 +22,17 @@ test("finds original year with accent-insensitive matching", () => {
   assert.strictEqual(watcher.findCatalogYear(index, { artist: "Bjork", album: "Debut" }), 1993);
 });
 
+test("accepts only an exact high-score MusicBrainz release group", () => {
+  const result = { "release-groups": [{
+    score: 100, title: "A thousand doors, just one key",
+    "first-release-date": "2025-02-14",
+    "artist-credit": [{ name: "Feldup" }],
+  }] };
+  assert.strictEqual(watcher.findMusicBrainzYear(result, {
+    artist: "Feldup", album: "A Thousand Doors, Just One Key",
+  }), 2025);
+});
+
 test("records a track only once until the zone changes track", async () => {
   watcher.writeState(watcher.emptyState("2026-08-30"));
   const data = { zone_id: "zone", now_playing: {

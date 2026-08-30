@@ -18,6 +18,8 @@ const ZONE_IDS = new Set((process.env.ROON_PRINT_ZONE_IDS || "")
 const CATALOG_CACHE_MS = 5 * 60 * 1000;
 let catalogCache = null;
 let catalogCachedAt = 0;
+const musicBrainzCache = new Map();
+let lastMusicBrainzRequestAt = 0;
 
 function log(message) {
   process.stdout.write(`[${new Date().toISOString()}] ${message}\n`);
@@ -89,6 +91,46 @@ function findCatalogYear(index, nowPlaying) {
     (match.releaseDate && match.releaseDate.year) || "";
 }
 
+function findMusicBrainzYear(result, nowPlaying) {
+  const wantedArtist = normalizeText(nowPlaying.artist);
+  const wantedAlbum = normalizeText(nowPlaying.album);
+  const groups = result && Array.isArray(result["release-groups"])
+    ? result["release-groups"] : [];
+  const match = groups.find(group => {
+    const artists = Array.isArray(group["artist-credit"])
+      ? group["artist-credit"].map(credit => credit.name || (credit.artist && credit.artist.name))
+      : [];
+    return Number(group.score || 0) >= 90 && normalizeText(group.title) === wantedAlbum &&
+      artists.some(artist => normalizeText(artist) === wantedArtist);
+  });
+  const year = match && String(match["first-release-date"] || "").match(/^(\d{4})/);
+  return year ? Number(year[1]) : "";
+}
+
+async function resolveMusicBrainzYear(nowPlaying, fetchImpl = fetch) {
+  const key = `${normalizeText(nowPlaying.artist)}|${normalizeText(nowPlaying.album)}`;
+  if (musicBrainzCache.has(key)) return musicBrainzCache.get(key);
+  const wait = Math.max(0, 1100 - (Date.now() - lastMusicBrainzRequestAt));
+  if (wait) await new Promise(resolve => setTimeout(resolve, wait));
+  try {
+    const query = `releasegroup:"${String(nowPlaying.album).replaceAll('"', '\\"')}" AND ` +
+      `artist:"${String(nowPlaying.artist).replaceAll('"', '\\"')}"`;
+    const parameters = new URLSearchParams({ query, fmt: "json", limit: "5" });
+    lastMusicBrainzRequestAt = Date.now();
+    const response = await fetchImpl(`https://musicbrainz.org/ws/2/release-group/?${parameters}`, {
+      headers: { "User-Agent": "ProteinResequencer/1.0 (https://github.com/CVerde/protein-resequencer)" },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!response.ok) throw new Error(`MusicBrainz HTTP ${response.status}`);
+    const year = findMusicBrainzYear(await response.json(), nowPlaying);
+    musicBrainzCache.set(key, year);
+    return year;
+  } catch (error) {
+    log(`Année MusicBrainz indisponible : ${error.message}`);
+    return "";
+  }
+}
+
 async function resolveYear(nowPlaying, fetchImpl = fetch) {
   if (Number.isInteger(nowPlaying.year)) return nowPlaying.year;
   try {
@@ -101,10 +143,11 @@ async function resolveYear(nowPlaying, fetchImpl = fetch) {
       catalogCache = await response.json();
       catalogCachedAt = now;
     }
-    return findCatalogYear(catalogCache, nowPlaying);
+    const songrYear = findCatalogYear(catalogCache, nowPlaying);
+    return songrYear || await resolveMusicBrainzYear(nowPlaying, fetchImpl);
   } catch (error) {
     log(`Année Songr indisponible : ${error.message}`);
-    return "";
+    return resolveMusicBrainzYear(nowPlaying, fetchImpl);
   }
 }
 
@@ -171,5 +214,6 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { allowedEvent, emptyState, findCatalogYear, normalizeText, parisDate,
-  parisTime, readState, recordNowPlaying, resolveYear, rolloverIfNeeded, trackKey, writeState };
+module.exports = { allowedEvent, emptyState, findCatalogYear, findMusicBrainzYear, normalizeText,
+  parisDate, parisTime, readState, recordNowPlaying, resolveMusicBrainzYear, resolveYear,
+  rolloverIfNeeded, trackKey, writeState };

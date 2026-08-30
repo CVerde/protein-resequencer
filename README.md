@@ -81,6 +81,10 @@ réel de morceau. À minuit (heure de Paris), il imprime la liste chronologique
 complète de la journée, sans pochette. Un rapport manqué pendant un arrêt est
 imprimé au redémarrage suivant.
 
+L'année vient d'abord du catalogue local Songr. Si elle y manque, le watcher
+interroge MusicBrainz avec une correspondance stricte artiste/album et respecte
+sa limite d'une requête par seconde.
+
 Le journal est stocké hors du dépôt dans
 `/home/pi/.local/state/protein-resequencer/roon-daily-report.json`. Par défaut,
 toutes les zones sont surveillées. `ROON_PRINT_ZONE_IDS` permet de fournir une
