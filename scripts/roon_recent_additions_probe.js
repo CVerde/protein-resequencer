@@ -41,6 +41,7 @@ const roon = new RoonApi({
   display_name: "Protein Resequencer — Ajouts quotidiens",
   display_version: "0.1.0",
   publisher: "CVerde",
+  email: "cverde@users.noreply.github.com",
   website: "https://github.com/CVerde/protein-resequencer",
   log_level: "none",
   core_paired: core => {
