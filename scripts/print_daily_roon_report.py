@@ -20,6 +20,8 @@ MARGIN = 10
 
 def load_font(size, bold=False):
     names = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Bold.ttf" if bold else
+        "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else
@@ -48,10 +50,20 @@ def wrap_pixels(draw, text, font, max_width):
 
 
 def format_entry(entry):
-    year = entry.get("year")
-    dated = f', {year}' if year else ''
-    return (f'{entry["time"]} -  {entry["title"]}, sur {entry["album"]}'
-            f'{dated} par {entry["artist"]}')
+    return (f'{entry["time"]} · {entry["title"]} · '
+            f'{entry["album"]} · {entry["artist"]}')
+
+
+def fit_single_line(draw, text, max_width, maximum_size=16, minimum_size=10):
+    for size in range(maximum_size, minimum_size - 1, -1):
+        font = load_font(size)
+        if draw.textbbox((0, 0), text, font=font)[2] <= max_width:
+            return text, font
+    font = load_font(minimum_size)
+    shortened = text
+    while shortened and draw.textbbox((0, 0), shortened + "…", font=font)[2] > max_width:
+        shortened = shortened[:-1]
+    return shortened.rstrip() + "…", font
 
 
 def format_long_date(value):
@@ -80,12 +92,12 @@ def render_report(report):
     summary = f"{count} track{'s' if count != 1 else ''} lu{'s' if count != 1 else ''}, total : {format_total_duration(entries)}"
     heading_lines = wrap_pixels(draw, heading, header_font, WIDTH - 2 * MARGIN)
     summary_lines = wrap_pixels(draw, summary, summary_font, WIDTH - 2 * MARGIN)
-    blocks = [wrap_pixels(draw, format_entry(entry), font, WIDTH - 2 * MARGIN)
-              for entry in entries]
-    if not blocks:
-        blocks = [["Aucun titre diffusé."]]
+    lines = [fit_single_line(draw, format_entry(entry), WIDTH - 2 * MARGIN)
+             for entry in entries]
+    if not lines:
+        lines = [("Aucun titre diffusé.", font)]
     header_height = len(heading_lines) * 35 + len(summary_lines) * 31 + 2 * 31 + 18
-    height = 12 + header_height + sum(len(lines) * 31 + 15 for lines in blocks) + 18
+    height = 12 + header_height + len(lines) * 24 + 18
     canvas = Image.new("L", (WIDTH, height), 255)
     draw = ImageDraw.Draw(canvas)
     y = 12
@@ -98,11 +110,9 @@ def render_report(report):
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=summary_font, fill=0)
         y += 31
     y += 2 * 31
-    for lines in blocks:
-        for line in lines:
-            draw.text((MARGIN, y), line, font=font, fill=0)
-            y += 31
-        y += 15
+    for line, line_font in lines:
+        draw.text((MARGIN, y), line, font=line_font, fill=0)
+        y += 24
     return canvas.convert("1", dither=Image.Dither.FLOYDSTEINBERG).rotate(180)
 
 

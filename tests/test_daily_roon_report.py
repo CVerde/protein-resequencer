@@ -1,8 +1,9 @@
 import unittest
 
 from scripts.print_daily_roon_report import (
-    format_entry, format_long_date, format_total_duration, render_report,
+    fit_single_line, format_entry, format_long_date, format_total_duration, render_report,
 )
+from PIL import Image, ImageDraw
 
 
 class DailyRoonReportTest(unittest.TestCase):
@@ -19,13 +20,23 @@ class DailyRoonReportTest(unittest.TestCase):
     def test_entry_uses_requested_format(self):
         text = format_entry({"time": "14h07", "title": "Titre", "album": "Album",
                              "year": 1993, "artist": "Artiste"})
-        self.assertEqual(text, "14h07 -  Titre, sur Album, 1993 par Artiste")
+        self.assertEqual(text, "14h07 · Titre · Album · Artiste")
+        self.assertNotIn("1993", text)
 
     def test_entry_omits_an_unknown_year(self):
         text = format_entry({"time": "14h07", "title": "Titre", "album": "Album",
                              "year": None, "artist": "Artiste"})
-        self.assertEqual(text, "14h07 -  Titre, sur Album par Artiste")
+        self.assertEqual(text, "14h07 · Titre · Album · Artiste")
         self.assertNotIn("inconnue", text)
+
+    def test_long_entry_is_fitted_to_one_thermal_line(self):
+        draw = ImageDraw.Draw(Image.new("L", (384, 30), 255))
+        text, font = fit_single_line(
+            draw,
+            "17h03 · Un titre vraiment extrêmement long · Un album également très long · Un artiste",
+            364,
+        )
+        self.assertLessEqual(draw.textbbox((0, 0), text, font=font)[2], 364)
 
     def test_formats_long_french_date_and_total_duration(self):
         self.assertEqual(format_long_date("2008-08-30"), "Samedi 30 Août 2008")
