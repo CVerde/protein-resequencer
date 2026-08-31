@@ -87,6 +87,8 @@ Chaque piste tient sur une seule ligne compacte sous la forme
 `heure · titre · album · artiste`, avec une taille identique et aucun interligne
 supplémentaire.
 Le titre est limité à 28 caractères, ellipse comprise.
+Dans chaque ligne, le morceau est en italique, l'album est souligné et
+l'artiste est en gras.
 
 Le journal est stocké hors du dépôt dans
 `/home/pi/.local/state/protein-resequencer/roon-daily-report.json`. Par défaut,

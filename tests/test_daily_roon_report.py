@@ -2,7 +2,7 @@ import unittest
 
 from scripts.print_daily_roon_report import (
     format_entry, format_long_date, format_total_duration, load_font,
-    render_report, shorten_title, truncate_single_line,
+    render_report, shorten_title, styled_entry_runs, truncate_single_line,
 )
 from PIL import Image, ImageDraw
 
@@ -45,6 +45,17 @@ class DailyRoonReportTest(unittest.TestCase):
         title = shorten_title("You Make A Mark Like A Calf Branding")
         self.assertEqual(len(title), 28)
         self.assertTrue(title.endswith("…"))
+
+    def test_entry_styles_fit_one_line(self):
+        draw = ImageDraw.Draw(Image.new("L", (384, 30), 255))
+        runs = styled_entry_runs(draw, {
+            "time": "17h03", "title": "Minimal", "album": "Sudden Fictions",
+            "artist": "Bo Ningen / Bobby Gillespie",
+        }, 364)
+        self.assertLessEqual(sum(draw.textlength(text, font=font)
+                                 for text, font, _ in runs), 364)
+        self.assertTrue(any(text == "Sudden Fictions" and underline
+                            for text, _, underline in runs))
 
     def test_formats_long_french_date_and_total_duration(self):
         self.assertEqual(format_long_date("2008-08-30"), "Samedi 30 Août 2008")

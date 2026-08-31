@@ -19,15 +19,22 @@ MARGIN = 10
 TITLE_MAX_CHARS = 28
 
 
-def load_font(size, bold=False):
-    names = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Bold.ttf" if bold else
-        "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else
-        "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
-    ]
+def load_font(size, bold=False, italic=False):
+    if italic:
+        names = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Oblique.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+            "/usr/share/fonts/truetype/liberation2/LiberationSans-Italic.ttf",
+        ]
+    else:
+        names = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Bold.ttf" if bold else
+            "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else
+            "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+        ]
     for name in names:
         if os.path.exists(name):
             return ImageFont.truetype(name, size)
@@ -69,6 +76,37 @@ def truncate_single_line(draw, text, font, max_width):
     return shortened.rstrip() + "…"
 
 
+def styled_entry_runs(draw, entry, max_width, size=12):
+    regular = load_font(size)
+    italic = load_font(size, italic=True)
+    bold = load_font(size, bold=True)
+    values = {
+        "time": str(entry["time"]),
+        "title": shorten_title(entry["title"]),
+        "album": str(entry["album"]),
+        "artist": str(entry["artist"]),
+    }
+
+    def runs():
+        return [
+            (values["time"] + " · ", regular, False),
+            (values["title"], italic, False),
+            (" · ", regular, False),
+            (values["album"], regular, True),
+            (" · ", regular, False),
+            (values["artist"], bold, False),
+        ]
+
+    def width():
+        return sum(draw.textlength(text, font=font) for text, font, _ in runs())
+
+    for field in ("title", "album", "artist"):
+        while len(values[field]) > 1 and width() > max_width:
+            raw = values[field].removesuffix("…")[:-1].rstrip()
+            values[field] = raw + "…"
+    return runs()
+
+
 def format_long_date(value):
     weekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
     months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -95,10 +133,9 @@ def render_report(report):
     summary = f"{count} track{'s' if count != 1 else ''} lu{'s' if count != 1 else ''}, total : {format_total_duration(entries)}"
     heading_lines = wrap_pixels(draw, heading, header_font, WIDTH - 2 * MARGIN)
     summary_lines = wrap_pixels(draw, summary, summary_font, WIDTH - 2 * MARGIN)
-    lines = [truncate_single_line(draw, format_entry(entry), entry_font, WIDTH - 2 * MARGIN)
-             for entry in entries]
+    lines = [styled_entry_runs(draw, entry, WIDTH - 2 * MARGIN) for entry in entries]
     if not lines:
-        lines = ["Aucun titre diffusé."]
+        lines = [[("Aucun titre diffusé.", entry_font, False)]]
     header_height = len(heading_lines) * 35 + len(summary_lines) * 31 + 2 * 31 + 18
     ascent, descent = entry_font.getmetrics()
     line_height = ascent + descent
@@ -115,8 +152,14 @@ def render_report(report):
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=summary_font, fill=0)
         y += 31
     y += 2 * 31
-    for line in lines:
-        draw.text((MARGIN, y), line, font=entry_font, fill=0)
+    for runs in lines:
+        x = MARGIN
+        for text, run_font, underline in runs:
+            draw.text((x, y), text, font=run_font, fill=0)
+            width = draw.textlength(text, font=run_font)
+            if underline and text:
+                draw.line((x, y + ascent + 1, x + width, y + ascent + 1), fill=0, width=1)
+            x += width
         y += line_height
     return canvas.convert("1", dither=Image.Dither.FLOYDSTEINBERG).rotate(180)
 
