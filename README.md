@@ -85,14 +85,8 @@ L'en-tête indique la date longue en français, le nombre de pistes et leur dur�
 cumulée, puis laisse deux lignes blanches avant la liste chronologique.
 Chaque piste tient sur une seule ligne compacte sous la forme
 `heure · titre · album · artiste`, avec une taille identique et aucun interligne
-supplémentaire. L'année n'est pas répétée dans la liste.
+supplémentaire.
 Le titre est limité à 28 caractères, ellipse comprise.
-
-L'année vient d'abord du catalogue local Songr. Si elle y manque, le watcher
-interroge MusicBrainz avec une correspondance stricte artiste/album et respecte
-sa limite d'une requête par seconde.
-Si aucune source ne fournit l'année avant l'impression, la date est simplement
-omise du compte rendu plutôt que remplacée par une mention « inconnue ».
 
 Le journal est stocké hors du dépôt dans
 `/home/pi/.local/state/protein-resequencer/roon-daily-report.json`. Par défaut,
