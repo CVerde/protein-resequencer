@@ -115,17 +115,11 @@ function updateLibrary(state, albums, now = new Date()) {
   return added;
 }
 
-function dateBefore(left, right) {
-  return String(left) < String(right);
-}
-
 function datesDue(state, now = new Date()) {
   const parts = parisParts(now);
   if (`${parts.hour}:${parts.minute}` < "01:00") return [];
   const today = parisDate(now);
-  const printed = new Set(state.printedDates);
-  return [...new Set(state.additions.map(item => item.detectedDate))]
-    .filter(date => dateBefore(date, today) && !printed.has(date)).sort();
+  return state.printedDates.includes(today) ? [] : [today];
 }
 
 function runPrinter(reportPath) {
@@ -138,7 +132,7 @@ function runPrinter(reportPath) {
 }
 
 async function printDate(core, state, date, printImpl = runPrinter) {
-  const albums = state.additions.filter(item => item.detectedDate === date);
+  const albums = state.additions.filter(item => !item.printedAt);
   if (!albums.length) return false;
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "roon-additions-"));
   try {
@@ -167,10 +161,17 @@ async function printDate(core, state, date, printImpl = runPrinter) {
 
 async function printDue(core, state, now = new Date(), printImpl = runPrinter) {
   for (const date of datesDue(state, now)) {
-    await printDate(core, state, date, printImpl);
+    const printed = await printDate(core, state, date, printImpl);
+    if (printed) {
+      const printedAt = now.toISOString();
+      for (const album of state.additions) {
+        if (!album.printedAt) album.printedAt = printedAt;
+      }
+    }
     state.printedDates.push(date);
     writeState(state);
-    log(`Ticket des ajouts du ${date} imprimé`);
+    if (printed) log(`Ticket des ajouts du ${date} imprimé`);
+    else log(`Aucun ajout à imprimer pour le ${date}`);
   }
 }
 
