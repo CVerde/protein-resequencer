@@ -121,7 +121,7 @@ function dateBefore(left, right) {
 
 function datesDue(state, now = new Date()) {
   const parts = parisParts(now);
-  if (`${parts.hour}:${parts.minute}` < "00:10") return [];
+  if (`${parts.hour}:${parts.minute}` < "01:00") return [];
   const today = parisDate(now);
   const printed = new Set(state.printedDates);
   return [...new Set(state.additions.map(item => item.detectedDate))]

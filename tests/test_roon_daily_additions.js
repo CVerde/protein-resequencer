@@ -35,14 +35,14 @@ test("later scan records only newly appearing albums", () => {
   assert.strictEqual(detected[0].detectedDate, "2026-09-01");
 });
 
-test("yesterday becomes printable at 00:10 Paris and only once", () => {
+test("yesterday becomes printable at 01:00 Paris and only once", () => {
   const state = additions.emptyState();
   state.additions = [{ detectedDate: "2026-09-01" }];
   assert.deepStrictEqual(additions.datesDue(state,
-    new Date("2026-09-01T22:09:00Z")), []);
+    new Date("2026-09-01T22:59:00Z")), []);
   assert.deepStrictEqual(additions.datesDue(state,
-    new Date("2026-09-01T22:10:00Z")), ["2026-09-01"]);
+    new Date("2026-09-01T23:00:00Z")), ["2026-09-01"]);
   state.printedDates.push("2026-09-01");
   assert.deepStrictEqual(additions.datesDue(state,
-    new Date("2026-09-01T22:11:00Z")), []);
+    new Date("2026-09-01T23:01:00Z")), []);
 });

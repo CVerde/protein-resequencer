@@ -98,7 +98,7 @@ liste d'identifiants de zones séparés par des virgules. Les logs sont dans
 
 Une extension Roon directe de lecture seule surveille la bibliothèque toutes les
 5 minutes. Le premier passage établit une référence sans rien imprimer. Les
-albums apparus ensuite sont mémorisés avec leur pochette. À 00h10 (heure de
+albums apparus ensuite sont mémorisés avec leur pochette. À 01h00 (heure de
 Paris), un ticket « Ajouté aujourd'hui » récapitule les ajouts de la journée
 terminée. Aucun ticket ne sort s'il n'y a eu aucun ajout, et un ticket manqué est
 imprimé au redémarrage suivant. L'année n'est affichée que si Roon la fournit ;
