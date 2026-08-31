@@ -21,19 +21,37 @@ function load(service, options) {
     (error, body) => error ? reject(new Error(String(error))) : resolve(body)));
 }
 
-async function inspectHierarchy(core, hierarchy) {
-  const service = core.services.RoonApiBrowse;
-  const opened = await browse(service, { hierarchy, pop_all: true });
-  const level = opened && opened.list ? opened.list.level : 0;
-  const count = opened && opened.list ? Math.min(opened.list.count || 100, 300) : 100;
-  const result = await load(service, { hierarchy, level, offset: 0, count });
-  log(`Hiérarchie Roon ${hierarchy}`, {
+function summarize(result) {
+  return {
     list: result.list,
     items: (result.items || []).map(item => ({
       title: item.title, subtitle: item.subtitle, hint: item.hint,
       item_key: item.item_key, image_key: item.image_key,
     })),
-  });
+  };
+}
+
+async function openLevel(service, hierarchy, itemKey) {
+  const options = itemKey
+    ? { hierarchy, item_key: itemKey }
+    : { hierarchy, pop_all: true };
+  const opened = await browse(service, options);
+  const level = opened && opened.list ? opened.list.level : 0;
+  const count = opened && opened.list ? Math.min(opened.list.count || 100, 300) : 100;
+  return load(service, { hierarchy, level, offset: 0, count });
+}
+
+async function inspectLibrary(core) {
+  const service = core.services.RoonApiBrowse;
+  const root = await openLevel(service, "browse");
+  log("Racine Roon", summarize(root));
+
+  const library = (root.items || []).find(item =>
+    String(item.title || "").toLocaleLowerCase().includes("library"));
+  if (!library) throw new Error("entrée Library introuvable");
+
+  const contents = await openLevel(service, "browse", library.item_key);
+  log("Contenu de Library", summarize(contents));
 }
 
 const roon = new RoonApi({
@@ -46,7 +64,7 @@ const roon = new RoonApi({
   log_level: "none",
   core_paired: core => {
     log(`Core Roon autorisé : ${core.display_name}`);
-    Promise.all([inspectHierarchy(core, "browse"), inspectHierarchy(core, "albums")])
+    inspectLibrary(core)
       .catch(error => log(`Exploration Roon impossible : ${error.message}`));
   },
   core_unpaired: core => log(`Core Roon déconnecté : ${core.display_name}`),
@@ -56,4 +74,4 @@ roon.init_services({ required_services: [RoonApiBrowse, RoonApiImage] });
 log("Extension démarrée ; autorisez-la dans Roon > Réglages > Extensions");
 roon.start_discovery();
 
-module.exports = { inspectHierarchy };
+module.exports = { inspectLibrary, openLevel, summarize };
