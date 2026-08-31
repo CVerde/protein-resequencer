@@ -31,13 +31,15 @@ function summarize(result) {
   };
 }
 
-async function openLevel(service, hierarchy, itemKey) {
+async function openLevel(service, hierarchy, itemKey, maxItems = 30) {
   const options = itemKey
     ? { hierarchy, item_key: itemKey }
     : { hierarchy, pop_all: true };
   const opened = await browse(service, options);
   const level = opened && opened.list ? opened.list.level : 0;
-  const count = opened && opened.list ? Math.min(opened.list.count || 100, 300) : 100;
+  const count = opened && opened.list
+    ? Math.min(opened.list.count || maxItems, maxItems)
+    : maxItems;
   return load(service, { hierarchy, level, offset: 0, count });
 }
 
@@ -52,6 +54,13 @@ async function inspectLibrary(core) {
 
   const contents = await openLevel(service, "browse", library.item_key);
   log("Contenu de Library", summarize(contents));
+
+  const albums = (contents.items || []).find(item =>
+    String(item.title || "").toLocaleLowerCase().includes("albums"));
+  if (!albums) throw new Error("entrée Albums introuvable");
+
+  const albumContents = await openLevel(service, "browse", albums.item_key);
+  log("Contenu de Library / Albums", summarize(albumContents));
 }
 
 const roon = new RoonApi({
