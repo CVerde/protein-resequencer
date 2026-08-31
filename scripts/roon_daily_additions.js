@@ -117,7 +117,7 @@ function updateLibrary(state, albums, now = new Date()) {
 
 function datesDue(state, now = new Date()) {
   const parts = parisParts(now);
-  if (`${parts.hour}:${parts.minute}` < "01:00") return [];
+  if (`${parts.hour}:${parts.minute}` < "00:05") return [];
   const today = parisDate(now);
   return state.printedDates.includes(today) ? [] : [today];
 }

@@ -35,28 +35,28 @@ test("later scan records only newly appearing albums", () => {
   assert.strictEqual(detected[0].detectedDate, "2026-09-01");
 });
 
-test("unprinted additions become printable at 01:00 Paris and only once", () => {
+test("unprinted additions become printable at 00:05 Paris and only once", () => {
   const state = additions.emptyState();
   state.additions = [{ detectedDate: "2026-09-01" }];
   assert.deepStrictEqual(additions.datesDue(state,
-    new Date("2026-08-31T22:59:00Z")), []);
+    new Date("2026-08-31T22:04:00Z")), []);
   assert.deepStrictEqual(additions.datesDue(state,
-    new Date("2026-08-31T23:00:00Z")), ["2026-09-01"]);
+    new Date("2026-08-31T22:05:00Z")), ["2026-09-01"]);
   state.printedDates.push("2026-09-01");
   assert.deepStrictEqual(additions.datesDue(state,
-    new Date("2026-08-31T23:01:00Z")), []);
+    new Date("2026-08-31T22:06:00Z")), []);
 });
 
-test("an album detected before 01:00 is included in the 01:00 ticket", async () => {
+test("an album detected before 00:05 is included in the 00:05 ticket", async () => {
   const state = additions.emptyState();
   state.initialized = true;
   state.additions = [{
     title: "EP3", artist: "Uwalmassa", image_key: null,
-    detectedDate: "2026-09-01", detectedAt: "2026-08-31T22:58:00.000Z",
+    detectedDate: "2026-09-01", detectedAt: "2026-08-31T22:03:00.000Z",
   }];
   let payload;
   await additions.printDue({ services: {} }, state,
-    new Date("2026-08-31T23:00:00Z"), async (_path, report) => { payload = report; });
+    new Date("2026-08-31T22:05:00Z"), async (_path, report) => { payload = report; });
   assert.strictEqual(payload.albums[0].title, "EP3");
   assert.strictEqual(payload.date, "2026-09-01");
   assert.ok(state.additions[0].printedAt);
