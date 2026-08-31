@@ -16,6 +16,7 @@ import printer
 
 WIDTH = 384
 MARGIN = 10
+TITLE_MAX_CHARS = 28
 
 
 def load_font(size, bold=False):
@@ -49,8 +50,13 @@ def wrap_pixels(draw, text, font, max_width):
     return lines
 
 
+def shorten_title(value, limit=TITLE_MAX_CHARS):
+    title = str(value)
+    return title if len(title) <= limit else title[:limit - 1].rstrip() + "…"
+
+
 def format_entry(entry):
-    return (f'{entry["time"]} · {entry["title"]} · '
+    return (f'{entry["time"]} · {shorten_title(entry["title"])} · '
             f'{entry["album"]} · {entry["artist"]}')
 
 
