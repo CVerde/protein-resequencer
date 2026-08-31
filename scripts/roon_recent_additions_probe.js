@@ -68,6 +68,19 @@ async function inspectLibrary(core) {
   log(`Fiche album témoin : ${sample.title}`, summarize(sampleContents));
 }
 
+async function inspectUndocumentedHierarchies(core) {
+  const service = core.services.RoonApiBrowse;
+  const candidates = ["home", "recently_added", "recently-added", "recent", "discover"];
+  for (const hierarchy of candidates) {
+    try {
+      const result = await openLevel(service, hierarchy, undefined, 10);
+      log(`Hiérarchie non documentée acceptée : ${hierarchy}`, summarize(result));
+    } catch (error) {
+      log(`Hiérarchie non documentée refusée : ${hierarchy}`, error.message);
+    }
+  }
+}
+
 const roon = new RoonApi({
   extension_id: "fr.cverde.protein-resequencer.daily-additions",
   display_name: "Protein Resequencer — Ajouts quotidiens",
@@ -78,7 +91,7 @@ const roon = new RoonApi({
   log_level: "none",
   core_paired: core => {
     log(`Core Roon autorisé : ${core.display_name}`);
-    inspectLibrary(core)
+    Promise.all([inspectLibrary(core), inspectUndocumentedHierarchies(core)])
       .catch(error => log(`Exploration Roon impossible : ${error.message}`));
   },
   core_unpaired: core => log(`Core Roon déconnecté : ${core.display_name}`),
@@ -88,4 +101,4 @@ roon.init_services({ required_services: [RoonApiBrowse, RoonApiImage] });
 log("Extension démarrée ; autorisez-la dans Roon > Réglages > Extensions");
 roon.start_discovery();
 
-module.exports = { inspectLibrary, openLevel, summarize };
+module.exports = { inspectLibrary, inspectUndocumentedHierarchies, openLevel, summarize };
