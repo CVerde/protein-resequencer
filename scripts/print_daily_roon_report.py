@@ -54,16 +54,13 @@ def format_entry(entry):
             f'{entry["album"]} · {entry["artist"]}')
 
 
-def fit_single_line(draw, text, max_width, maximum_size=16, minimum_size=10):
-    for size in range(maximum_size, minimum_size - 1, -1):
-        font = load_font(size)
-        if draw.textbbox((0, 0), text, font=font)[2] <= max_width:
-            return text, font
-    font = load_font(minimum_size)
+def truncate_single_line(draw, text, font, max_width):
+    if draw.textbbox((0, 0), text, font=font)[2] <= max_width:
+        return text
     shortened = text
     while shortened and draw.textbbox((0, 0), shortened + "…", font=font)[2] > max_width:
         shortened = shortened[:-1]
-    return shortened.rstrip() + "…", font
+    return shortened.rstrip() + "…"
 
 
 def format_long_date(value):
@@ -81,7 +78,7 @@ def format_total_duration(entries):
 
 
 def render_report(report):
-    font = load_font(24)
+    entry_font = load_font(12)
     header_font = load_font(26, bold=True)
     summary_font = load_font(21, bold=True)
     probe = Image.new("L", (WIDTH, 10), 255)
@@ -92,12 +89,14 @@ def render_report(report):
     summary = f"{count} track{'s' if count != 1 else ''} lu{'s' if count != 1 else ''}, total : {format_total_duration(entries)}"
     heading_lines = wrap_pixels(draw, heading, header_font, WIDTH - 2 * MARGIN)
     summary_lines = wrap_pixels(draw, summary, summary_font, WIDTH - 2 * MARGIN)
-    lines = [fit_single_line(draw, format_entry(entry), WIDTH - 2 * MARGIN)
+    lines = [truncate_single_line(draw, format_entry(entry), entry_font, WIDTH - 2 * MARGIN)
              for entry in entries]
     if not lines:
-        lines = [("Aucun titre diffusé.", font)]
+        lines = ["Aucun titre diffusé."]
     header_height = len(heading_lines) * 35 + len(summary_lines) * 31 + 2 * 31 + 18
-    height = 12 + header_height + len(lines) * 24 + 18
+    ascent, descent = entry_font.getmetrics()
+    line_height = ascent + descent
+    height = 12 + header_height + len(lines) * line_height + 18
     canvas = Image.new("L", (WIDTH, height), 255)
     draw = ImageDraw.Draw(canvas)
     y = 12
@@ -110,9 +109,9 @@ def render_report(report):
         draw.text(((WIDTH - (box[2] - box[0])) // 2, y), line, font=summary_font, fill=0)
         y += 31
     y += 2 * 31
-    for line, line_font in lines:
-        draw.text((MARGIN, y), line, font=line_font, fill=0)
-        y += 24
+    for line in lines:
+        draw.text((MARGIN, y), line, font=entry_font, fill=0)
+        y += line_height
     return canvas.convert("1", dither=Image.Dither.FLOYDSTEINBERG).rotate(180)
 
 

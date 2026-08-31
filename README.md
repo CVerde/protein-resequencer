@@ -84,7 +84,8 @@ imprimé au redémarrage suivant.
 L'en-tête indique la date longue en français, le nombre de pistes et leur durée
 cumulée, puis laisse deux lignes blanches avant la liste chronologique.
 Chaque piste tient sur une seule ligne compacte sous la forme
-`heure · titre · album · artiste`; l'année n'est pas répétée dans la liste.
+`heure · titre · album · artiste`, avec une taille identique et aucun interligne
+supplémentaire. L'année n'est pas répétée dans la liste.
 
 L'année vient d'abord du catalogue local Songr. Si elle y manque, le watcher
 interroge MusicBrainz avec une correspondance stricte artiste/album et respecte

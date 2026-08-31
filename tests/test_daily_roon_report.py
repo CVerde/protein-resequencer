@@ -1,7 +1,8 @@
 import unittest
 
 from scripts.print_daily_roon_report import (
-    fit_single_line, format_entry, format_long_date, format_total_duration, render_report,
+    format_entry, format_long_date, format_total_duration, load_font,
+    render_report, truncate_single_line,
 )
 from PIL import Image, ImageDraw
 
@@ -31,9 +32,11 @@ class DailyRoonReportTest(unittest.TestCase):
 
     def test_long_entry_is_fitted_to_one_thermal_line(self):
         draw = ImageDraw.Draw(Image.new("L", (384, 30), 255))
-        text, font = fit_single_line(
+        font = load_font(12)
+        text = truncate_single_line(
             draw,
             "17h03 · Un titre vraiment extrêmement long · Un album également très long · Un artiste",
+            font,
             364,
         )
         self.assertLessEqual(draw.textbbox((0, 0), text, font=font)[2], 364)
