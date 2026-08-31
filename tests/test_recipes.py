@@ -1,8 +1,8 @@
 import tempfile
 import unittest
 
-from recipes import RecipeFormatError, parse_recipe, render_thermal
-from recipes.storage import RecipeStore
+from recipes import RecipeFormatError, parse_recipe, render_thermal, scale_quantity, scale_recipe
+from recipes.storage import RecipeStore, recipe_category
 
 
 VALID_RECIPE = """\
@@ -84,6 +84,24 @@ finish: s6
             self.assertIn("Pain test", source)
             self.assertEqual(recipe.title, "Pain test")
             self.assertTrue(store.list()[0]["valid"])
+
+    def test_scales_simple_range_and_decimal_quantities(self):
+        self.assertEqual(scale_quantity("100 g", 1.5), "150 g")
+        self.assertEqual(scale_quantity("135 à 145 g", 2), "270 à 290 g")
+        self.assertEqual(scale_quantity("1,5 pincée", 2), "3 pincée")
+        self.assertEqual(scale_quantity("quantité non définie", 4),
+                         "quantité non définie")
+
+    def test_scaled_recipe_keeps_graph_and_scales_every_ingredient(self):
+        recipe = scale_recipe(parse_recipe(VALID_RECIPE), 2.5)
+        self.assertEqual(recipe.ingredients["farine"].quantity, "250 g")
+        self.assertEqual(recipe.ingredients["eau"].quantity, "175 g")
+        self.assertEqual(recipe.finish, "cuisson")
+
+    def test_recipe_categories_are_touch_navigation_friendly(self):
+        self.assertEqual(recipe_category("Shokupan Pullman"), "Pains")
+        self.assertEqual(recipe_category("Brioche au lait"), "Brioches")
+        self.assertEqual(recipe_category("Tarte rhubarbe"), "Tartes")
 
 
 if __name__ == "__main__":

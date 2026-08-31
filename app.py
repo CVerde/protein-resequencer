@@ -14,7 +14,7 @@ import threading
 import time
 
 import printer
-from recipes import RecipeFormatError, parse_recipe, render_thermal
+from recipes import RecipeFormatError, parse_recipe, render_thermal, scale_recipe
 from recipes.storage import RecipeStore
 
 app = Flask(__name__)
@@ -412,6 +412,7 @@ def recipe_item(slug):
 def recipe_preview(slug):
     try:
         _, recipe = recipe_store.read(slug)
+        recipe = scale_recipe(recipe, request.args.get('scale', 1))
         image = render_thermal(recipe)
         output = BytesIO()
         image.save(output, format='PNG')
@@ -430,6 +431,7 @@ def print_recipe(slug):
         return jsonify({"error": "Imprimante indisponible ou permission refusée"}), 503
     try:
         _, recipe = recipe_store.read(slug)
+        recipe = scale_recipe(recipe, (request.get_json(silent=True) or {}).get('scale', 1))
         printer.print_image(render_thermal(recipe))
         printer.feed(3)
         return jsonify({"success": True})

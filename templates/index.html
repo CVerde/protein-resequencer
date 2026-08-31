@@ -583,20 +583,34 @@
         .history-actions{display:flex;gap:4px;padding:6px;}
         .history-actions .btn-sm{flex:1;text-align:center;}
 
-        /* Recipe/TRN editor */
-        .recipes-layout{display:grid;grid-template-columns:150px minmax(260px,1fr) 260px;gap:6px;flex:1;min-height:0;}
-        .recipe-pane{background:var(--bg2);border-left:4px solid var(--lcars-orange);padding:7px;display:flex;flex-direction:column;min-width:0;min-height:0;}
-        .recipe-list{flex:1;overflow-y:auto;margin-top:6px;}
-        .recipe-card{background:var(--bg);border-left:3px solid var(--lcars-blue);padding:7px;margin-bottom:4px;cursor:pointer;color:var(--lcars-yellow);font-size:12px;}
-        .recipe-card.active{border-color:var(--lcars-orange);background:rgba(255,153,0,.12);}
+        /* Recettes TRN : interface tactile */
+        .recipes-layout{display:grid;grid-template-columns:minmax(280px,38%) minmax(0,1fr);gap:10px;flex:1;min-height:0;}
+        .recipe-browser,.recipe-scale-pane{background:var(--bg2);border-left:6px solid var(--lcars-orange);padding:12px;display:flex;flex-direction:column;min-width:0;min-height:0;}
+        .recipe-category-nav{display:grid;grid-template-columns:64px 1fr 64px;gap:8px;align-items:stretch;margin-bottom:10px;}
+        .recipe-arrow{min-height:60px;border:0;background:var(--lcars-orange);color:var(--bg);font-size:34px;font-weight:700;cursor:pointer;border-radius:var(--theme-radius);}
+        .recipe-category{display:flex;align-items:center;justify-content:center;text-align:center;background:var(--lcars-blue);color:var(--bg);font-family:var(--theme-font);font-size:18px;font-weight:700;padding:8px;}
+        .recipe-list{flex:1;overflow-y:auto;min-height:0;}
+        .recipe-card{min-height:72px;background:var(--bg);border-left:7px solid var(--lcars-blue);padding:12px 14px;margin-bottom:8px;cursor:pointer;color:var(--lcars-yellow);font-size:19px;line-height:1.12;display:flex;flex-direction:column;justify-content:center;}
+        .recipe-card.active{border-color:var(--lcars-orange);background:rgba(255,153,0,.18);}
         .recipe-card.invalid{border-color:var(--lcars-red);}
-        .recipe-meta{color:var(--lcars-tan);font-size:10px;margin-top:3px;}
-        .recipe-editor{flex:1;min-height:0;width:100%;resize:none;background:#08080c;color:#f4d36f;border:1px solid var(--lcars-tan);padding:7px;font:13px/1.25 monospace;}
-        .recipe-actions{display:flex;gap:4px;margin-top:6px;}
-        .recipe-actions .btn{flex:1;padding:8px 4px;font-size:10px;}
-        .recipe-preview{flex:1;min-height:0;overflow:auto;background:#eee;text-align:center;}
-        .recipe-preview img{display:block;width:100%;height:auto;image-rendering:auto;}
-        .recipe-errors{color:var(--lcars-red);font:11px/1.25 monospace;max-height:70px;overflow:auto;margin-top:4px;white-space:pre-wrap;}
+        .recipe-meta{color:var(--lcars-tan);font-size:14px;margin-top:6px;}
+        .recipe-scale-header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding-bottom:10px;border-bottom:2px solid var(--lcars-orange);}
+        .recipe-scale-title{color:var(--lcars-yellow);font-family:var(--theme-font);font-size:24px;line-height:1.1;}
+        .recipe-scale-serving{color:var(--lcars-tan);font-size:16px;margin-top:5px;}
+        .recipe-scale-badge{flex:0 0 auto;background:var(--lcars-purple);color:var(--bg);font-family:var(--theme-font);font-size:20px;font-weight:700;padding:10px 14px;}
+        .recipe-scale-help{font-size:16px;color:var(--lcars-cream);padding:10px 2px 8px;}
+        .recipe-ingredients{flex:1;overflow-y:auto;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:start;}
+        .recipe-ingredient{background:var(--bg);border-left:5px solid var(--lcars-blue);padding:9px;min-width:0;}
+        .recipe-ingredient-name{color:var(--lcars-cream);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;}
+        .recipe-quantity{width:100%;min-height:48px;background:#fff;color:#111;border:3px solid var(--lcars-orange);font-family:var(--theme-font-body);font-size:22px;font-weight:700;padding:6px 10px;border-radius:var(--theme-radius);}
+        .recipe-quantity:disabled{background:#b8b8b8;color:#444;border-color:#777;}
+        .recipe-scale-footer{display:grid;grid-template-columns:110px 110px 1fr;gap:8px;margin-top:10px;}
+        .recipe-scale-reset,.recipe-scale-step{min-height:54px;border:0;font-family:var(--theme-font);font-size:18px;font-weight:700;cursor:pointer;}
+        .recipe-scale-step{background:var(--lcars-blue);color:var(--bg);}
+        .recipe-scale-reset{background:var(--lcars-tan);color:var(--bg);}
+        .recipe-print{min-height:54px;font-size:20px!important;}
+        .recipe-empty{color:var(--lcars-tan);font-size:20px;text-align:center;margin:auto;padding:30px;}
+        @media(max-width:760px){.recipes-layout{grid-template-columns:minmax(250px,42%) minmax(0,1fr)}.recipe-ingredients{grid-template-columns:1fr}.recipe-card{font-size:17px}.recipe-scale-title{font-size:20px}}
         
         /* Modal */
         .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000;padding:12px;}
@@ -692,26 +706,16 @@
         <!-- Recettes TRN -->
         <div class="screen" id="recipes">
             <div class="recipes-layout">
-                <div class="recipe-pane">
-                    <button class="btn green" onclick="newRecipe()">+ Nouvelle</button>
+                <div class="recipe-browser">
+                    <div class="recipe-category-nav">
+                        <button class="recipe-arrow" onclick="changeRecipeCategory(-1)" aria-label="Catégorie précédente">◀</button>
+                        <div class="recipe-category" id="recipeCategory">RECETTES</div>
+                        <button class="recipe-arrow" onclick="changeRecipeCategory(1)" aria-label="Catégorie suivante">▶</button>
+                    </div>
                     <div class="recipe-list" id="recipeList"></div>
                 </div>
-                <div class="recipe-pane">
-                    <div style="display:flex;gap:5px;margin-bottom:5px;">
-                        <input class="form-input" id="recipeSlug" placeholder="nom-du-fichier" style="padding:6px;font-size:13px;">
-                    </div>
-                    <textarea class="recipe-editor" id="recipeSource" spellcheck="false"></textarea>
-                    <div class="recipe-errors" id="recipeErrors"></div>
-                    <div class="recipe-actions">
-                        <button class="btn" onclick="validateRecipeSource()">Valider</button>
-                        <button class="btn green" onclick="saveRecipe()">Enregistrer</button>
-                        <button class="btn red" onclick="deleteRecipeFile()">Supprimer</button>
-                    </div>
-                </div>
-                <div class="recipe-pane">
-                    <div class="section-title">Aperçu thermique 384 px</div>
-                    <div class="recipe-preview" id="recipePreview"><p style="color:#333;padding:20px;">Enregistre une recette pour générer son aperçu.</p></div>
-                    <div class="recipe-actions"><button class="btn orange" onclick="printCurrentRecipe()">Imprimer</button></div>
+                <div class="recipe-scale-pane" id="recipeScalePane">
+                    <div class="recipe-empty">Choisis une recette à gauche.</div>
                 </div>
             </div>
         </div>
@@ -844,7 +848,8 @@
 <div class="modal" id="fridgeDayModal"><div class="modal-box" id="fridgeDayContent"></div></div>
 <script>
 let state={},presets={},selectedPreset=null,editSteps=[],stopStatus='completed',stopRating=0,deleteId=null;
-let recipes=[],currentRecipeSlug=null;
+let recipes=[],currentRecipeSlug=null,currentRecipeData=null,recipeScale=1;
+let recipeCategories=[],recipeCategoryIndex=0;
 let curveVisible={t1:true,t2:true,avg:true,humid:true,oven:true,fridge:true};
 function toggleCurve(k){
     curveVisible[k]=!curveVisible[k];
@@ -894,45 +899,66 @@ async function fetchPresets(){presets=await(await fetch('/api/presets')).json();
 async function fetchHistory(){renderHistory(await(await fetch('/api/history')).json());}
 function escapeHtml(value){const d=document.createElement('div');d.textContent=String(value??'');return d.innerHTML;}
 async function fetchRecipes(){
-    try{recipes=await(await fetch('/api/recipes')).json();renderRecipeList();}
+    try{
+        recipes=await(await fetch('/api/recipes')).json();
+        recipeCategories=[...new Set(recipes.filter(r=>r.valid).map(r=>r.category||'Autres'))];
+        const order=['Pains','Brioches','Gâteaux','Tartes','Autres'];
+        recipeCategories.sort((a,b)=>(order.indexOf(a)<0?99:order.indexOf(a))-(order.indexOf(b)<0?99:order.indexOf(b))||a.localeCompare(b,'fr'));
+        if(recipeCategoryIndex>=recipeCategories.length)recipeCategoryIndex=0;
+        renderRecipeList();
+        if(!currentRecipeSlug){const first=currentCategoryRecipes()[0];if(first)loadRecipe(first.slug);}
+    }
     catch(e){showAlert('Chargement recettes impossible',1);}
 }
+function currentCategoryRecipes(){
+    const category=recipeCategories[recipeCategoryIndex];
+    return recipes.filter(r=>(r.category||'Autres')===category);
+}
+function changeRecipeCategory(direction){
+    if(!recipeCategories.length)return;
+    recipeCategoryIndex=(recipeCategoryIndex+direction+recipeCategories.length)%recipeCategories.length;
+    currentRecipeSlug=null;currentRecipeData=null;recipeScale=1;renderRecipeList();
+    const first=currentCategoryRecipes()[0];if(first)loadRecipe(first.slug);
+}
 function renderRecipeList(){
-    document.getElementById('recipeList').innerHTML=recipes.map(r=>`<div class="recipe-card ${r.slug===currentRecipeSlug?'active':''} ${r.valid?'':'invalid'}" onclick="loadRecipe('${r.slug}')"><div>${escapeHtml(r.title)}</div><div class="recipe-meta">${r.valid?`${r.ingredients} ingrédients · ${r.steps} étapes`:'FICHIER INVALIDE'}</div></div>`).join('')||'<p class="recipe-meta">Aucune recette</p>';
+    const category=recipeCategories[recipeCategoryIndex]||'Aucune catégorie';
+    document.getElementById('recipeCategory').innerHTML=`${escapeHtml(category)}<br><span style="font-size:12px">${recipeCategories.length?recipeCategoryIndex+1:0} / ${recipeCategories.length}</span>`;
+    document.getElementById('recipeList').innerHTML=currentCategoryRecipes().map(r=>`<div class="recipe-card ${r.slug===currentRecipeSlug?'active':''}" onclick="loadRecipe('${r.slug}')"><div>${escapeHtml(r.title)}</div><div class="recipe-meta">${r.ingredients} ingrédients · ${escapeHtml(r.servings||'')}</div></div>`).join('')||'<div class="recipe-empty">Aucune recette</div>';
 }
 async function loadRecipe(slug){
     const r=await fetch('/api/recipes/'+encodeURIComponent(slug)),data=await r.json();
     if(!r.ok){showAlert(data.error||'Recette introuvable',1);return;}
-    currentRecipeSlug=slug;document.getElementById('recipeSlug').value=slug;
-    document.getElementById('recipeSource').value=data.source;document.getElementById('recipeErrors').textContent='';
-    document.getElementById('recipePreview').innerHTML=`<img alt="Aperçu ${escapeHtml(data.recipe.title)}" src="/api/recipes/${encodeURIComponent(slug)}/preview.png?t=${Date.now()}">`;
-    renderRecipeList();
+    currentRecipeSlug=slug;currentRecipeData=data.recipe;recipeScale=1;renderRecipeList();renderRecipeScaler();
 }
-function newRecipe(){
-    currentRecipeSlug=null;document.getElementById('recipeSlug').value='nouvelle-recette';
-    document.getElementById('recipeSource').value=`# Recette TRN Protein Resequencer\ntitle: Nouvelle recette\nservings: 4 personnes\nprep: Préparer le matériel\n\ningredient ingredient1 | 100 g | Premier ingrédient\ningredient ingredient2 | 50 g | Deuxième ingrédient\n\nstep melange | MELANGER | ingredient1, ingredient2\nstep cuisson | CUIRE | melange | 180 C / 20 min\n\nfinish: cuisson\n`;
-    document.getElementById('recipeErrors').textContent='';document.getElementById('recipePreview').innerHTML='<p style="color:#333;padding:20px;">Valide puis enregistre la recette.</p>';renderRecipeList();
+function recipeQuantityNumbers(quantity){
+    return [...String(quantity).matchAll(/\d+(?:[.,]\d+)?/g)].map(m=>Number(m[0].replace(',','.')));
 }
-async function validateRecipeSource(){
-    const r=await fetch('/api/recipes/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:document.getElementById('recipeSource').value})});
-    const data=await r.json();document.getElementById('recipeErrors').textContent=r.ok?'Format TRN valide':(data.errors||[data.error]).join('\n');
-    showAlert(r.ok?'Recette valide':'Recette invalide',!r.ok);return r.ok;
+function formatRecipeNumber(value){
+    const rounded=Math.round(value*1000)/1000;
+    return (Number.isInteger(rounded)?String(rounded):String(rounded).replace('.',','));
 }
-async function saveRecipe(){
-    const slug=document.getElementById('recipeSlug').value.trim();
-    const r=await fetch('/api/recipes/'+encodeURIComponent(slug),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:document.getElementById('recipeSource').value})});
-    const data=await r.json();
-    if(!r.ok){document.getElementById('recipeErrors').textContent=(data.errors||[data.error]).join('\n');showAlert('Recette invalide',1);return;}
-    currentRecipeSlug=slug;showAlert('Recette enregistrée');await fetchRecipes();await loadRecipe(slug);
+function scaledRecipeQuantity(quantity){
+    return String(quantity).replace(/\d+(?:[.,]\d+)?/g,m=>formatRecipeNumber(Number(m.replace(',','.'))*recipeScale));
 }
-async function deleteRecipeFile(){
-    if(!currentRecipeSlug||!confirm('Supprimer cette recette ?'))return;
-    const r=await fetch('/api/recipes/'+encodeURIComponent(currentRecipeSlug),{method:'DELETE'});
-    if(!r.ok){showAlert('Suppression impossible',1);return;}currentRecipeSlug=null;newRecipe();fetchRecipes();showAlert('Recette supprimée');
+function renderRecipeScaler(){
+    const pane=document.getElementById('recipeScalePane');
+    if(!currentRecipeData){pane.innerHTML='<div class="recipe-empty">Choisis une recette à gauche.</div>';return;}
+    const ingredients=currentRecipeData.ingredients.map((item,index)=>{
+        const scalable=recipeQuantityNumbers(item.quantity).length>0;
+        return `<label class="recipe-ingredient"><div class="recipe-ingredient-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div><input class="recipe-quantity" data-index="${index}" value="${escapeHtml(scaledRecipeQuantity(item.quantity))}" ${scalable?'':'disabled'} inputmode="decimal" onchange="setRecipeQuantity(${index},this.value)"></label>`;
+    }).join('');
+    pane.innerHTML=`<div class="recipe-scale-header"><div><div class="recipe-scale-title">${escapeHtml(currentRecipeData.title)}</div><div class="recipe-scale-serving">${escapeHtml(currentRecipeData.servings||'')}</div></div><div class="recipe-scale-badge">× ${recipeScale.toFixed(2).replace('.',',')}</div></div><div class="recipe-scale-help">Modifie une quantité : toutes les autres suivront automatiquement.</div><div class="recipe-ingredients">${ingredients}</div><div class="recipe-scale-footer"><button class="recipe-scale-step" onclick="adjustRecipeScale(.9)">− 10%</button><button class="recipe-scale-step" onclick="adjustRecipeScale(1.1)">+ 10%</button><button class="btn orange recipe-print" onclick="printCurrentRecipe()">IMPRIMER</button></div>`;
 }
+function setRecipeQuantity(index,value){
+    const ingredient=currentRecipeData?.ingredients[index],original=ingredient?recipeQuantityNumbers(ingredient.quantity)[0]:null;
+    const requested=recipeQuantityNumbers(value)[0];
+    if(!original||!requested||requested<=0){showAlert('Quantité invalide',1);renderRecipeScaler();return;}
+    recipeScale=Math.max(.01,Math.min(100,requested/original));renderRecipeScaler();
+}
+function adjustRecipeScale(multiplier){recipeScale=Math.max(.01,Math.min(100,recipeScale*multiplier));renderRecipeScaler();}
 async function printCurrentRecipe(){
-    if(!currentRecipeSlug){showAlert('Enregistre la recette avant impression',1);return;}
-    const r=await fetch('/api/recipes/'+encodeURIComponent(currentRecipeSlug)+'/print',{method:'POST'}),data=await r.json();
+    if(!currentRecipeSlug){showAlert('Choisis une recette',1);return;}
+    const r=await fetch('/api/recipes/'+encodeURIComponent(currentRecipeSlug)+'/print',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scale:recipeScale})}),data=await r.json();
     showAlert(r.ok?'Recette imprimée':(data.error||'Impression impossible'),!r.ok);
 }
 function showScreen(id){

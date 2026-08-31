@@ -26,6 +26,12 @@ class RecipeApiTest(unittest.TestCase):
         preview = self.client.get('/api/recipes/pain/preview.png')
         self.assertEqual(preview.status_code, 200)
         self.assertEqual(preview.mimetype, 'image/png')
+
+    def test_scaled_preview_is_generated(self):
+        app_module.recipe_store.save('pain', VALID_RECIPE)
+        preview = self.client.get('/api/recipes/pain/preview.png?scale=2.5')
+        self.assertEqual(preview.status_code, 200)
+        self.assertEqual(preview.mimetype, 'image/png')
         self.assertTrue(preview.data.startswith(b'\x89PNG'))
 
     def test_invalid_recipe_is_not_saved(self):

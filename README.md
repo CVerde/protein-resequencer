@@ -132,6 +132,15 @@ chmod +x ~/Desktop/*.desktop
 2. **Commit/Push** vers GitHub 
 3. **Mise à jour Pi** avec l'icône "PR Update & Start"
 
+### Recettes TRN
+
+L'onglet Recettes est conçu pour l'écran tactile : les catégories se parcourent
+avec les grandes flèches gauche/droite, puis une grande carte sélectionne la
+recette. Modifier la quantité de n'importe quel ingrédient recalcule toutes les
+autres quantités proportionnellement. L'impression utilise exactement ce même
+facteur, sans modifier le fichier `.trn` d'origine. Les quantités textuelles sans
+nombre (par exemple « une pincée ») restent inchangées.
+
 ### Icônes disponibles :
 - 🟢 **"Protein Resequencer"** - Lancement direct
 - 🔄 **"PR Update & Start"** - Mise à jour depuis GitHub + lancement

@@ -12,6 +12,19 @@ SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 DEFAULT_DIRECTORY = Path(__file__).resolve().parents[1] / "recipes_data"
 
 
+def recipe_category(title):
+    value = title.casefold()
+    if any(word in value for word in ("shokupan", "pain", "focaccia")):
+        return "Pains"
+    if any(word in value for word in ("brioche", "kouign", "croissant")):
+        return "Brioches"
+    if any(word in value for word in ("tarte", "tartel")):
+        return "Tartes"
+    if any(word in value for word in ("cake", "madeleine", "gâteau", "gateau")):
+        return "Gâteaux"
+    return "Autres"
+
+
 class RecipeStore:
     def __init__(self, directory=None):
         self.directory = Path(directory or os.environ.get("RECIPES_DIRECTORY", DEFAULT_DIRECTORY))
@@ -35,6 +48,7 @@ class RecipeStore:
                 entry.update({
                     "title": recipe.title,
                     "servings": recipe.servings,
+                    "category": recipe_category(recipe.title),
                     "ingredients": len(recipe.ingredients),
                     "steps": len(recipe.operations),
                     "valid": True,
