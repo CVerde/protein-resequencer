@@ -96,6 +96,11 @@ toutes les zones sont surveillées. `ROON_PRINT_ZONE_IDS` permet de fournir une
 liste d'identifiants de zones séparés par des virgules. Les logs sont dans
 `/tmp/protein-resequencer-roon-report.log`.
 
+Une extension Roon directe de lecture seule explore les hiérarchies Browse et
+Albums afin de préparer le ticket des ajouts quotidiens. Elle doit être
+autorisée une fois dans **Roon > Réglages > Extensions**. Son journal est
+`/tmp/protein-resequencer-roon-api.log`.
+
 ```bash
 # Clone depuis GitHub
 git clone https://github.com/CVerde/protein-resequencer.git
