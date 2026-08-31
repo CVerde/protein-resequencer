@@ -96,10 +96,18 @@ toutes les zones sont surveillées. `ROON_PRINT_ZONE_IDS` permet de fournir une
 liste d'identifiants de zones séparés par des virgules. Les logs sont dans
 `/tmp/protein-resequencer-roon-report.log`.
 
-Une extension Roon directe de lecture seule explore les hiérarchies Browse et
-Albums afin de préparer le ticket des ajouts quotidiens. Elle doit être
-autorisée une fois dans **Roon > Réglages > Extensions**. Son journal est
-`/tmp/protein-resequencer-roon-api.log`.
+Une extension Roon directe de lecture seule surveille la bibliothèque toutes les
+5 minutes. Le premier passage établit une référence sans rien imprimer. Les
+albums apparus ensuite sont mémorisés avec leur pochette. À 00h10 (heure de
+Paris), un ticket « Ajouté aujourd'hui » récapitule les ajouts de la journée
+terminée. Aucun ticket ne sort s'il n'y a eu aucun ajout, et un ticket manqué est
+imprimé au redémarrage suivant. L'année n'est affichée que si Roon la fournit ;
+aucune mention « année inconnue » n'est ajoutée.
+
+L'extension doit être autorisée une fois dans **Roon > Réglages > Extensions**.
+Son état est conservé dans
+`/home/pi/.local/state/protein-resequencer/roon-daily-additions.json` et son
+journal est `/tmp/protein-resequencer-roon-additions.log`.
 
 ```bash
 # Clone depuis GitHub

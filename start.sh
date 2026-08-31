@@ -8,6 +8,7 @@ pkill -f "chromium.*localhost:5000" 2>/dev/null
 pkill -f "scripts/roon_album_watcher.js" 2>/dev/null
 pkill -f "scripts/roon_daily_report.js" 2>/dev/null
 pkill -f "scripts/roon_recent_additions_probe.js" 2>/dev/null
+pkill -f "scripts/roon_daily_additions.js" 2>/dev/null
 
 sleep 1
 
@@ -17,7 +18,7 @@ SERVER_PID=$!
 
 # Journal des écoutes Roon et impression quotidienne à minuit (échec non bloquant)
 node scripts/roon_daily_report.js >> /tmp/protein-resequencer-roon-report.log 2>&1 &
-node scripts/roon_recent_additions_probe.js >> /tmp/protein-resequencer-roon-api.log 2>&1 &
+node scripts/roon_daily_additions.js >> /tmp/protein-resequencer-roon-additions.log 2>&1 &
 
 sleep 2
 
