@@ -61,6 +61,11 @@ async function inspectLibrary(core) {
 
   const albumContents = await openLevel(service, "browse", albums.item_key);
   log("Contenu de Library / Albums", summarize(albumContents));
+
+  const sample = (albumContents.items || [])[0];
+  if (!sample) throw new Error("aucun album disponible pour inspecter sa fiche");
+  const sampleContents = await openLevel(service, "browse", sample.item_key);
+  log(`Fiche album témoin : ${sample.title}`, summarize(sampleContents));
 }
 
 const roon = new RoonApi({
