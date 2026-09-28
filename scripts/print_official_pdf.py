@@ -12,8 +12,10 @@ from PIL import Image, ImageDraw, ImageFont
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import printer
 
-WIDTH = 384
-MARGIN = 12
+PRINT_WIDTH = 384
+LANDSCAPE_HEIGHT = 384
+COLUMN_WIDTH = 340
+MARGIN = 16
 
 
 def font(size, bold=False, mono=False):
@@ -66,11 +68,11 @@ def wrap_pixels(draw, line, used_font, width):
 
 
 def render_document(text, title="RELEVÉ D’IDENTITÉ BANCAIRE"):
-    title_font = font(23, bold=True)
-    label_font = font(12, bold=True)
-    body_font = font(13, mono=True)
-    heading_font = font(14, bold=True)
-    probe = Image.new("L", (WIDTH, 10), 255)
+    title_font = font(28, bold=True)
+    label_font = font(14, bold=True)
+    body_font = font(17, mono=True)
+    heading_font = font(19, bold=True)
+    probe = Image.new("L", (COLUMN_WIDTH, 10), 255)
     draw = ImageDraw.Draw(probe)
     rows = []
     previous_blank = False
@@ -78,35 +80,48 @@ def render_document(text, title="RELEVÉ D’IDENTITÉ BANCAIRE"):
         stripped = raw.strip()
         if not stripped:
             if rows and not previous_blank:
-                rows.append(("", body_font, 9))
+                rows.append(("", body_font, 11))
             previous_blank = True
             continue
         previous_blank = False
         used_font = heading_font if is_heading(stripped) else body_font
-        for line in wrap_pixels(draw, stripped, used_font, WIDTH - 2 * MARGIN):
-            rows.append((line, used_font, 19 if used_font == heading_font else 18))
+        for line in wrap_pixels(draw, stripped, used_font, COLUMN_WIDTH - 2 * MARGIN):
+            rows.append((line, used_font, 27 if used_font == heading_font else 24))
 
-    header_height = 96
-    height = header_height + sum(step for _, _, step in rows) + 36
-    image = Image.new("L", (WIDTH, height), 255)
+    content_top = 92
+    content_bottom = LANDSCAPE_HEIGHT - 26
+    columns = [[]]
+    used_height = content_top
+    for row in rows:
+        if used_height + row[2] > content_bottom and columns[-1]:
+            columns.append([])
+            used_height = content_top
+        columns[-1].append(row)
+        used_height += row[2]
+
+    width = max(700, len(columns) * COLUMN_WIDTH)
+    image = Image.new("L", (width, LANDSCAPE_HEIGHT), 255)
     draw = ImageDraw.Draw(image)
-    draw.rectangle((0, 0, WIDTH - 1, 78), fill=0)
-    draw.text((MARGIN, 10), "DOCUMENT BANCAIRE", font=label_font, fill=255)
-    title_lines = wrap_pixels(draw, title, title_font, WIDTH - 2 * MARGIN)
-    y = 30
-    for line in title_lines[:2]:
-        draw.text((MARGIN, y), line, font=title_font, fill=255)
-        y += 27
-    draw.line((MARGIN, 87, WIDTH - MARGIN, 87), fill=0, width=2)
-    y = header_height
-    for line, used_font, step in rows:
-        if line:
-            draw.text((MARGIN, y), line, font=used_font, fill=0)
-        y += step
-    draw.line((MARGIN, y + 4, WIDTH - MARGIN, y + 4), fill=0, width=1)
-    draw.text((MARGIN, y + 10), "Édité depuis le document PDF original", font=label_font, fill=0)
-    return image.crop((0, 0, WIDTH, y + 32)).convert(
-        "1", dither=Image.Dither.FLOYDSTEINBERG).rotate(180)
+    draw.rectangle((0, 0, width - 1, 74), fill=0)
+    draw.text((MARGIN, 8), "DOCUMENT BANCAIRE", font=label_font, fill=255)
+    draw.text((MARGIN, 32), title, font=title_font, fill=255)
+    draw.line((MARGIN, 82, width - MARGIN, 82), fill=0, width=2)
+    for column_index, column in enumerate(columns):
+        x = column_index * COLUMN_WIDTH + MARGIN
+        y = content_top
+        if column_index:
+            divider = column_index * COLUMN_WIDTH
+            draw.line((divider, content_top, divider, content_bottom), fill=160, width=1)
+        for line, used_font, step in column:
+            if line:
+                draw.text((x, y), line, font=used_font, fill=0)
+            y += step
+    footer = "Édité depuis le document PDF original"
+    draw.text((MARGIN, LANDSCAPE_HEIGHT - 21), footer, font=label_font, fill=0)
+    ticket = image.convert("1", dither=Image.Dither.FLOYDSTEINBERG).rotate(90, expand=True)
+    if ticket.width != PRINT_WIDTH:
+        raise ValueError(f"Largeur thermique invalide : {ticket.width}")
+    return ticket
 
 
 def main():
