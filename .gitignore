@@ -5,3 +5,4 @@ __pycache__/
 haccp.json
 history.json
 *.log
+/AUTRES/
